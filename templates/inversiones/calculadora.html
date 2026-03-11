@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+{% block title %}Calculadora de Intereses{% endblock %}
+{% block nav_calculadora %}active{% endblock %}
+{% block topbar_title %}Calculadora de <span>Intereses</span>{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div class="section-header mb-0">
+    <h2>Calculadora de Intereses</h2>
+    <p>Fórmula oficial Ideaconv — ISR 20% · IVA 16%</p>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Input Card -->
+  <div class="col-lg-5">
+    <div class="calc-card">
+      <div class="form-section-title" style="color:rgba(255,255,255,.8);border-color:rgba(255,255,255,.2);font-size:11px">
+        <i class="bi bi-sliders"></i> Parámetros de Cálculo
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Capital ($)</label>
+          <input class="form-control" id="c-capital" placeholder="Ej. 450000">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Tasa Anual (%)</label>
+          <input class="form-control" id="c-tasa" placeholder="Ej. 15">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Días del período</label>
+          <input class="form-control" id="c-dias" placeholder="Ej. 28">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Base de cálculo</label>
+          <select class="form-select" id="c-base">
+            <option value="365" selected>365 días</option>
+            <option value="360">360 días</option>
+          </select>
+        </div>
+        <div class="col-12" style="border-top:1px solid rgba(255,255,255,.1);padding-top:16px;margin-top:4px">
+          <label class="form-label">Porcentaje a facturar (%)</label>
+          <input class="form-control" id="c-factura-pct" placeholder="Ej. 50">
+        </div>
+        <div class="col-12">
+          <label class="form-label">Retención ISR (%)</label>
+          <input class="form-control" value="20" readonly style="opacity:.6">
+        </div>
+        <div class="col-12">
+          <label class="form-label">IVA (%)</label>
+          <input class="form-control" value="16" readonly style="opacity:.6">
+        </div>
+        <div class="col-12" id="calc-error" style="display:none;background:rgba(200,40,42,.15);border:1px solid rgba(200,40,42,.4);border-radius:8px;padding:9px 12px;font-size:12.5px;color:#FCA5A5;">
+          <i class="bi bi-exclamation-circle me-1"></i><span id="calc-error-msg"></span>
+        </div>
+        <div class="col-12 mt-1">
+          <button class="btn-brand w-100" style="padding:12px" onclick="calcularIntereses()">
+            <i class="bi bi-play-fill me-2"></i>Calcular Intereses
+          </button>
+        </div>
+        <div class="col-12">
+          <button class="btn-outline-brand w-100" style="padding:10px;border-color:rgba(255,255,255,.3);color:#fff" onclick="calcularDesdeAPI()">
+            <i class="bi bi-cloud-arrow-up me-2"></i>Calcular vía API
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Result Card -->
+  <div class="col-lg-7">
+    <div class="calc-card" style="height:100%">
+      <div class="form-section-title" style="color:rgba(255,255,255,.8);border-color:rgba(255,255,255,.2);font-size:11px">
+        <i class="bi bi-receipt-cutoff"></i> Resultado del Cálculo
+      </div>
+      <div class="result-box">
+        <div class="result-row"><span class="label">Capital</span><span class="value" id="r-capital">—</span></div>
+        <div class="result-row"><span class="label">Tasa anual</span><span class="value" id="r-tasa">—</span></div>
+        <div class="result-row"><span class="label">Período</span><span class="value" id="r-periodo">—</span></div>
+        <div class="result-row"><span class="label">Interés Bruto</span><span class="value" id="r-bruto" style="color:#7DD3FC">—</span></div>
+        <div style="padding:8px 0 4px;font-size:11.5px;color:rgba(255,255,255,.45);letter-spacing:.5px;text-transform:uppercase" id="r-label-factura">Parte con Factura (—%)</div>
+        <div class="result-row"><span class="label">Interés base factura</span><span class="value" id="r-base-factura">—</span></div>
+        <div class="result-row"><span class="label">Retención ISR (20%)</span><span class="value" id="r-isr" style="color:#FCA5A5">—</span></div>
+        <div class="result-row"><span class="label">Subtotal factura</span><span class="value" id="r-subtotal">—</span></div>
+        <div class="result-row"><span class="label">IVA (16%)</span><span class="value" id="r-iva" style="color:#86EFAC">—</span></div>
+        <div class="result-row"><span class="label">Total factura a pagar</span><span class="value" id="r-total-factura" style="color:#fff">—</span></div>
+        <div style="padding:8px 0 4px;font-size:11.5px;color:rgba(255,255,255,.45);letter-spacing:.5px;text-transform:uppercase" id="r-label-externo">Parte sin Factura (—%)</div>
+        <div class="result-row"><span class="label">Pago externo</span><span class="value" id="r-externo">—</span></div>
+        <div class="result-row total"><span class="label">TOTAL A PAGAR</span><span class="value" id="r-total">—</span></div>
+      </div>
+      <div class="d-flex gap-2 mt-3">
+        <button class="btn-outline-brand" style="flex:1;border-color:rgba(255,255,255,.3);color:#fff;font-size:12.5px">
+          <i class="bi bi-printer me-1"></i>Imprimir
+        </button>
+        <button class="btn-brand" style="flex:1;font-size:12.5px">
+          <i class="bi bi-file-earmark-text me-1"></i>Generar Estado
+        </button>
+      </div>
+    </div>
+
+    <!-- Formula reference -->
+    <div class="form-card mt-4" style="background:#F8F9FB">
+      <div class="form-section-title" style="font-size:12px;border-width:1px">
+        <i class="bi bi-info-circle"></i>Fórmula Aplicada
+      </div>
+      <div style="font-size:12.5px;color:var(--text-muted);line-height:1.8">
+        <strong>Interés bruto</strong> = Capital × (Tasa / Base) × Días<br>
+        <strong>ISR</strong> = Interés_factura × 20%<br>
+        <strong>IVA</strong> = (Interés_factura − ISR) × 16%<br>
+        <strong>Total factura</strong> = Interés_factura − ISR + IVA<br>
+        <strong>Total a pagar</strong> = Total_factura + Pago_externo
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function calcularIntereses() {
+    const capital    = parseFloat(document.getElementById('c-capital').value.replace(/,/g,''));
+    const tasa       = parseFloat(document.getElementById('c-tasa').value);
+    const dias       = parseFloat(document.getElementById('c-dias').value);
+    const base       = parseFloat(document.getElementById('c-base').value);
+    const factPct    = parseFloat(document.getElementById('c-factura-pct').value);
+    const errBox     = document.getElementById('calc-error');
+    const errMsg     = document.getElementById('calc-error-msg');
+
+    if (isNaN(capital)||capital<=0)       { errMsg.textContent='Ingresa un capital válido mayor a 0.'; errBox.style.display='block'; return; }
+    if (isNaN(tasa)||tasa<=0||tasa>100)   { errMsg.textContent='Ingresa una tasa anual válida (1-100).'; errBox.style.display='block'; return; }
+    if (isNaN(dias)||dias<=0)             { errMsg.textContent='Ingresa un número de días válido.'; errBox.style.display='block'; return; }
+    if (isNaN(factPct)||factPct<0||factPct>100) { errMsg.textContent='El porcentaje a facturar debe ser entre 0 y 100.'; errBox.style.display='block'; return; }
+    errBox.style.display='none';
+
+    const extPct       = 100 - factPct;
+    const bruto        = capital * (tasa / 100 / base) * dias;
+    const baseFact     = bruto * (factPct / 100);
+    const isr          = baseFact * 0.20;
+    const subtotal     = baseFact - isr;
+    const iva          = subtotal * 0.16;
+    const totalFact    = subtotal + iva;
+    const externo      = bruto * (extPct / 100);
+    const total        = totalFact + externo;
+
+    document.getElementById('r-capital').textContent       = fmt(capital);
+    document.getElementById('r-tasa').textContent          = tasa + '% / ' + base + ' días';
+    document.getElementById('r-periodo').textContent       = dias + ' días';
+    document.getElementById('r-bruto').textContent         = fmt(bruto);
+    document.getElementById('r-label-factura').textContent = 'Parte con Factura (' + factPct + '%)';
+    document.getElementById('r-base-factura').textContent  = fmt(baseFact);
+    document.getElementById('r-isr').textContent           = '– ' + fmt(isr);
+    document.getElementById('r-subtotal').textContent      = fmt(subtotal);
+    document.getElementById('r-iva').textContent           = '+ ' + fmt(iva);
+    document.getElementById('r-total-factura').textContent = fmt(totalFact);
+    document.getElementById('r-label-externo').textContent = 'Parte sin Factura (' + extPct + '%)';
+    document.getElementById('r-externo').textContent       = fmt(externo);
+    document.getElementById('r-total').textContent         = fmt(total);
+
+    showToast('Cálculo realizado ✓','calculator-fill','#7DD3FC');
+  }
+
+  function calcularDesdeAPI() {
+    const body = {
+      capital: document.getElementById('c-capital').value.replace(/,/g,''),
+      tasa_anual: document.getElementById('c-tasa').value,
+      dias: parseInt(document.getElementById('c-dias').value),
+      base: parseInt(document.getElementById('c-base').value),
+      porcentaje_factura: document.getElementById('c-factura-pct').value,
+    };
+    fetch('/api/calculadora/', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','X-CSRFToken': getCookie('csrftoken')},
+      body: JSON.stringify(body)
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.interes_bruto) {
+        document.getElementById('r-capital').textContent       = fmt(data.capital);
+        document.getElementById('r-tasa').textContent          = data.tasa_anual + '% / ' + data.base + ' días';
+        document.getElementById('r-periodo').textContent       = data.dias + ' días';
+        document.getElementById('r-bruto').textContent         = fmt(data.interes_bruto);
+        document.getElementById('r-label-factura').textContent = 'Parte con Factura (' + data.porcentaje_factura + '%)';
+        document.getElementById('r-base-factura').textContent  = fmt(data.base_factura);
+        document.getElementById('r-isr').textContent           = '– ' + fmt(data.isr);
+        document.getElementById('r-subtotal').textContent      = fmt(data.subtotal_factura);
+        document.getElementById('r-iva').textContent           = '+ ' + fmt(data.iva);
+        document.getElementById('r-total-factura').textContent = fmt(data.total_factura);
+        document.getElementById('r-label-externo').textContent = 'Parte sin Factura (' + data.porcentaje_externo + '%)';
+        document.getElementById('r-externo').textContent       = fmt(data.pago_externo);
+        document.getElementById('r-total').textContent         = fmt(data.total_pagar);
+        showToast('Calculado vía API ✓','cloud-check-fill','#7DD3FC');
+      } else {
+        showToast('Error en API — verifica los datos','x-circle-fill','#FCA5A5');
+      }
+    })
+    .catch(() => showToast('Sin conexión al servidor','wifi-off-fill','#FCA5A5'));
+  }
+
+  function getCookie(name){
+    let v=null;
+    document.cookie.split(';').forEach(c=>{
+      const [k,val]=c.trim().split('=');
+      if(k===name) v=decodeURIComponent(val);
+    });
+    return v;
+  }
+</script>
+{% endblock %}

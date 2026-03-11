@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+{% block title %}Prospectos{% endblock %}
+{% block nav_prospectos %}active{% endblock %}
+{% block topbar_title %}Pipeline de <span>Prospectos</span>{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div class="section-header mb-0">
+    <h2>Prospectos</h2>
+    <p id="prospectos-subtitle">Cargando...</p>
+  </div>
+  <button class="btn-brand" onclick="abrirAgregarProspecto()">
+    <i class="bi bi-plus-lg me-2"></i>Agregar Prospecto
+  </button>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-4">
+    <div style="background:#F8F9FB;border-radius:12px;padding:16px;border:1px solid var(--border)">
+      <div style="font-weight:700;font-size:13px;margin-bottom:14px;display:flex;align-items:center;gap:8px">
+        <span style="width:8px;height:8px;border-radius:50%;background:var(--text-muted);display:inline-block"></span>
+        CONTACTO INICIAL
+        <span id="count-inicial" style="background:var(--border);color:var(--text-muted);border-radius:20px;padding:1px 8px;font-size:11px;margin-left:auto">0</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px" id="col-inicial">
+        <div style="text-align:center;padding:24px;color:var(--text-muted);font-size:12.5px" id="empty-inicial">
+          <i class="bi bi-inbox" style="font-size:22px;display:block;margin-bottom:6px;opacity:.4"></i>Sin prospectos
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div style="background:#F8F9FB;border-radius:12px;padding:16px;border:1px solid var(--border)">
+      <div style="font-weight:700;font-size:13px;margin-bottom:14px;display:flex;align-items:center;gap:8px">
+        <span style="width:8px;height:8px;border-radius:50%;background:var(--warning);display:inline-block"></span>
+        EN SEGUIMIENTO
+        <span id="count-seguimiento" style="background:#FFF4E5;color:var(--warning);border-radius:20px;padding:1px 8px;font-size:11px;margin-left:auto">0</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px" id="col-seguimiento">
+        <div style="text-align:center;padding:24px;color:var(--text-muted);font-size:12.5px" id="empty-seguimiento">
+          <i class="bi bi-inbox" style="font-size:22px;display:block;margin-bottom:6px;opacity:.4"></i>Sin prospectos
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div style="background:#F8F9FB;border-radius:12px;padding:16px;border:1px solid var(--border)">
+      <div style="font-weight:700;font-size:13px;margin-bottom:14px;display:flex;align-items:center;gap:8px">
+        <span style="width:8px;height:8px;border-radius:50%;background:var(--success);display:inline-block"></span>
+        LISTO PARA ALTA
+        <span id="count-listo" style="background:#E8F9F2;color:var(--success);border-radius:20px;padding:1px 8px;font-size:11px;margin-left:auto">0</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px" id="col-listo">
+        <div style="text-align:center;padding:24px;color:var(--text-muted);font-size:12.5px" id="empty-listo">
+          <i class="bi bi-inbox" style="font-size:22px;display:block;margin-bottom:6px;opacity:.4"></i>Sin prospectos
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const COLORS=['#C8282A','#1A2340','#1CB87E','#F5A623','#6B7A99','#7C3AED','#0284C7'];
+  function getInitials(n){ return n.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
+  function getColor(id){ return COLORS[id%COLORS.length]; }
+  function fmtMoney(v){ return v?'$'+parseFloat(v).toLocaleString('es-MX',{minimumFractionDigits:0,maximumFractionDigits:0}):'Por definir'; }
+  function getCookie(name){ let v=null; document.cookie.split(';').forEach(c=>{ const[k,val]=c.trim().split('='); if(k===name) v=decodeURIComponent(val); }); return v; }
+
+  async function cargarProspectos(){
+    try{
+      const res=await fetch('/api/prospectos/');
+      const data=await res.json();
+      renderProspectos(data);
+      document.getElementById('prospectos-subtitle').textContent=`${data.length} prospectos activos`;
+    }catch{
+      document.getElementById('prospectos-subtitle').textContent='Error al cargar';
+    }
+  }
+
+  function renderProspectos(data){
+    const cols={inicial:[],seguimiento:[],listo:[]};
+    data.forEach(p=>{ if(cols[p.etapa]) cols[p.etapa].push(p); });
+
+    ['inicial','seguimiento','listo'].forEach(etapa=>{
+      const col=document.getElementById('col-'+etapa);
+      const empty=document.getElementById('empty-'+etapa);
+      const count=document.getElementById('count-'+etapa);
+      const items=cols[etapa];
+      count.textContent=items.length;
+      if(!items.length){ empty.style.display='block'; return; }
+      empty.style.display='none';
+      const cards=items.map(p=>buildCard(p)).join('');
+      // Remove old cards but keep empty placeholder
+      col.querySelectorAll('.prospecto-card').forEach(c=>c.remove());
+      col.insertAdjacentHTML('afterbegin',cards);
+    });
+  }
+
+  function buildCard(p){
+    const initials=getInitials(p.nombre_completo);
+    const color=getColor(p.id);
+    const isListo=p.etapa==='listo';
+    const nextEtapa=p.etapa==='inicial'?'seguimiento':'listo';
+    const arrowColor=p.etapa==='inicial'?'var(--brand-red)':'var(--warning)';
+    const arrowBtn=isListo?'':`
+      <a class="btn-icon" style="font-size:13px" onclick="avanzar(${p.id},'${nextEtapa}')" title="Avanzar">
+        <i class="bi bi-arrow-right-circle-fill" style="color:${arrowColor}"></i>
+      </a>`;
+    const convertBtn=isListo?`
+      <button class="btn-brand w-100 mt-2" style="font-size:12px;padding:6px"
+              onclick="convertir(${p.id},'${p.nombre_completo}','${fmtMoney(p.monto_estimado)}')">
+        <i class="bi bi-person-plus me-1"></i>Convertir a Inversionista
+      </button>`:'';
+    return `
+      <div class="form-card prospecto-card" style="padding:14px;${isListo?'border-left:3px solid var(--success)':''}" data-id="${p.id}">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <div style="width:28px;height:28px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">${initials}</div>
+          <div style="font-weight:600;font-size:13.5px">${p.nombre_completo}</div>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted)">Referido por: ${p.promotor_nombre||'— Sin promotor —'}</div>
+        ${p.telefono?`<div style="font-size:12px;color:var(--text-muted)">Tel: ${p.telefono}</div>`:''}
+        <div style="font-size:12px;margin-top:6px">Monto estimado: <strong>${fmtMoney(p.monto_estimado)}</strong></div>
+        ${p.notas?`<div style="font-size:11.5px;color:var(--text-muted);margin-top:4px;font-style:italic">"${p.notas}"</div>`:''}
+        <div class="d-flex gap-1 mt-2">${arrowBtn}</div>
+        ${convertBtn}
+      </div>`;
+  }
+
+  async function avanzar(id, nuevaEtapa){
+    try{
+      const res=await fetch(`/api/prospectos/${id}/`,{
+        method:'PUT',
+        headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},
+        body:JSON.stringify({etapa:nuevaEtapa})
+      });
+      if(res.ok){ cargarProspectos(); showToast(`Prospecto avanzado a ${nuevaEtapa==='seguimiento'?'En Seguimiento':'Listo para Alta'}`); }
+      else showToast('Error al actualizar','x-circle-fill','#FCA5A5');
+    }catch{ showToast('Sin conexión','wifi-off-fill','#FCA5A5'); }
+  }
+
+  function convertir(id, nombre, monto){
+    document.getElementById('cv-title').textContent='¿Convertir a Inversionista?';
+    document.getElementById('cv-body').innerHTML=`<strong>${nombre}</strong> pasará de Prospecto a Inversionista activo con monto estimado de <strong>${monto}</strong>.<br><br>Se completará el formulario de alta con sus datos.`;
+    document.getElementById('cv-confirm-btn').style.background='var(--success)';
+    document.getElementById('cv-confirm-btn').innerHTML='<i class="bi bi-check2 me-1"></i>Confirmar Alta';
+    document.getElementById('cv-confirm-btn').onclick=async()=>{
+      closeModal();
+      try{
+        const res=await fetch(`/api/prospectos/${id}/convertir/`,{
+          method:'POST',
+          headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},
+          body:JSON.stringify({})
+        });
+        if(res.ok){
+          showToast(`${nombre} convertido a Inversionista ✓`,'person-check-fill','#1CB87E');
+          setTimeout(()=>{ window.location.href='/inversionistas/'; },1800);
+        } else showToast('Error al convertir','x-circle-fill','#FCA5A5');
+      }catch{ showToast('Sin conexión','wifi-off-fill','#FCA5A5'); }
+    };
+    showOverlay();
+    document.getElementById('convert-modal').style.display='block';
+  }
+
+  function abrirAgregarProspecto(){
+    document.getElementById('cv-title').innerHTML=`<i class="bi bi-person-plus-fill me-2" style="color:var(--brand-red)"></i>Agregar Prospecto`;
+    document.getElementById('cv-body').innerHTML=`
+      <div style="text-align:left;display:flex;flex-direction:column;gap:10px;">
+        <div><label style="font-size:11.5px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px">NOMBRE COMPLETO *</label>
+        <input type="text" id="np-nombre" placeholder="Nombre(s) Apellido Paterno Materno" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;"></div>
+        <div><label style="font-size:11.5px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px">TELÉFONO</label>
+        <input type="text" id="np-tel" placeholder="81 0000 0000" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;"></div>
+        <div><label style="font-size:11.5px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px">MONTO ESTIMADO ($)</label>
+        <input type="text" id="np-monto" placeholder="Ej. 150000" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;"></div>
+        <div><label style="font-size:11.5px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px">NOTAS</label>
+        <input type="text" id="np-notas" placeholder="Ej. Interesado en tasa del 15%, contactar lunes" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;"></div>
+      </div>`;
+    document.getElementById('cv-confirm-btn').style.background='var(--brand-red)';
+    document.getElementById('cv-confirm-btn').innerHTML='<i class="bi bi-plus-lg me-1"></i>Agregar';
+    document.getElementById('cv-confirm-btn').onclick=async()=>{
+      const nombre=document.getElementById('np-nombre').value.trim();
+      if(!nombre){ document.getElementById('np-nombre').style.borderColor='var(--brand-red)'; return; }
+      const monto=document.getElementById('np-monto').value.replace(/,/g,'');
+      closeModal();
+      try{
+        const res=await fetch('/api/prospectos/',{
+          method:'POST',
+          headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},
+          body:JSON.stringify({
+            nombre_completo:nombre,
+            telefono:document.getElementById('np-tel').value,
+            monto_estimado:monto||null,
+            notas:document.getElementById('np-notas').value,
+            etapa:'inicial'
+          })
+        });
+        if(res.ok){ showToast(`${nombre} agregado como prospecto ✓`,'person-plus-fill','#1CB87E'); cargarProspectos(); }
+        else showToast('Error al guardar','x-circle-fill','#FCA5A5');
+      }catch{ showToast('Sin conexión','wifi-off-fill','#FCA5A5'); }
+    };
+    showOverlay();
+    document.getElementById('convert-modal').style.display='block';
+  }
+
+  cargarProspectos();
+</script>
+{% endblock %}

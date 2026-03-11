@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+{% block title %}Registro de Pagos{% endblock %}
+{% block nav_pagos %}active{% endblock %}
+{% block topbar_title %}Registro de <span>Pagos</span>{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div class="section-header mb-0">
+    <h2>Registro de Pagos</h2>
+    <p id="pagos-subtitle">Cargando...</p>
+  </div>
+  <div class="d-flex gap-2">
+    <select class="form-select" style="max-width:160px" id="filtro-estado" onchange="cargarPagos()">
+      <option value="">Todos</option>
+      <option value="pendiente">Pendientes</option>
+      <option value="pagado">Pagados</option>
+    </select>
+    <button class="btn-brand" onclick="marcarTodosPagados()">
+      <i class="bi bi-check2-all me-1"></i>Marcar Pagados
+    </button>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="card-icon" style="background:#E8F9F2;color:var(--success)"><i class="bi bi-check-circle-fill"></i></div>
+      <div class="card-value" id="count-pagados">—</div>
+      <div class="card-label">Pagados</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="card-icon" style="background:#FFF4E5;color:var(--warning)"><i class="bi bi-hourglass-split"></i></div>
+      <div class="card-value" id="count-pendientes">—</div>
+      <div class="card-label">Pendientes</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="card-icon" style="background:#FDECEA;color:var(--brand-red)"><i class="bi bi-x-circle-fill"></i></div>
+      <div class="card-value" id="count-sin-generar">—</div>
+      <div class="card-label">Sin generar</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="card-icon" style="background:#E8EBF4;color:var(--brand-navy)"><i class="bi bi-currency-dollar"></i></div>
+      <div class="card-value" id="total-pagado">—</div>
+      <div class="card-label">Total pagado (mes)</div>
+    </div>
+  </div>
+</div>
+
+<div class="table-card">
+  <div class="table-card-header">
+    <h5 id="tabla-titulo">Detalle de Pagos</h5>
+    <div class="ms-auto">
+      <input class="form-control form-control-sm" style="max-width:200px"
+             placeholder="Buscar…" oninput="filtrarTabla(this.value)">
+    </div>
+  </div>
+  <table class="table">
+    <thead><tr>
+      <th><input type="checkbox" id="check-all" onchange="toggleAll(this)"></th>
+      <th>Inversionista</th><th>Capital</th>
+      <th>Interés c/Factura</th><th>Pago Externo</th>
+      <th>Total</th><th>Método</th><th>Estado</th><th>Acción</th>
+    </tr></thead>
+    <tbody id="pagos-tbody">
+      <tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-muted)">
+        <i class="bi bi-arrow-repeat" style="font-size:22px;display:block;margin-bottom:8px"></i>
+        Cargando pagos...
+      </td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div id="pagos-empty" style="display:none;text-align:center;padding:60px 20px;color:var(--text-muted)">
+  <i class="bi bi-inbox" style="font-size:40px;display:block;margin-bottom:12px;opacity:.4"></i>
+  <div style="font-weight:600;font-size:15px;margin-bottom:6px">No hay pagos registrados</div>
+  <div style="font-size:13px">Los pagos aparecerán aquí una vez que se generen los estados de cuenta</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const COLORS=['#C8282A','#1A2340','#1CB87E','#F5A623','#6B7A99','#7C3AED','#0284C7'];
+  let pagosData=[];
+
+  function getInitials(n){ return n.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
+  function getColor(id){ return COLORS[id%COLORS.length]; }
+  function fmtMoney(v){ return '$'+parseFloat(v).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function getCookie(name){ let v=null; document.cookie.split(';').forEach(c=>{ const[k,val]=c.trim().split('='); if(k===name) v=decodeURIComponent(val); }); return v; }
+
+  async function cargarPagos(){
+    const estado=document.getElementById('filtro-estado').value;
+    const url='/api/pagos/'+(estado?'?estado='+estado:'');
+    try{
+      const res=await fetch(url);
+      const data=await res.json();
+      pagosData=data;
+      renderPagos(data);
+      renderStats(data);
+    }catch(e){
+      document.getElementById('pagos-tbody').innerHTML=`<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--brand-red)"><i class="bi bi-wifi-off" style="font-size:22px;display:block;margin-bottom:8px"></i>Error al conectar con el servidor</td></tr>`;
+    }
+  }
+
+  function renderStats(data){
+    const pagados=data.filter(p=>p.estado==='pagado').length;
+    const pendientes=data.filter(p=>p.estado==='pendiente').length;
+    const totalPagado=data.filter(p=>p.estado==='pagado').reduce((s,p)=>s+parseFloat(p.total_pagar||0),0);
+    document.getElementById('count-pagados').textContent=pagados;
+    document.getElementById('count-pendientes').textContent=pendientes;
+    document.getElementById('count-sin-generar').textContent='—';
+    document.getElementById('total-pagado').textContent=totalPagado>=1000?'$'+(totalPagado/1000).toFixed(1)+'K':fmtMoney(totalPagado);
+    document.getElementById('pagos-subtitle').textContent=`${data.length} registros — ${pagados} pagados, ${pendientes} pendientes`;
+    document.getElementById('tabla-titulo').textContent=`Detalle de Pagos (${data.length})`;
+  }
+
+  function renderPagos(data){
+    const tbody=document.getElementById('pagos-tbody');
+    const empty=document.getElementById('pagos-empty');
+    if(!data.length){ tbody.innerHTML=''; empty.style.display='block'; return; }
+    empty.style.display='none';
+    tbody.innerHTML=data.map(p=>{
+      const nombre=p.inversionista_nombre||'—';
+      const color=getColor(p.id);
+      const isPagado=p.estado==='pagado';
+      const badge=isPagado?`<span class="badge-status badge-pagado">Pagado</span>`:`<span class="badge-status badge-pendiente">Pendiente</span>`;
+      const accion=isPagado
+        ?`<a class="btn-icon" onclick="openReceipt(${p.id})" title="Ver comprobante"><i class="bi bi-receipt"></i></a>`
+        :`<button class="btn-brand" style="font-size:11.5px;padding:5px 10px" onclick="confirmarPago(${p.id},'${fmtMoney(p.total_pagar)}','${p.metodo_display||p.metodo}','${nombre}')">Marcar pagado</button>`;
+      return `<tr id="pago-row-${p.id}">
+        <td><input type="checkbox" class="pago-check" value="${p.id}"></td>
+        <td><div class="d-flex align-items-center gap-2"><div class="avatar-sm" style="background:${color}">${getInitials(nombre)}</div>${nombre}</div></td>
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
+        <td><strong>${fmtMoney(p.total_pagar)}</strong></td>
+        <td>${p.metodo_display||p.metodo||'—'}</td>
+        <td id="estado-${p.id}">${badge}</td>
+        <td id="accion-${p.id}">${accion}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  async function confirmarPago(pagoId,total,metodo,nombre){
+    document.getElementById('cv-title').innerHTML=`<i class="bi bi-cash-stack me-2" style="color:var(--success)"></i>Confirmar Pago`;
+    document.getElementById('cv-body').innerHTML=`
+      <div style="text-align:left">
+        <div style="background:#E8F9F2;border:1px solid #1CB87E;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#0e6b47;display:flex;gap:8px;align-items:center;">
+          <i class="bi bi-check-circle-fill" style="color:#1CB87E;flex-shrink:0"></i>
+          <span>¿Confirmas que el pago de <strong>${total}</strong> fue entregado a <strong>${nombre}</strong> vía <strong>${metodo}</strong>?</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div><label style="font-size:11.5px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px">FECHA DE PAGO</label>
+          <input type="date" id="confirm-fecha" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13.5px;" value="${new Date().toISOString().split('T')[0]}"></div>
+          <div><label style="font-size:11.5px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px">NOTAS (opcional)</label>
+          <input type="text" id="confirm-notas" placeholder="Ej. Entregado en oficina, folio de transferencia…" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;"></div>
+        </div>
+      </div>`;
+    document.getElementById('cv-confirm-btn').style.background='var(--success)';
+    document.getElementById('cv-confirm-btn').innerHTML='<i class="bi bi-check2 me-1"></i>Confirmar Pago';
+    document.getElementById('cv-confirm-btn').onclick=async()=>{
+      const fecha=document.getElementById('confirm-fecha').value;
+      const notas=document.getElementById('confirm-notas').value;
+      closeModal();
+      try{
+        const res=await fetch(`/api/pagos/${pagoId}/marcar-pagado/`,{
+          method:'POST',
+          headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},
+          body:JSON.stringify({fecha_pago:fecha,notas})
+        });
+        if(res.ok){ showToast(`Pago de ${nombre} confirmado ✓`); cargarPagos(); }
+        else showToast('Error al guardar el pago','x-circle-fill','#FCA5A5');
+      }catch{ showToast('Sin conexión al servidor','wifi-off-fill','#FCA5A5'); }
+    };
+    showOverlay();
+    document.getElementById('convert-modal').style.display='block';
+  }
+
+  async function openReceipt(pagoId){
+    try{
+      const res=await fetch(`/api/pagos/${pagoId}/`);
+      const p=await res.json();
+      document.getElementById('rec-nombre').textContent=p.inversionista_nombre||'—';
+      document.getElementById('rec-rfc').textContent='';
+      document.getElementById('rec-folio').textContent=p.folio||'—';
+      document.getElementById('rec-total').textContent=fmtMoney(p.total_pagar);
+      document.getElementById('rec-rows').innerHTML=
+        makeRow('Método de pago',p.metodo_display||p.metodo)+
+        makeRow('Fecha de pago',p.fecha_pago||'—')+
+        makeRow('Confirmado por',p.confirmado_por||'—');
+      const notasWrap=document.getElementById('rec-notas-wrap');
+      if(p.notas){ document.getElementById('rec-notas').textContent=p.notas; notasWrap.style.display='block'; }
+      else notasWrap.style.display='none';
+      showOverlay();
+      document.getElementById('receipt-modal').style.display='block';
+    }catch{ showToast('No se pudo cargar el comprobante','x-circle-fill','#FCA5A5'); }
+  }
+
+  function filtrarTabla(q){
+    document.querySelectorAll('#pagos-tbody tr').forEach(tr=>{
+      tr.style.display=tr.textContent.toLowerCase().includes(q.toLowerCase())?'':'none';
+    });
+  }
+
+  function toggleAll(cb){
+    document.querySelectorAll('.pago-check').forEach(c=>c.checked=cb.checked);
+  }
+
+  function marcarTodosPagados(){
+    const checked=[...document.querySelectorAll('.pago-check:checked')].map(c=>c.value);
+    if(!checked.length){ showToast('Selecciona al menos un pago','exclamation-circle','#F5A623'); return; }
+    const first=pagosData.find(p=>checked.includes(String(p.id))&&p.estado==='pendiente');
+    if(first) confirmarPago(first.id,fmtMoney(first.total_pagar),first.metodo_display||first.metodo,first.inversionista_nombre);
+    else showToast('Los pagos seleccionados ya están pagados','check-circle-fill','#1CB87E');
+  }
+
+  cargarPagos();
+</script>
+{% endblock %}
