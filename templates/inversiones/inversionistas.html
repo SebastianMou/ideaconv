@@ -2,7 +2,523 @@
 {% block title %}Inversionistas{% endblock %}
 {% block nav_inversionistas %}active{% endblock %}
 {% block topbar_title %}Gestión de <span>Inversionistas</span>{% endblock %}
+
 {% block content %}
-<div class="section-header"><h2>Inversionistas</h2><p>Gestión de inversionistas activos</p></div>
-<p style="color:var(--text-muted)">Contenido migrado del HTML principal — conectar con <code>/api/inversionistas/</code></p>
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div class="section-header mb-0">
+        <h2>Inversionistas</h2>
+        <p id="inv-subtitle">Cargando...</p>
+    </div>
+    <button class="btn-brand" onclick="abrirFormulario()">
+        <i class="bi bi-plus-lg me-2"></i>Nuevo Inversionista
+    </button>
+</div>
+
+<!-- Search bar -->
+<div class="table-card mb-4">
+    <div class="table-card-header">
+        <input class="form-control" style="max-width:280px" placeholder="Buscar por nombre o RFC…" id="search-inv"
+            oninput="buscar(this.value)">
+        <select class="form-select ms-2" style="max-width:180px" id="filtro-tipo" onchange="cargarInversionistas()">
+            <option value="">Todos los tipos</option>
+            <option value="fisica">Persona Física</option>
+            <option value="moral">Persona Moral</option>
+        </select>
+        <div class="ms-auto d-flex align-items-center gap-2">
+            <span id="inv-count" style="font-size:13px;color:var(--text-muted)"></span>
+            <select class="form-select form-select-sm" style="max-width:200px" id="sort-inv" onchange="cargarInversionistas()">
+                <option value="nombre_completo">Nombre A → Z</option>
+                <option value="-nombre_completo">Nombre Z → A</option>
+                <option value="fecha_ingreso">Fecha ingreso (antigua)</option>
+                <option value="-fecha_ingreso">Fecha ingreso (reciente)</option>
+                <option value="capital">Capital (menor)</option>
+                <option value="-capital">Capital (mayor)</option>
+                <option value="tipo_contribuyente">Tipo (Física / Moral)</option>
+            </select>
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Inversionista</th>
+                <th>RFC</th>
+                <th>Tipo</th>
+                <th>Teléfono</th>
+                <th>Promotor</th>
+                <th>Fecha Ingreso</th>
+                <th>Capital Activo</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody id="inv-tbody">
+            <tr>
+                <td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted)">
+                    <i class="bi bi-arrow-repeat" style="font-size:22px;display:block;margin-bottom:8px"></i>Cargando...
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="inv-empty" style="display:none;text-align:center;padding:60px;color:var(--text-muted)">
+    <i class="bi bi-people" style="font-size:40px;display:block;margin-bottom:12px;opacity:.4"></i>
+    <div style="font-weight:600;font-size:15px;margin-bottom:6px">No hay inversionistas registrados</div>
+    <button class="btn-brand mt-2" onclick="abrirFormulario()"><i class="bi bi-plus-lg me-2"></i>Agregar el
+        primero</button>
+</div>
+
+<!-- Slide-in form panel -->
+<div id="inv-form-panel"
+    style="display:none;position:fixed;top:0;right:0;width:520px;max-width:100vw;height:100vh;background:#fff;z-index:2000;box-shadow:-8px 0 40px rgba(26,35,64,.18);display:flex;flex-direction:column;transform:translateX(110%);transition:transform .35s cubic-bezier(.4,0,.2,1);">
+    <div style="background:var(--brand-navy);padding:20px 24px;display:flex;align-items:center;gap:14px;flex-shrink:0">
+        <div>
+            <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:16px;color:#fff"
+                id="form-panel-title">Nuevo Inversionista</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.5)">Completa todos los campos requeridos</div>
+        </div>
+        <button onclick="cerrarFormulario()"
+            style="margin-left:auto;background:rgba(255,255,255,.1);border:none;color:#fff;width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">✕</button>
+    </div>
+
+    <div style="flex:1;overflow-y:auto;padding:24px">
+        <input type="hidden" id="form-inv-id">
+
+        <div class="form-section-title"><i class="bi bi-person-fill"></i> Datos Personales</div>
+        <div class="row g-3 mb-4">
+            <div class="col-6">
+                <label class="form-label">Tipo de contribuyente *</label>
+                <select class="form-select" id="f-tipo">
+                    <option value="fisica">Persona Física</option>
+                    <option value="moral">Persona Moral</option>
+                </select>
+            </div>
+            <div class="col-6">
+                <label class="form-label">Nombre completo *</label>
+                <input class="form-control" id="f-nombre" placeholder="Nombre(s) Ap. Paterno Ap. Materno">
+            </div>
+            <div class="col-6">
+                <label class="form-label">Correo electrónico</label>
+                <input class="form-control" id="f-correo" type="email" placeholder="correo@ejemplo.com">
+            </div>
+            <div class="col-6">
+                <label class="form-label">Teléfono</label>
+                <input class="form-control" id="f-telefono" placeholder="81 0000 0000">
+            </div>
+            <div class="col-6">
+                <label class="form-label">CURP</label>
+                <input class="form-control" id="f-curp" placeholder="AAAA000000XXXXXX00"
+                    style="text-transform:uppercase">
+            </div>
+            <div class="col-6">
+                <label class="form-label">Fecha de nacimiento</label>
+                <input class="form-control" id="f-nacimiento" type="date">
+            </div>
+            <div class="col-6">
+                <label class="form-label">Estado civil</label>
+                <select class="form-select" id="f-estado-civil">
+                    <option value="soltero">Soltero(a)</option>
+                    <option value="casado">Casado(a)</option>
+                    <option value="divorciado">Divorciado(a)</option>
+                    <option value="viudo">Viudo(a)</option>
+                </select>
+            </div>
+            <div class="col-6">
+                <label class="form-label">Tipo de documento</label>
+                <select class="form-select" id="f-documento">
+                    <option value="ine">INE / Credencial de Elector</option>
+                    <option value="pasaporte">Pasaporte</option>
+                    <option value="cedula">Cédula Profesional</option>
+                    <option value="otro">Otro</option>
+                </select>
+            </div>
+            <div class="col-12">
+                <label class="form-label">Número de documento</label>
+                <input class="form-control" id="f-num-doc" placeholder="Número de identificación">
+            </div>
+            <div class="col-12">
+                <label class="form-label">Domicilio (calle y número)</label>
+                <input class="form-control" id="f-calle" placeholder="Calle, número exterior e interior" oninput="actualizarMapa()">
+            </div>
+            <div class="col-4">
+                <label class="form-label">Ciudad</label>
+                <input class="form-control" id="f-ciudad" placeholder="Ciudad" oninput="actualizarMapa()">
+            </div>
+            <div class="col-4">
+                <label class="form-label">Estado</label>
+                <input class="form-control" id="f-estado" placeholder="Estado" oninput="actualizarMapa()">
+            </div>
+            <div class="col-4">
+                <label class="form-label">C.P.</label>
+                <input class="form-control" id="f-cp" placeholder="00000" oninput="actualizarMapa()">
+            </div>
+            <div class="col-12" id="f-maps-wrap" style="display:none">
+                <label class="form-label" style="display:flex;align-items:center;gap:6px">
+                    <i class="bi bi-geo-alt-fill" style="color:var(--brand-red)"></i>
+                    Ubicación detectada
+                    <span id="f-maps-label" style="font-size:11.5px;color:var(--text-muted);font-weight:400;margin-left:4px"></span>
+                </label>
+                <div style="border-radius:10px;overflow:hidden;border:1.5px solid var(--border)">
+                    <iframe id="f-maps-frame"
+                    width="100%" height="200" style="border:0;display:block"
+                    loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"
+                    src="">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section-title"><i class="bi bi-file-earmark-text-fill"></i> Datos Fiscales</div>
+        <div class="row g-3 mb-4">
+            <div class="col-6">
+                <label class="form-label">RFC</label>
+                <input class="form-control" id="f-rfc" placeholder="AAAA000000XXX" style="text-transform:uppercase">
+            </div>
+            <div class="col-6">
+                <label class="form-label">Régimen fiscal</label>
+                <input class="form-control" id="f-regimen" value="Régimen de Intereses">
+            </div>
+            <div class="col-12">
+                <label class="form-label">Nombre fiscal (si difiere)</label>
+                <input class="form-control" id="f-nombre-fiscal" placeholder="Nombre o razón social para facturas">
+            </div>
+        </div>
+
+        <div class="form-section-title"><i class="bi bi-bank2"></i> Datos Bancarios</div>
+        <div class="row g-3 mb-4">
+            <div class="col-6">
+                <label class="form-label">Banco</label>
+                <select class="form-select" id="f-banco">
+                    <option value="">— Seleccionar —</option>
+                    <option value="bbva">BBVA Bancomer</option>
+                    <option value="banorte">Banorte</option>
+                    <option value="hsbc">HSBC</option>
+                    <option value="santander">Santander</option>
+                    <option value="banamex">Banamex</option>
+                    <option value="otro">Otro</option>
+                </select>
+            </div>
+            <div class="col-6">
+                <label class="form-label">CLABE interbancaria</label>
+                <input class="form-control" id="f-clabe" placeholder="18 dígitos" maxlength="18">
+            </div>
+        </div>
+
+        <div class="form-section-title"><i class="bi bi-graph-up-arrow"></i> Inversión Inicial</div>
+        <div class="row g-3 mb-4">
+            <div class="col-6">
+                <label class="form-label">Capital ($) *</label>
+                <input class="form-control" id="f-capital" placeholder="Ej. 150000">
+            </div>
+            <div class="col-6">
+                <label class="form-label">Tasa anual (%) *</label>
+                <input class="form-control" id="f-tasa" placeholder="Ej. 15">
+            </div>
+            <div class="col-6">
+                <label class="form-label">Base de cálculo</label>
+                <select class="form-select" id="f-base">
+                    <option value="365">365 días</option>
+                    <option value="360">360 días</option>
+                </select>
+            </div>
+            <div class="col-6">
+                <label class="form-label">% a facturar</label>
+                <input class="form-control" id="f-factura-pct" placeholder="Ej. 50" value="100">
+            </div>
+            <div class="col-6">
+                <label class="form-label">Fecha de inicio *</label>
+                <input class="form-control" id="f-fecha-inicio" type="date">
+            </div>
+            <div class="col-6">
+                <label class="form-label">Promotor</label>
+                <select class="form-select" id="f-promotor">
+                    <option value="">— Sin promotor —</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="form-error"
+            style="display:none;background:#FDECEA;border:1px solid var(--brand-red);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--brand-red);margin-bottom:16px">
+            <i class="bi bi-exclamation-circle me-2"></i><span id="form-error-msg"></span>
+        </div>
+    </div>
+
+    <div
+        style="padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;flex-shrink:0;background:#FAFBFD">
+        <button onclick="cerrarFormulario()" class="btn-outline-brand" style="flex:1">Cancelar</button>
+        <button onclick="guardarInversionista()" class="btn-brand" style="flex:2">
+            <i class="bi bi-check2 me-1"></i>Guardar Inversionista
+        </button>
+    </div>
+</div>
+<div id="inv-form-overlay" onclick="cerrarFormulario()"
+    style="display:none;position:fixed;inset:0;background:rgba(26,35,64,.4);z-index:1999;backdrop-filter:blur(2px)">
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const COLORS = ['#C8282A', '#1A2340', '#1CB87E', '#F5A623', '#6B7A99', '#7C3AED', '#0284C7'];
+    function getInitials(n) { return n.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase(); }
+    function getColor(id) { return COLORS[id % COLORS.length]; }
+    function fmtMoney(v) { return v ? '$' + parseFloat(v).toLocaleString('es-MX', { minimumFractionDigits: 2 }) : '—'; }
+    function getCookie(name) { let v = null; document.cookie.split(';').forEach(c => { const [k, val] = c.trim().split('='); if (k === name) v = decodeURIComponent(val); }); return v; }
+
+    async function cargarInversionistas() {
+        const tipo = document.getElementById('filtro-tipo').value;
+        const search = document.getElementById('search-inv').value;
+        let url = '/api/inversionistas/?';
+        if (tipo) url += 'tipo=' + tipo + '&';
+        if (search) url += 'search=' + encodeURIComponent(search) + '&';
+        const orden = document.getElementById('sort-inv').value;
+        if (orden && !orden.includes('capital')) url += 'orden=' + orden;
+        try {
+            const res = await fetch(url);
+            const data = await res.json();
+            renderTabla(data);
+        } catch { mostrarError('Error al conectar con el servidor'); }
+    }
+
+    function renderTabla(data) {
+        const tbody = document.getElementById('inv-tbody');
+        const empty = document.getElementById('inv-empty');
+        document.getElementById('inv-subtitle').textContent = `${data.length} inversionistas registrados`;
+        document.getElementById('inv-count').textContent = `${data.length} registros`;
+        if (!data.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+        empty.style.display = 'none';
+
+        // Client-side capital sort (since capital is in a related model)
+        const orden = document.getElementById('sort-inv').value;
+        if (orden === 'capital') {
+            data.sort((a, b) => parseFloat(a.inversion_activa?.capital || 0) - parseFloat(b.inversion_activa?.capital || 0));
+        } else if (orden === '-capital') {
+            data.sort((a, b) => parseFloat(b.inversion_activa?.capital || 0) - parseFloat(a.inversion_activa?.capital || 0));
+        }
+
+        tbody.innerHTML = data.map(inv => {
+            const capital = inv.inversion_activa?.capital;
+            return `
+                <tr>
+                    <td><div class="d-flex align-items-center gap-2">
+                    <div class="avatar-sm" style="background:${getColor(inv.id)}">${getInitials(inv.nombre_completo)}</div>
+                    <div><div style="font-weight:600">${inv.nombre_completo}</div>
+                    <div style="font-size:11.5px;color:var(--text-muted)">${inv.correo || '—'}</div></div>
+                    </div></td>
+                    <td style="font-family:monospace;font-size:12.5px">${inv.rfc || '—'}</td>
+                    <td><span class="badge-status badge-activo">${inv.tipo_display}</span></td>
+                    <td>${inv.telefono || '—'}</td>
+                    <td>${inv.promotor_nombre || '—'}</td>
+                    <td>${inv.fecha_ingreso || '—'}</td>
+                    <td>${capital ? fmtMoney(capital) : 'Sin inversión'}</td>
+                    <td><div class="d-flex gap-1">
+                    <a class="btn-icon" onclick="editarInversionista(${inv.id})" title="Editar"><i class="bi bi-pencil"></i></a>
+                    <a class="btn-icon" onclick="eliminarInversionista(${inv.id},'${inv.nombre_completo}')" title="Eliminar" style="color:var(--brand-red)"><i class="bi bi-trash"></i></a>
+                    </div></td>
+                </tr>`;
+            }).join('');
+    }
+
+    async function cargarPromotores() {
+        try {
+            const res = await fetch('/api/promotores/');
+            const data = await res.json();
+            const sel = document.getElementById('f-promotor');
+            data.forEach(p => { sel.innerHTML += `<option value="${p.id}">${p.nombre}</option>`; });
+        } catch { }
+    }
+
+    function abrirFormulario() {
+        document.getElementById('form-inv-id').value = '';
+        document.getElementById('form-panel-title').textContent = 'Nuevo Inversionista';
+        ['f-nombre', 'f-correo', 'f-telefono', 'f-curp', 'f-num-doc', 'f-calle', 'f-ciudad',
+            'f-estado', 'f-cp', 'f-rfc', 'f-nombre-fiscal', 'f-clabe', 'f-capital', 'f-tasa', 'f-factura-pct']
+            .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+        document.getElementById('f-regimen').value = 'Régimen de Intereses';
+        document.getElementById('f-factura-pct').value = '100';
+        document.getElementById('f-fecha-inicio').value = '';
+        document.getElementById('f-nacimiento').value = '';
+        document.getElementById('f-promotor').value = '';
+        document.getElementById('f-maps-frame').src = '';
+        document.getElementById('f-maps-wrap').style.display = 'none';
+        document.getElementById('form-error').style.display = 'none';
+        document.getElementById('inv-form-panel').style.transform = 'translateX(0)';
+        document.getElementById('inv-form-overlay').style.display = 'block';
+    }
+
+    function cerrarFormulario() {
+        document.getElementById('inv-form-panel').style.transform = 'translateX(110%)';
+        document.getElementById('inv-form-overlay').style.display = 'none';
+    }
+
+    async function editarInversionista(id) {
+        abrirFormulario();
+        document.getElementById('form-panel-title').textContent = 'Editar Inversionista';
+        try {
+            const res = await fetch(`/api/inversionistas/${id}/`);
+            const d = await res.json();
+            document.getElementById('form-inv-id').value = d.id;
+            document.getElementById('f-tipo').value = d.tipo_contribuyente || 'fisica';
+            document.getElementById('f-nombre').value = d.nombre_completo || '';
+            document.getElementById('f-correo').value = d.correo || '';
+            document.getElementById('f-telefono').value = d.telefono || '';
+            document.getElementById('f-curp').value = d.curp || '';
+            document.getElementById('f-nacimiento').value = d.fecha_nacimiento || '';
+            document.getElementById('f-estado-civil').value = d.estado_civil || 'soltero';
+            document.getElementById('f-documento').value = d.tipo_documento || 'ine';
+            document.getElementById('f-num-doc').value = d.numero_documento || '';
+            document.getElementById('f-calle').value = d.calle || '';
+            document.getElementById('f-ciudad').value = d.ciudad || '';
+            document.getElementById('f-estado').value = d.estado || '';
+            document.getElementById('f-cp').value = d.codigo_postal || '';
+            document.getElementById('f-rfc').value = d.rfc || '';
+            document.getElementById('f-regimen').value = d.regimen_fiscal || 'Régimen de Intereses';
+            document.getElementById('f-nombre-fiscal').value = d.nombre_fiscal || '';
+            document.getElementById('f-banco').value = d.banco || '';
+            document.getElementById('f-clabe').value = d.clabe || '';
+            document.getElementById('f-promotor').value = d.promotor || '';
+        } catch { mostrarError('No se pudo cargar el inversionista'); }
+    }
+
+    async function guardarInversionista() {
+        const nombre = document.getElementById('f-nombre').value.trim();
+        const capital = document.getElementById('f-capital').value.trim();
+        const tasa = document.getElementById('f-tasa').value.trim();
+        const fechaInicio = document.getElementById('f-fecha-inicio').value;
+        const id = document.getElementById('form-inv-id').value;
+
+        const errores = [];
+        if(!nombre) errores.push('• nombre completo: es obligatorio');
+        if(!id && !capital) errores.push('• capital: es obligatorio para la inversión inicial');
+        if(!id && !tasa) errores.push('• tasa anual: es obligatoria para la inversión inicial');
+        if(!id && !fechaInicio) errores.push('• fecha de inicio: es obligatoria para la inversión inicial');
+        if(document.getElementById('f-clabe').value && document.getElementById('f-clabe').value.length !== 18)
+        errores.push('• CLABE: debe tener exactamente 18 dígitos');
+        if(document.getElementById('f-rfc').value && document.getElementById('f-rfc').value.length < 12)
+        errores.push('• RFC: debe tener al menos 12 caracteres');
+        if(errores.length){ mostrarError('Corrige los siguientes campos:<br>' + errores.join('<br>')); return; }
+        document.getElementById('form-error').style.display='none';
+
+        const payload = {
+            tipo_contribuyente: document.getElementById('f-tipo').value,
+            nombre_completo: nombre,
+            correo: document.getElementById('f-correo').value,
+            telefono: document.getElementById('f-telefono').value,
+            curp: document.getElementById('f-curp').value.toUpperCase(),
+            fecha_nacimiento: document.getElementById('f-nacimiento').value || null,
+            estado_civil: document.getElementById('f-estado-civil').value,
+            tipo_documento: document.getElementById('f-documento').value,
+            numero_documento: document.getElementById('f-num-doc').value,
+            calle: document.getElementById('f-calle').value,
+            ciudad: document.getElementById('f-ciudad').value,
+            estado: document.getElementById('f-estado').value,
+            codigo_postal: document.getElementById('f-cp').value,
+            rfc: document.getElementById('f-rfc').value.toUpperCase(),
+            regimen_fiscal: document.getElementById('f-regimen').value,
+            nombre_fiscal: document.getElementById('f-nombre-fiscal').value,
+            banco: document.getElementById('f-banco').value,
+            clabe: document.getElementById('f-clabe').value,
+            promotor: document.getElementById('f-promotor').value || null,
+        };
+
+        try {
+            const url = id ? `/api/inversionistas/${id}/` : '/api/inversionistas/';
+            const method = id ? 'PUT' : 'POST';
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) {
+                const errData = await res.json().catch(() => null);
+                if (errData && typeof errData === 'object') {
+                    const campos = Object.entries(errData)
+                        .map(([campo, msgs]) => `• ${campo}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`)
+                        .join('\n');
+                    mostrarError('Corrige los siguientes campos:\n' + campos);
+                } else {
+                    mostrarError('Error al guardar — verifica los datos');
+                }
+                return;
+            }
+            const inv = await res.json();
+
+            // Create the initial inversion if new investor
+            if (!id && capital && tasa) {
+                await fetch('/api/inversiones/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                    body: JSON.stringify({
+                        inversionista: inv.id,
+                        capital: capital.replace(/,/g, ''),
+                        tasa_anual: tasa,
+                        base_calculo: parseInt(document.getElementById('f-base').value),
+                        porcentaje_factura: document.getElementById('f-factura-pct').value || 100,
+                        fecha_inicio: fechaInicio,
+                        estado: 'activo'
+                    })
+                });
+            }
+
+            cerrarFormulario();
+            showToast(id ? 'Inversionista actualizado ✓' : 'Inversionista agregado ✓', 'check-circle-fill', '#1CB87E');
+            cargarInversionistas();
+        } catch { mostrarError('Sin conexión al servidor'); }
+    }
+
+    function eliminarInversionista(id, nombre) {
+        document.getElementById('cv-title').textContent = '¿Eliminar inversionista?';
+        document.getElementById('cv-body').innerHTML = `¿Estás seguro que deseas eliminar a <strong>${nombre}</strong>? Esta acción no se puede deshacer y eliminará también sus inversiones y estados de cuenta.`;
+        document.getElementById('cv-confirm-btn').style.background = 'var(--brand-red)';
+        document.getElementById('cv-confirm-btn').innerHTML = '<i class="bi bi-trash me-1"></i>Eliminar';
+        document.getElementById('cv-confirm-btn').onclick = async () => {
+            closeModal();
+            try {
+                await fetch(`/api/inversionistas/${id}/`, { method: 'DELETE', headers: { 'X-CSRFToken': getCookie('csrftoken') } });
+                showToast(`${nombre} eliminado`, 'trash', '#F5A623');
+                cargarInversionistas();
+            } catch { showToast('Error al eliminar', 'x-circle-fill', '#FCA5A5'); }
+        };
+        showOverlay();
+        document.getElementById('convert-modal').style.display = 'block';
+    }
+
+    function mostrarError(msg) {
+        const box = document.getElementById('form-error');
+        const msgEl = document.getElementById('form-error-msg');
+        msgEl.innerHTML = msg.replace(/\n/g, '<br>');
+        box.style.display = 'block';
+        box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function buscar(q) {
+        clearTimeout(window._searchTimer);
+        window._searchTimer = setTimeout(cargarInversionistas, 400);
+    }
+
+    function actualizarMapa(){
+        const calle  = document.getElementById('f-calle').value.trim();
+        const ciudad = document.getElementById('f-ciudad').value.trim();
+        const estado = document.getElementById('f-estado').value.trim();
+        const cp     = document.getElementById('f-cp').value.trim();
+
+        // Only show map once we have at least ciudad + estado
+        if(!ciudad || !estado){ 
+            document.getElementById('f-maps-wrap').style.display='none';
+            return;
+        }
+
+        clearTimeout(window._mapaTimer);
+        window._mapaTimer = setTimeout(()=>{
+            const direccion = [calle, ciudad, estado, cp, 'México']
+            .filter(Boolean).join(', ');
+            const query = encodeURIComponent(direccion);
+            document.getElementById('f-maps-frame').src =
+            `https://www.google.com/maps?q=${query}&output=embed`;
+            document.getElementById('f-maps-label').textContent = direccion;
+            document.getElementById('f-maps-wrap').style.display='block';
+        }, 800); // waits 800ms after user stops typing before updating
+    }
+
+    cargarPromotores();
+    cargarInversionistas();
+</script>
 {% endblock %}

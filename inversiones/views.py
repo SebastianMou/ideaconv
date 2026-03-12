@@ -53,7 +53,15 @@ def inversionistas_list(request):
     POST /api/inversionistas/       — create new investor
     """
     if request.method == 'GET':
-        queryset = Inversionista.objects.all().order_by('nombre_completo')
+        orden = request.GET.get('orden', 'nombre_completo')
+        ORDENES_PERMITIDOS = [
+            'nombre_completo', '-nombre_completo',
+            'fecha_ingreso', '-fecha_ingreso',
+            'tipo_contribuyente', '-tipo_contribuyente',
+        ]
+        if orden not in ORDENES_PERMITIDOS:
+            orden = 'nombre_completo'
+        queryset = Inversionista.objects.all().order_by(orden)
 
         # Optional filters
         search = request.GET.get('search')

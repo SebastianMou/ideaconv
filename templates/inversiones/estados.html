@@ -2,7 +2,177 @@
 {% block title %}Estados de Cuenta{% endblock %}
 {% block nav_estados %}active{% endblock %}
 {% block topbar_title %}Estados de <span>Cuenta</span>{% endblock %}
+
 {% block content %}
-<div class="section-header"><h2>Estados de Cuenta</h2><p>Generación y envío — Corte: Marzo 2026</p></div>
-<p style="color:var(--text-muted)">Conectar con <code>/api/estados/</code> y <code>/api/estados/generar-todos/</code></p>
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div class="section-header mb-0">
+    <h2>Estados de Cuenta</h2>
+    <p id="edc-subtitle">Cargando...</p>
+  </div>
+  <button class="btn-brand" onclick="abrirGenerarTodos()">
+    <i class="bi bi-lightning-fill me-2"></i>Generar Todos
+  </button>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="stat-card"><div class="card-icon" style="background:#E8F9F2;color:var(--success)"><i class="bi bi-check-circle-fill"></i></div>
+      <div class="card-value" id="edc-count-gen">—</div><div class="card-label">Generados</div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card"><div class="card-icon" style="background:#FFF4E5;color:var(--warning)"><i class="bi bi-hourglass-split"></i></div>
+      <div class="card-value" id="edc-count-pend">—</div><div class="card-label">Pendientes</div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card"><div class="card-icon" style="background:#E8EBF4;color:var(--brand-navy)"><i class="bi bi-send-fill"></i></div>
+      <div class="card-value" id="edc-count-env">—</div><div class="card-label">Enviados</div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card"><div class="card-icon" style="background:#FDECEA;color:var(--brand-red)"><i class="bi bi-currency-dollar"></i></div>
+      <div class="card-value" id="edc-total">—</div><div class="card-label">Total a pagar</div></div>
+  </div>
+</div>
+
+<div class="table-card">
+  <div class="table-card-header">
+    <h5 id="edc-tabla-titulo">Estados de Cuenta</h5>
+    <select class="form-select ms-auto" style="max-width:180px" id="filtro-edc" onchange="cargarEstados()">
+      <option value="">Todos</option>
+      <option value="pendiente">Pendientes</option>
+      <option value="generado">Generados</option>
+      <option value="enviado">Enviados</option>
+    </select>
+  </div>
+  <table class="table">
+    <thead><tr>
+      <th>Inversionista</th>
+      <th>Período</th>
+      <th>Días</th>
+      <th>Interés Bruto</th>
+      <th>ISR</th>
+      <th>IVA</th>
+      <th>Total</th>
+      <th>Estado</th>
+    </tr></thead>
+    <tbody id="edc-tbody">
+      <tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted)">
+        <i class="bi bi-arrow-repeat" style="font-size:22px;display:block;margin-bottom:8px"></i>Cargando...
+      </td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Generar Todos Modal -->
+<div id="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(26,35,64,.5);z-index:3000;backdrop-filter:blur(3px);"></div>
+<div id="gen-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3001;width:420px;max-width:95vw;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(26,35,64,.25);">
+  <div style="background:var(--brand-navy);padding:20px 24px;display:flex;justify-content:space-between;align-items:center;">
+    <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:16px;color:#fff">Generar Estados del Período</div>
+    <button onclick="cerrarModal()" style="background:rgba(255,255,255,.1);border:none;color:#fff;width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:16px;">✕</button>
+  </div>
+  <div style="padding:24px">
+    <div class="row g-3">
+      <div class="col-6">
+        <label class="form-label">Fecha inicio *</label>
+        <input class="form-control" id="gen-inicio" type="date">
+      </div>
+      <div class="col-6">
+        <label class="form-label">Fecha fin *</label>
+        <input class="form-control" id="gen-fin" type="date">
+      </div>
+      <div class="col-12">
+        <label class="form-label">Días del período *</label>
+        <input class="form-control" id="gen-dias" type="number" value="28" min="1" max="31">
+      </div>
+    </div>
+    <div style="background:#E8EBF4;border-radius:8px;padding:10px 14px;font-size:12.5px;color:var(--text-muted);margin-top:14px">
+      <i class="bi bi-info-circle me-1"></i>
+      Se generarán estados para todas las inversiones activas que no tengan estado para este período.
+    </div>
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button onclick="cerrarModal()" class="btn-outline-brand" style="flex:1">Cancelar</button>
+      <button onclick="ejecutarGenerar()" class="btn-brand" style="flex:2">
+        <i class="bi bi-lightning-fill me-1"></i>Generar ahora
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function getCookie(name){ let v=null; document.cookie.split(';').forEach(c=>{ const[k,val]=c.trim().split('='); if(k===name) v=decodeURIComponent(val); }); return v; }
+  function fmtMoney(v){ return '$'+parseFloat(v).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+  async function cargarEstados(){
+    const estado=document.getElementById('filtro-edc').value;
+    const url='/api/estados/'+(estado?'?estado='+estado:'');
+    try{
+      const res=await fetch(url);
+      const data=await res.json();
+      renderEstados(data);
+    }catch{ document.getElementById('edc-subtitle').textContent='Error al cargar'; }
+  }
+
+  function renderEstados(data){
+    const gen=data.filter(e=>e.estado==='generado').length;
+    const pend=data.filter(e=>e.estado==='pendiente').length;
+    const env=data.filter(e=>e.estado==='enviado').length;
+    const total=data.reduce((s,e)=>s+parseFloat(e.total_pagar||0),0);
+    document.getElementById('edc-count-gen').textContent=gen;
+    document.getElementById('edc-count-pend').textContent=pend;
+    document.getElementById('edc-count-env').textContent=env;
+    document.getElementById('edc-total').textContent=total>=1000?'$'+(total/1000).toFixed(1)+'K':fmtMoney(total);
+    document.getElementById('edc-subtitle').textContent=`${data.length} estados de cuenta`;
+    document.getElementById('edc-tabla-titulo').textContent=`Estados de Cuenta (${data.length})`;
+    const tbody=document.getElementById('edc-tbody');
+    if(!data.length){ tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted)">No hay estados de cuenta para este filtro</td></tr>'; return; }
+    tbody.innerHTML=data.map(e=>{
+      const badgeClass=e.estado==='generado'?'badge-activo':e.estado==='enviado'?'badge-pagado':'badge-pendiente';
+      return `<tr>
+        <td><strong>${e.inversionista_nombre||'—'}</strong></td>
+        <td style="font-size:12.5px">${e.periodo_inicio} → ${e.periodo_fin}</td>
+        <td>${e.dias_periodo}</td>
+        <td>${fmtMoney(e.interes_bruto)}</td>
+        <td style="color:var(--brand-red)">– ${fmtMoney(e.isr)}</td>
+        <td style="color:var(--success)">+ ${fmtMoney(e.iva)}</td>
+        <td><strong>${fmtMoney(e.total_pagar)}</strong></td>
+        <td><span class="badge-status ${badgeClass}">${e.estado_display}</span></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function abrirGenerarTodos(){
+    const today=new Date().toISOString().split('T')[0];
+    document.getElementById('gen-inicio').value=today;
+    document.getElementById('gen-fin').value=today;
+    document.getElementById('modal-overlay').style.display='block';
+    document.getElementById('gen-modal').style.display='block';
+    document.getElementById('modal-overlay').onclick=cerrarModal;
+  }
+
+  function cerrarModal(){
+    document.getElementById('modal-overlay').style.display='none';
+    document.getElementById('gen-modal').style.display='none';
+  }
+
+  async function ejecutarGenerar(){
+    const inicio=document.getElementById('gen-inicio').value;
+    const fin=document.getElementById('gen-fin').value;
+    const dias=document.getElementById('gen-dias').value;
+    if(!inicio||!fin||!dias){ showToast('Completa todos los campos','exclamation-circle','#F5A623'); return; }
+    try{
+      const res=await fetch('/api/estados/generar-todos/',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},
+        body:JSON.stringify({periodo_inicio:inicio,periodo_fin:fin,dias_periodo:parseInt(dias)})
+      });
+      const d=await res.json();
+      cerrarModal();
+      showToast(`${d.generados} estados generados, ${d.omitidos} omitidos`,'lightning-fill','#1CB87E');
+      cargarEstados();
+    }catch{ showToast('Error al generar','x-circle-fill','#FCA5A5'); }
+  }
+
+  cargarEstados();
+</script>
 {% endblock %}

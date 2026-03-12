@@ -2,7 +2,169 @@
 {% block title %}Promotores{% endblock %}
 {% block nav_promotores %}active{% endblock %}
 {% block topbar_title %}Red de <span>Promotores</span>{% endblock %}
+
 {% block content %}
-<div class="section-header"><h2>Promotores</h2><p>Red de promotores e historial de comisiones</p></div>
-<p style="color:var(--text-muted)">Conectar con <code>/api/promotores/</code></p>
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div class="section-header mb-0">
+    <h2>Promotores</h2>
+    <p id="prom-subtitle">Cargando...</p>
+  </div>
+  <button class="btn-brand" onclick="abrirFormulario()">
+    <i class="bi bi-plus-lg me-2"></i>Nuevo Promotor
+  </button>
+</div>
+
+<div class="table-card">
+  <table class="table">
+    <thead><tr>
+      <th>Nombre</th>
+      <th>Teléfono</th>
+      <th>Correo</th>
+      <th>Referidos</th>
+      <th>Estado</th>
+      <th>Acción</th>
+    </tr></thead>
+    <tbody id="prom-tbody">
+      <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted)">
+        <i class="bi bi-arrow-repeat" style="font-size:22px;display:block;margin-bottom:8px"></i>Cargando...
+      </td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal form -->
+<div id="modal-overlay" onclick="cerrarFormulario()" style="display:none;position:fixed;inset:0;background:rgba(26,35,64,.5);z-index:3000;backdrop-filter:blur(3px);"></div>
+<div id="prom-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3001;width:440px;max-width:95vw;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(26,35,64,.25);">
+  <div style="background:var(--brand-navy);padding:20px 24px;display:flex;justify-content:space-between;align-items:center;">
+    <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:16px;color:#fff" id="prom-modal-title">Nuevo Promotor</div>
+    <button onclick="cerrarFormulario()" style="background:rgba(255,255,255,.1);border:none;color:#fff;width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:16px;">✕</button>
+  </div>
+  <div style="padding:24px">
+    <input type="hidden" id="prom-id">
+    <div class="row g-3">
+      <div class="col-12">
+        <label class="form-label">Nombre completo *</label>
+        <input class="form-control" id="prom-nombre" placeholder="Nombre del promotor">
+      </div>
+      <div class="col-6">
+        <label class="form-label">Teléfono</label>
+        <input class="form-control" id="prom-tel" placeholder="81 0000 0000">
+      </div>
+      <div class="col-6">
+        <label class="form-label">Correo</label>
+        <input class="form-control" id="prom-correo" type="email" placeholder="correo@ejemplo.com">
+      </div>
+      <div class="col-12">
+        <label class="form-label">Estado</label>
+        <select class="form-select" id="prom-activo">
+          <option value="true">Activo</option>
+          <option value="false">Inactivo</option>
+        </select>
+      </div>
+      <div id="prom-error" style="display:none;background:#FDECEA;border:1px solid var(--brand-red);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--brand-red)" class="col-12">
+        <i class="bi bi-exclamation-circle me-2"></i><span id="prom-error-msg"></span>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button onclick="cerrarFormulario()" class="btn-outline-brand" style="flex:1">Cancelar</button>
+      <button onclick="guardarPromotor()" class="btn-brand" style="flex:2">
+        <i class="bi bi-check2 me-1"></i>Guardar
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function getCookie(name){ let v=null; document.cookie.split(';').forEach(c=>{ const[k,val]=c.trim().split('='); if(k===name) v=decodeURIComponent(val); }); return v; }
+
+  async function cargarPromotores(){
+    try{
+      const res=await fetch('/api/promotores/');
+      const data=await res.json();
+      document.getElementById('prom-subtitle').textContent=`${data.length} promotores registrados`;
+      const tbody=document.getElementById('prom-tbody');
+      if(!data.length){ tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted)">No hay promotores registrados</td></tr>'; return; }
+      tbody.innerHTML=data.map(p=>`
+        <tr>
+          <td><strong>${p.nombre}</strong></td>
+          <td>${p.telefono||'—'}</td>
+          <td>${p.correo||'—'}</td>
+          <td>${p.total_referidos||0}</td>
+          <td><span class="badge-status ${p.activo?'badge-activo':'badge-vencido'}">${p.activo?'Activo':'Inactivo'}</span></td>
+          <td><div class="d-flex gap-1">
+            <a class="btn-icon" onclick="editarPromotor(${p.id})" title="Editar"><i class="bi bi-pencil"></i></a>
+            <a class="btn-icon" onclick="eliminarPromotor(${p.id},'${p.nombre}')" title="Eliminar" style="color:var(--brand-red)"><i class="bi bi-trash"></i></a>
+          </div></td>
+        </tr>`).join('');
+    }catch{ document.getElementById('prom-subtitle').textContent='Error al cargar'; }
+  }
+
+  function abrirFormulario(){
+    document.getElementById('prom-id').value='';
+    document.getElementById('prom-modal-title').textContent='Nuevo Promotor';
+    document.getElementById('prom-nombre').value='';
+    document.getElementById('prom-tel').value='';
+    document.getElementById('prom-correo').value='';
+    document.getElementById('prom-activo').value='true';
+    document.getElementById('prom-error').style.display='none';
+    document.getElementById('modal-overlay').style.display='block';
+    document.getElementById('prom-modal').style.display='block';
+  }
+
+  function cerrarFormulario(){
+    document.getElementById('modal-overlay').style.display='none';
+    document.getElementById('prom-modal').style.display='none';
+  }
+
+  async function editarPromotor(id){
+    abrirFormulario();
+    document.getElementById('prom-modal-title').textContent='Editar Promotor';
+    try{
+      const res=await fetch(`/api/promotores/${id}/`);
+      const d=await res.json();
+      document.getElementById('prom-id').value=d.id;
+      document.getElementById('prom-nombre').value=d.nombre;
+      document.getElementById('prom-tel').value=d.telefono||'';
+      document.getElementById('prom-correo').value=d.correo||'';
+      document.getElementById('prom-activo').value=d.activo?'true':'false';
+    }catch{}
+  }
+
+  async function guardarPromotor(){
+    const nombre=document.getElementById('prom-nombre').value.trim();
+    if(!nombre){ document.getElementById('prom-error-msg').textContent='El nombre es obligatorio'; document.getElementById('prom-error').style.display='block'; return; }
+    const id=document.getElementById('prom-id').value;
+    const payload={ nombre, telefono:document.getElementById('prom-tel').value, correo:document.getElementById('prom-correo').value, activo:document.getElementById('prom-activo').value==='true' };
+    try{
+      const res=await fetch(id?`/api/promotores/${id}/`:'/api/promotores/',{
+        method:id?'PUT':'POST',
+        headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},
+        body:JSON.stringify(payload)
+      });
+      if(!res.ok){ document.getElementById('prom-error-msg').textContent='Error al guardar'; document.getElementById('prom-error').style.display='block'; return; }
+      cerrarFormulario();
+      showToast(id?'Promotor actualizado ✓':'Promotor agregado ✓','check-circle-fill','#1CB87E');
+      cargarPromotores();
+    }catch{ document.getElementById('prom-error-msg').textContent='Sin conexión'; document.getElementById('prom-error').style.display='block'; }
+  }
+
+  async function eliminarPromotor(id, nombre){
+    document.getElementById('cv-title').textContent='¿Eliminar promotor?';
+    document.getElementById('cv-body').innerHTML=`¿Seguro que deseas eliminar a <strong>${nombre}</strong>?`;
+    document.getElementById('cv-confirm-btn').style.background='var(--brand-red)';
+    document.getElementById('cv-confirm-btn').innerHTML='<i class="bi bi-trash me-1"></i>Eliminar';
+    document.getElementById('cv-confirm-btn').onclick=async()=>{
+      closeModal();
+      await fetch(`/api/promotores/${id}/`,{method:'DELETE',headers:{'X-CSRFToken':getCookie('csrftoken')}});
+      showToast(`${nombre} eliminado`,'trash','#F5A623');
+      cargarPromotores();
+    };
+    showOverlay();
+    document.getElementById('convert-modal').style.display='block';
+  }
+
+  cargarPromotores();
+</script>
 {% endblock %}
