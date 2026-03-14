@@ -23,10 +23,26 @@
           <label class="form-label">Capital ($)</label>
           <input class="form-control" id="c-capital" placeholder="Ej. 450000">
         </div>
+        
         <div class="col-md-6">
-          <label class="form-label">Tasa Anual (%)</label>
-          <input class="form-control" id="c-tasa" placeholder="Ej. 15">
+          <label class="form-label">Tasa con factura (%)</label>
+          <input class="form-control" id="c-tasa-factura" placeholder="Ej. 7.5"
+                oninput="recalcularTasaGlobal()">
         </div>
+        <div class="col-md-6">
+          <label class="form-label">Tasa sin factura (%)</label>
+          <input class="form-control" id="c-tasa-externa" placeholder="Ej. 7.5"
+                oninput="recalcularTasaGlobal()">
+        </div>
+        <div class="col-12" style="border-top:1px solid rgba(255,255,255,.1);padding-top:16px;margin-top:4px">
+          <label class="form-label">Tasa global anual (%)</label>
+          <input class="form-control" id="c-tasa" readonly style="opacity:.7"
+                placeholder="Se calcula automáticamente">
+          <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:4px">
+            Suma de tasa con factura + tasa sin factura
+          </div>
+        </div>
+
         <div class="col-md-6">
           <label class="form-label">Días del período</label>
           <input class="form-control" id="c-dias" placeholder="Ej. 28">
@@ -37,10 +53,6 @@
             <option value="365" selected>365 días</option>
             <option value="360">360 días</option>
           </select>
-        </div>
-        <div class="col-12" style="border-top:1px solid rgba(255,255,255,.1);padding-top:16px;margin-top:4px">
-          <label class="form-label">Porcentaje a facturar (%)</label>
-          <input class="form-control" id="c-factura-pct" placeholder="Ej. 50">
         </div>
         <div class="col-12">
           <label class="form-label">Retención ISR (%)</label>
@@ -117,19 +129,26 @@
 
 {% block extra_js %}
 <script>
+  function recalcularTasaGlobal() {
+    const tf = parseFloat(document.getElementById('c-tasa-factura').value) || 0;
+    const te = parseFloat(document.getElementById('c-tasa-externa').value) || 0;
+    document.getElementById('c-tasa').value = (tf + te).toFixed(2);
+  }
+
   function calcularIntereses() {
     const capital    = parseFloat(document.getElementById('c-capital').value.replace(/,/g,''));
-    const tasa       = parseFloat(document.getElementById('c-tasa').value);
+    const tasaFactura = parseFloat(document.getElementById('c-tasa-factura').value) || 0;
+    const tasaExterna = parseFloat(document.getElementById('c-tasa-externa').value) || 0;
+    const tasa        = tasaFactura + tasaExterna;
+    const factPct     = tasa > 0 ? (tasaFactura / tasa) * 100 : 0;
     const dias       = parseFloat(document.getElementById('c-dias').value);
     const base       = parseFloat(document.getElementById('c-base').value);
-    const factPct    = parseFloat(document.getElementById('c-factura-pct').value);
     const errBox     = document.getElementById('calc-error');
     const errMsg     = document.getElementById('calc-error-msg');
 
     if (isNaN(capital)||capital<=0)       { errMsg.textContent='Ingresa un capital válido mayor a 0.'; errBox.style.display='block'; return; }
-    if (isNaN(tasa)||tasa<=0||tasa>100)   { errMsg.textContent='Ingresa una tasa anual válida (1-100).'; errBox.style.display='block'; return; }
     if (isNaN(dias)||dias<=0)             { errMsg.textContent='Ingresa un número de días válido.'; errBox.style.display='block'; return; }
-    if (isNaN(factPct)||factPct<0||factPct>100) { errMsg.textContent='El porcentaje a facturar debe ser entre 0 y 100.'; errBox.style.display='block'; return; }
+    if (tasa <= 0 || tasa > 100) { errMsg.textContent='Ingresa al menos una tasa válida (con factura o sin factura).'; errBox.style.display='block'; return; }
     errBox.style.display='none';
 
     const extPct       = 100 - factPct;
@@ -162,10 +181,13 @@
   function calcularDesdeAPI() {
     const body = {
       capital: document.getElementById('c-capital').value.replace(/,/g,''),
-      tasa_anual: document.getElementById('c-tasa').value,
       dias: parseInt(document.getElementById('c-dias').value),
       base: parseInt(document.getElementById('c-base').value),
-      porcentaje_factura: document.getElementById('c-factura-pct').value,
+      tasa_anual: document.getElementById('c-tasa').value,
+      porcentaje_factura: document.getElementById('c-tasa').value > 0
+        ? ((parseFloat(document.getElementById('c-tasa-factura').value)||0) /
+          parseFloat(document.getElementById('c-tasa').value) * 100).toFixed(2)
+        : 0,
     };
     fetch('/api/calculadora/', {
       method: 'POST',

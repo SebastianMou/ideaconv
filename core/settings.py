@@ -25,9 +25,8 @@ SECRET_KEY = 'django-insecure-nzai$&@s-^4)7db(=%g9k!mv9oj$5^dcz)=mmm6_!klnxk21y7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
-
+ALLOWED_HOSTS = ["https://diana-luncheonless-unoccasionally.ngrok-free.dev/", "localhost", "127.0.0.1" "*"]
+ALLOWED_HOSTS = ["diana-luncheonless-unoccasionally.ngrok-free.dev", "localhost", "127.0.0.1", "*"]
 # Application definition
 
 INSTALLED_APPS = [
@@ -112,6 +111,10 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/login/'
 
 
 # Static files (CSS, JavaScript, Images)

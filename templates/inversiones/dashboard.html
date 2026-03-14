@@ -6,7 +6,7 @@
 {% block content %}
 <div class="section-header">
   <h2>Resumen del Mes</h2>
-  <p>Ciclo activo: Marzo 2026 — Corte al 28 de Marzo</p>
+  <p id="dash-subtitle">Cargando datos...</p>
 </div>
 
 <!-- Stats Row -->
@@ -14,31 +14,31 @@
   <div class="col-6 col-xl-3">
     <div class="stat-card red">
       <div class="card-icon" style="background:#FDECEA;color:var(--brand-red)"><i class="bi bi-people-fill"></i></div>
-      <div class="card-value" id="stat-inversionistas">63</div>
+      <div class="card-value" id="stat-inversionistas">—</div>
       <div class="card-label">Inversionistas Activos</div>
-      <div class="card-change up"><i class="bi bi-arrow-up-short"></i>+4 este mes</div>
+      <div class="card-change up" id="stat-inv-change"><i class="bi bi-arrow-up-short"></i>—</div>
     </div>
   </div>
   <div class="col-6 col-xl-3">
     <div class="stat-card navy">
       <div class="card-icon" style="background:#E8EBF4;color:var(--brand-navy)"><i class="bi bi-bank2"></i></div>
-      <div class="card-value" id="stat-capital">$8.4M</div>
+      <div class="card-value" id="stat-capital">—</div>
       <div class="card-label">Capital Total Gestionado</div>
-      <div class="card-change up"><i class="bi bi-arrow-up-short"></i>+$320K vs mes anterior</div>
+      <div class="card-change up" id="stat-capital-change">—</div>
     </div>
   </div>
   <div class="col-6 col-xl-3">
     <div class="stat-card green">
       <div class="card-icon" style="background:#E8F9F2;color:var(--success)"><i class="bi bi-cash-stack"></i></div>
-      <div class="card-value">$112K</div>
-      <div class="card-label">Intereses a Pagar (Marzo)</div>
-      <div class="card-change up"><i class="bi bi-check-circle"></i> 58/63 generados</div>
+      <div class="card-value" id="stat-intereses">—</div>
+      <div class="card-label">Intereses a Pagar (Mes)</div>
+      <div class="card-change up" id="stat-estados-change">—</div>
     </div>
   </div>
   <div class="col-6 col-xl-3">
     <div class="stat-card orange">
       <div class="card-icon" style="background:#FFF4E5;color:var(--warning)"><i class="bi bi-exclamation-triangle-fill"></i></div>
-      <div class="card-value" id="stat-advertencias">5</div>
+      <div class="card-value" id="stat-advertencias">—</div>
       <div class="card-label">Advertencias Pendientes</div>
       <div class="card-change warn"><i class="bi bi-clock"></i> Requieren acción</div>
     </div>
@@ -54,23 +54,34 @@
         <div class="ms-auto"><span class="badge-status badge-activo">Actualizado</span></div>
       </div>
       <div class="p-4">
-        <div class="chart-bar-wrap">
-          <div class="chart-bar" style="height:45%"></div>
-          <div class="chart-bar" style="height:58%"></div>
-          <div class="chart-bar" style="height:52%"></div>
-          <div class="chart-bar" style="height:67%"></div>
-          <div class="chart-bar" style="height:73%"></div>
-          <div class="chart-bar" style="height:61%"></div>
-          <div class="chart-bar" style="height:80%"></div>
-          <div class="chart-bar active" style="height:88%"></div>
+        <div class="chart-bar-wrap" id="chart-bars">
+          <!-- rendered by JS -->
+          <div class="chart-bar" style="height:20%;opacity:.3"></div>
+          <div class="chart-bar" style="height:20%;opacity:.3"></div>
+          <div class="chart-bar" style="height:20%;opacity:.3"></div>
+          <div class="chart-bar" style="height:20%;opacity:.3"></div>
+          <div class="chart-bar" style="height:20%;opacity:.3"></div>
+          <div class="chart-bar" style="height:20%;opacity:.3"></div>
+          <div class="chart-bar" style="height:20%;opacity:.3"></div>
+          <div class="chart-bar" style="height:20%;opacity:.3"></div>
         </div>
-        <div class="chart-months">
-          <span>Ago</span><span>Sep</span><span>Oct</span><span>Nov</span>
-          <span>Dic</span><span>Ene</span><span>Feb</span><span>Mar</span>
+        <div class="chart-months" id="chart-months">
+          <span>—</span><span>—</span><span>—</span><span>—</span>
+          <span>—</span><span>—</span><span>—</span><span>—</span>
         </div>
         <div class="mt-3 d-flex gap-4">
-          <div><div style="font-size:12px;color:var(--text-muted)">Promedio mensual</div><div style="font-weight:700;font-size:15px">$98,450</div></div>
-          <div><div style="font-size:12px;color:var(--text-muted)">Mes más alto</div><div style="font-weight:700;font-size:15px">$112,800 <span style="font-size:11px;color:var(--success)">Mar ↑</span></div></div>
+          <div>
+            <div style="font-size:12px;color:var(--text-muted)">Promedio mensual</div>
+            <div style="font-weight:700;font-size:15px" id="chart-promedio">—</div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:var(--text-muted)">Mes más alto</div>
+            <div style="font-weight:700;font-size:15px" id="chart-maximo">—</div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:var(--text-muted)">Pagos pendientes</div>
+            <div style="font-weight:700;font-size:15px" id="chart-pendientes">—</div>
+          </div>
         </div>
       </div>
     </div>
@@ -81,30 +92,48 @@
     <div class="table-card" style="height:100%">
       <div class="table-card-header">
         <h5><i class="bi bi-bell-fill me-2" style="color:var(--warning)"></i>Advertencias</h5>
-        <div class="ms-auto"><button class="btn-outline-brand" style="font-size:12px;padding:5px 12px">Ver todas</button></div>
-      </div>
-      <div class="p-3">
-        <div class="alert-item">
-          <div class="ai-icon" style="background:#FDECEA;color:var(--brand-red)"><i class="bi bi-calendar-x-fill"></i></div>
-          <div class="ai-text"><strong>Inversión por vencer</strong><span>Carlos A. — vence en 3 días</span></div>
-          <span class="ai-time">Hoy</span>
-        </div>
-        <div class="alert-item">
-          <div class="ai-icon" style="background:#FFF4E5;color:var(--warning)"><i class="bi bi-file-earmark-x-fill"></i></div>
-          <div class="ai-text"><strong>Factura pendiente</strong><span>María G. — Factura no recibida</span></div>
-          <span class="ai-time">Ayer</span>
-        </div>
-        <div class="alert-item">
-          <div class="ai-icon" style="background:#FDECEA;color:var(--brand-red)"><i class="bi bi-person-exclamation-fill"></i></div>
-          <div class="ai-text"><strong>Datos incompletos</strong><span>Roberto S. — Falta RFC</span></div>
-          <span class="ai-time">Mar 1</span>
-        </div>
-        <div class="alert-item">
-          <div class="ai-icon" style="background:#FFF4E5;color:var(--warning)"><i class="bi bi-arrow-repeat"></i></div>
-          <div class="ai-text"><strong>Reinversión pendiente</strong><span>Ana L. — Confirmación necesaria</span></div>
-          <span class="ai-time">Feb 28</span>
+        <div class="ms-auto">
+          <a href="/pagos/" class="btn-outline-brand" style="font-size:12px;padding:5px 12px">Ver pagos</a>
         </div>
       </div>
+      <div class="p-3" id="advertencias-list">
+        <div style="text-align:center;padding:30px;color:var(--text-muted)">
+          <i class="bi bi-arrow-repeat" style="font-size:22px;display:block;margin-bottom:8px"></i>
+          Cargando...
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick stats row -->
+<div class="row g-3 mt-1">
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="card-icon" style="background:#E8F9F2;color:var(--success)"><i class="bi bi-check-circle-fill"></i></div>
+      <div class="card-value" id="stat-pagados">—</div>
+      <div class="card-label">Pagos Confirmados</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="card-icon" style="background:#FFF4E5;color:var(--warning)"><i class="bi bi-hourglass-split"></i></div>
+      <div class="card-value" id="stat-pagos-pend">—</div>
+      <div class="card-label">Pagos Pendientes</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="card-icon" style="background:#FDECEA;color:var(--brand-red)"><i class="bi bi-calendar-x-fill"></i></div>
+      <div class="card-value" id="stat-venciendo">—</div>
+      <div class="card-label">Inversiones por Vencer</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card">
+      <div class="card-icon" style="background:#E8EBF4;color:var(--brand-navy)"><i class="bi bi-file-earmark-check-fill"></i></div>
+      <div class="card-value" id="stat-estados-gen">—</div>
+      <div class="card-label">Estados Generados</div>
     </div>
   </div>
 </div>
@@ -112,14 +141,119 @@
 
 {% block extra_js %}
 <script>
-  // Load dashboard stats from API
-  fetch('/api/dashboard/')
-    .then(r => r.json())
-    .then(data => {
-      if (data.total_inversionistas) document.getElementById('stat-inversionistas').textContent = data.total_inversionistas;
-      if (data.capital_total) document.getElementById('stat-capital').textContent = '$' + parseFloat(data.capital_total).toLocaleString('es-MX');
-      if (data.estados_pendientes) document.getElementById('stat-advertencias').textContent = data.estados_pendientes;
-    })
-    .catch(() => {}); // fallback to static demo data
+  function fmtMoney(v) {
+    const n = parseFloat(v);
+    if (isNaN(n)) return '—';
+    if (n >= 1000000) return '$' + (n/1000000).toFixed(1) + 'M';
+    if (n >= 1000)    return '$' + (n/1000).toFixed(1) + 'K';
+    return '$' + n.toLocaleString('es-MX', {minimumFractionDigits:2});
+  }
+
+  function today() {
+    return new Date().toLocaleDateString('es-MX', {month:'long', year:'numeric'});
+  }
+
+  const iconMap = {
+    red:     { bg:'#FDECEA', color:'var(--brand-red)' },
+    warning: { bg:'#FFF4E5', color:'var(--warning)' },
+  };
+
+  function renderAdvertencias(list) {
+    const el = document.getElementById('advertencias-list');
+    if (!list || !list.length) {
+      el.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text-muted)">
+        <i class="bi bi-check-circle-fill" style="font-size:28px;display:block;margin-bottom:8px;color:var(--success)"></i>
+        Sin advertencias pendientes
+      </div>`;
+      return;
+    }
+    el.innerHTML = list.map(a => {
+      const c = iconMap[a.color] || iconMap.warning;
+      return `<div class="alert-item">
+        <div class="ai-icon" style="background:${c.bg};color:${c.color}">
+          <i class="bi bi-${a.icono}"></i>
+        </div>
+        <div class="ai-text">
+          <strong>${a.nombre}</strong>
+          <span>${a.detalle}</span>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderChart(chart) {
+    if (!chart || !chart.length) return;
+
+    const totals  = chart.map(c => parseFloat(c.total) || 0);
+    const maxVal  = Math.max(...totals, 1);
+    const promedio = totals.reduce((a,b) => a+b, 0) / totals.length;
+    const maxMes  = chart[totals.indexOf(Math.max(...totals))];
+
+    // Bars
+    document.getElementById('chart-bars').innerHTML = chart.map((c, i) => {
+      const pct = Math.max((parseFloat(c.total) / maxVal) * 100, 4);
+      const isLast = i === chart.length - 1;
+      return `<div class="chart-bar ${isLast?'active':''}" style="height:${pct}%"
+                   title="${c.mes}: ${fmtMoney(c.total)}"></div>`;
+    }).join('');
+
+    // Months
+    document.getElementById('chart-months').innerHTML =
+      chart.map(c => `<span>${c.mes}</span>`).join('');
+
+    // Stats under chart
+    document.getElementById('chart-promedio').textContent = fmtMoney(promedio);
+    document.getElementById('chart-maximo').textContent   =
+      fmtMoney(maxMes.total) + ` <span style="font-size:11px;color:var(--success)">${maxMes.mes} ↑</span>`;
+  }
+
+  async function cargarDashboard() {
+    try {
+      const res  = await fetch('/api/dashboard/');
+      const data = await res.json();
+
+      // Subtitle
+      document.getElementById('dash-subtitle').textContent =
+        `Ciclo activo: ${today()} — Datos en tiempo real`;
+
+      // Stat cards
+      document.getElementById('stat-inversionistas').textContent = data.inversiones_activas || 0;
+      document.getElementById('stat-inv-change').innerHTML =
+        `<i class="bi bi-people"></i> ${data.total_inversionistas} registrados total`;
+
+      document.getElementById('stat-capital').textContent = fmtMoney(data.capital_total);
+      document.getElementById('stat-capital-change').innerHTML =
+        `<i class="bi bi-bank2"></i> ${data.inversiones_activas} inversiones activas`;
+
+      document.getElementById('stat-intereses').textContent = fmtMoney(data.total_intereses_mes);
+      document.getElementById('stat-estados-change').innerHTML =
+        `<i class="bi bi-check-circle"></i> ${data.estados_generados}/${data.total_estados} generados`;
+
+      document.getElementById('stat-advertencias').textContent = data.advertencias?.length || 0;
+
+      // Quick stats
+      document.getElementById('stat-pagados').textContent    = data.pagos_pagados || 0;
+      document.getElementById('stat-pagos-pend').textContent = data.pagos_pendientes || 0;
+      document.getElementById('stat-venciendo').textContent  = data.inversiones_venciendo || 0;
+      document.getElementById('stat-estados-gen').textContent = data.estados_generados || 0;
+      document.getElementById('chart-pendientes').textContent = data.pagos_pendientes || 0;
+
+      // Advertencias
+      renderAdvertencias(data.advertencias);
+
+      // Chart
+      renderChart(data.chart);
+
+    } catch(e) {
+      document.getElementById('dash-subtitle').textContent = 'Error al cargar datos';
+      document.getElementById('advertencias-list').innerHTML = `
+        <div style="text-align:center;padding:30px;color:var(--brand-red)">
+          <i class="bi bi-wifi-off" style="font-size:22px;display:block;margin-bottom:8px"></i>
+          Sin conexión al servidor
+        </div>`;
+    }
+  }
+
+  cargarDashboard();
 </script>
 {% endblock %}

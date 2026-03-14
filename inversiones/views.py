@@ -1,5 +1,7 @@
 from decimal import Decimal
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -17,27 +19,62 @@ from .serializers import (
 
 
 # ══════════════════════════════════════════════
+#  AUTH VIEWS
+# ══════════════════════════════════════════════
+
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect(request.GET.get('next', 'dashboard'))
+        return render(request, 'inversiones/login.html', {
+            'error': 'Usuario o contraseña incorrectos.',
+            'username': username,
+        })
+
+    return render(request, 'inversiones/login.html')
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+
+# ══════════════════════════════════════════════
 #  TEMPLATE VIEWS  (render HTML pages)
 # ══════════════════════════════════════════════
 
+@login_required(login_url='login')
 def dashboard_view(request):
     return render(request, 'inversiones/dashboard.html')
 
+@login_required(login_url='login')
 def inversionistas_view(request):
     return render(request, 'inversiones/inversionistas.html')
 
+@login_required(login_url='login')
 def calculadora_view(request):
     return render(request, 'inversiones/calculadora.html')
 
+@login_required(login_url='login')
 def estados_view(request):
     return render(request, 'inversiones/estados.html')
 
+@login_required(login_url='login')
 def pagos_view(request):
     return render(request, 'inversiones/pagos.html')
 
+@login_required(login_url='login')
 def promotores_view(request):
     return render(request, 'inversiones/promotores.html')
 
+@login_required(login_url='login')
 def prospectos_view(request):
     return render(request, 'inversiones/prospectos.html')
 
@@ -53,15 +90,7 @@ def inversionistas_list(request):
     POST /api/inversionistas/       — create new investor
     """
     if request.method == 'GET':
-        orden = request.GET.get('orden', 'nombre_completo')
-        ORDENES_PERMITIDOS = [
-            'nombre_completo', '-nombre_completo',
-            'fecha_ingreso', '-fecha_ingreso',
-            'tipo_contribuyente', '-tipo_contribuyente',
-        ]
-        if orden not in ORDENES_PERMITIDOS:
-            orden = 'nombre_completo'
-        queryset = Inversionista.objects.all().order_by(orden)
+        queryset = Inversionista.objects.all().order_by('nombre_completo')
 
         # Optional filters
         search = request.GET.get('search')
@@ -508,17 +537,108 @@ def convertir_prospecto(request, pk):
 def dashboard_summary(request):
     """
     GET /api/dashboard/
-    Returns key metrics for the dashboard cards.
+    Returns all metrics needed for the dashboard.
     """
-    total_inversionistas = Inversionista.objects.count()
-    inversiones_activas  = Inversion.objects.filter(estado='activo')
-    capital_total        = sum(i.capital for i in inversiones_activas) if inversiones_activas.exists() else 0
-    pagos_pendientes     = Pago.objects.filter(estado='pendiente').count()
-    estados_pendientes   = EstadoDeCuenta.objects.filter(estado='pendiente').count()
+    from django.utils import timezone
+    from datetime import date, timedelta
+    import calendar
+
+    today = date.today()
+
+    # ── Inversionistas ──
+    total_inversionistas  = Inversionista.objects.count()
+    inversiones_activas   = Inversion.objects.filter(estado='activo')
+    inversiones_venciendo = Inversion.objects.filter(
+        estado='activo',
+        fecha_vencimiento__range=[today, today + timedelta(days=15)]
+    )
+    inversiones_vencidas  = Inversion.objects.filter(estado='vencido').count()
+
+    # ── Capital ──
+    capital_total = sum(i.capital for i in inversiones_activas) if inversiones_activas.exists() else 0
+
+    # ── Estados de cuenta ──
+    total_estados     = EstadoDeCuenta.objects.count()
+    estados_generados = EstadoDeCuenta.objects.filter(estado='generado').count()
+    estados_pendientes = EstadoDeCuenta.objects.filter(estado='pendiente').count()
+    total_intereses   = sum(
+        e.total_pagar for e in EstadoDeCuenta.objects.filter(
+            periodo_inicio__year=today.year,
+            periodo_inicio__month=today.month
+        )
+    ) if EstadoDeCuenta.objects.exists() else 0
+
+    # ── Pagos ──
+    pagos_pendientes = Pago.objects.filter(estado='pendiente').count()
+    pagos_pagados    = Pago.objects.filter(estado='pagado').count()
+
+    # ── Advertencias ──
+    advertencias = []
+
+    # Inversiones por vencer en 15 días
+    for inv in inversiones_venciendo.select_related('inversionista')[:5]:
+        dias_restantes = (inv.fecha_vencimiento - today).days
+        advertencias.append({
+            'tipo': 'por_vencer',
+            'nombre': inv.inversionista.nombre_completo,
+            'detalle': f'Vence en {dias_restantes} día{"s" if dias_restantes != 1 else ""}',
+            'icono': 'calendar-x-fill',
+            'color': 'red',
+        })
+
+    # Inversionistas sin RFC
+    sin_rfc = Inversionista.objects.filter(rfc='').select_related()[:3]
+    for inv in sin_rfc:
+        advertencias.append({
+            'tipo': 'datos_incompletos',
+            'nombre': inv.nombre_completo,
+            'detalle': 'Falta RFC',
+            'icono': 'person-exclamation-fill',
+            'color': 'red',
+        })
+
+    # Pagos pendientes como advertencia
+    pagos_pend_list = Pago.objects.filter(
+        estado='pendiente'
+    ).select_related('estado_de_cuenta__inversion__inversionista')[:3]
+    for p in pagos_pend_list:
+        advertencias.append({
+            'tipo': 'pago_pendiente',
+            'nombre': p.estado_de_cuenta.inversion.inversionista.nombre_completo,
+            'detalle': 'Pago pendiente de confirmación',
+            'icono': 'credit-card-fill',
+            'color': 'warning',
+        })
+
+    # ── Chart: last 8 months of total_pagar ──
+    chart = []
+    for i in range(7, -1, -1):
+        d = today.replace(day=1) - timedelta(days=1)
+        for _ in range(i):
+            d = d.replace(day=1) - timedelta(days=1)
+        month_total = sum(
+            e.total_pagar for e in EstadoDeCuenta.objects.filter(
+                periodo_inicio__year=d.year,
+                periodo_inicio__month=d.month
+            )
+        )
+        chart.append({
+            'mes': calendar.month_abbr[d.month].capitalize(),
+            'total': str(month_total),
+        })
 
     return Response({
-        'total_inversionistas': total_inversionistas,
-        'capital_total':        str(capital_total),
-        'pagos_pendientes':     pagos_pendientes,
-        'estados_pendientes':   estados_pendientes,
+        'total_inversionistas':  total_inversionistas,
+        'inversiones_activas':   inversiones_activas.count(),
+        'inversiones_venciendo': inversiones_venciendo.count(),
+        'inversiones_vencidas':  inversiones_vencidas,
+        'capital_total':         str(capital_total),
+        'total_intereses_mes':   str(total_intereses),
+        'estados_generados':     estados_generados,
+        'total_estados':         total_estados,
+        'estados_pendientes':    estados_pendientes,
+        'pagos_pendientes':      pagos_pendientes,
+        'pagos_pagados':         pagos_pagados,
+        'advertencias':          advertencias[:6],
+        'chart':                 chart,
     })
