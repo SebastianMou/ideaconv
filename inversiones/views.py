@@ -6,6 +6,8 @@ from django.utils import timezone
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from django.core.mail import EmailMultiAlternatives
+from django.conf import settings as django_settings
 
 from .models import (
     Promotor, Inversionista, Inversion,
@@ -90,7 +92,7 @@ def inversionistas_list(request):
     POST /api/inversionistas/       — create new investor
     """
     if request.method == 'GET':
-        queryset = Inversionista.objects.all().order_by('nombre_completo')
+        queryset = Inversionista.objects.all().order_by('-id')
 
         # Optional filters
         search = request.GET.get('search')
@@ -207,7 +209,7 @@ def calcular_intereses(request):
     base_factura     = interes_bruto * pct_factura
     isr              = base_factura * Decimal('0.20')
     subtotal_factura = base_factura - isr
-    iva              = subtotal_factura * Decimal('0.16')
+    iva              = base_factura * Decimal('0.16')
     total_factura    = subtotal_factura + iva
     pago_externo     = interes_bruto * pct_externo
     total_pagar      = total_factura + pago_externo
@@ -320,7 +322,7 @@ def generar_estados_todos(request):
         base_factura     = interes_bruto * pct_factura
         isr              = base_factura * Decimal('0.20')
         subtotal_factura = base_factura - isr
-        iva              = subtotal_factura * Decimal('0.16')
+        iva              = base_factura * Decimal('0.16')
         total_factura    = subtotal_factura + iva
         pago_externo     = interes_bruto * pct_externo
         total_pagar      = total_factura + pago_externo
@@ -641,4 +643,224 @@ def dashboard_summary(request):
         'pagos_pagados':         pagos_pagados,
         'advertencias':          advertencias[:6],
         'chart':                 chart,
+    })
+
+# ══════════════════════════════════════════════
+#  EMAIL VIEWS
+# ══════════════════════════════════════════════
+
+@api_view(['GET'])
+@login_required(login_url='login')
+def estado_preview(request, pk):
+    """
+    GET /api/estados/<pk>/preview/
+    Returns full estado de cuenta data for email preview/edit.
+    """
+    estado = get_object_or_404(EstadoDeCuenta, pk=pk)
+    inv    = estado.inversion.inversionista
+    return Response({
+        'id':               estado.id,
+        'inversionista':    inv.nombre_completo,
+        'rfc':              inv.rfc or '',
+        'correo':           inv.correo or '',
+        'capital':          str(estado.inversion.capital),
+        'tasa':             str(estado.inversion.tasa_anual),
+        'periodo_inicio':   str(estado.periodo_inicio),
+        'periodo_fin':      str(estado.periodo_fin),
+        'dias_periodo':     estado.dias_periodo,
+        'interes_bruto':    str(estado.interes_bruto),
+        'isr':              str(estado.isr),
+        'iva':              str(estado.iva),
+        'interes_neto':     str(estado.interes_neto),
+        'pago_externo':     str(estado.pago_externo),
+        'total_pagar':      str(estado.total_pagar),
+        'estado':           estado.estado,
+        'notas':            estado.notas or '',
+    })
+
+
+def _build_email_html(data, notas_extra=''):
+    """Builds the HTML email body for an estado de cuenta."""
+    notas_section = f'<p style="margin-top:16px;padding:10px 14px;background:#FFF9E6;border-radius:8px;font-size:13px;color:#666;">📝 <strong>Notas:</strong> {notas_extra}</p>' if notas_extra else ''
+    return f"""
+    <div style="font-family:Arial,sans-serif;max-width:540px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.1);">
+      <div style="background:#1A2340;padding:28px 32px;">
+        <div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:1px;">IDEACONV</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.5);margin-top:4px;">Estado de Cuenta Mensual</div>
+      </div>
+      <div style="padding:28px 32px;">
+        <p style="font-size:15px;color:#1A2340;margin-bottom:4px;">Estimado(a) <strong>{data['inversionista']}</strong>,</p>
+        <p style="font-size:13px;color:#6B7A99;margin-bottom:24px;">Le compartimos el resumen de su inversión correspondiente al período <strong>{data['periodo_inicio']} al {data['periodo_fin']}</strong>.</p>
+
+        <table style="width:100%;border-collapse:collapse;font-size:13.5px;">
+          <tr style="background:#F4F6FA;">
+            <td style="padding:10px 14px;color:#6B7A99;">Capital invertido</td>
+            <td style="padding:10px 14px;font-weight:700;text-align:right;">${float(data['capital']):,.2f}</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 14px;color:#6B7A99;">Tasa anual</td>
+            <td style="padding:10px 14px;font-weight:700;text-align:right;">{data['tasa']}%</td>
+          </tr>
+          <tr style="background:#F4F6FA;">
+            <td style="padding:10px 14px;color:#6B7A99;">Días del período</td>
+            <td style="padding:10px 14px;font-weight:700;text-align:right;">{data['dias_periodo']} días</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 14px;color:#6B7A99;">Interés bruto</td>
+            <td style="padding:10px 14px;font-weight:700;text-align:right;">${float(data['interes_bruto']):,.2f}</td>
+          </tr>
+          <tr style="background:#F4F6FA;">
+            <td style="padding:10px 14px;color:#C8282A;">Retención ISR (20%)</td>
+            <td style="padding:10px 14px;font-weight:700;text-align:right;color:#C8282A;">– ${float(data['isr']):,.2f}</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 14px;color:#1CB87E;">IVA (16%)</td>
+            <td style="padding:10px 14px;font-weight:700;text-align:right;color:#1CB87E;">+ ${float(data['iva']):,.2f}</td>
+          </tr>
+          {'<tr style="background:#F4F6FA;"><td style="padding:10px 14px;color:#6B7A99;">Pago externo</td><td style="padding:10px 14px;font-weight:700;text-align:right;">${:,.2f}</td></tr>'.format(float(data['pago_externo'])) if float(data['pago_externo']) > 0 else ''}
+        </table>
+
+        <div style="background:#1A2340;border-radius:10px;padding:16px 20px;margin-top:16px;display:flex;justify-content:space-between;">
+          <span style="color:rgba(255,255,255,.7);font-weight:600;">TOTAL A PAGAR</span>
+          <span style="color:#fff;font-weight:800;font-size:20px;">${float(data['total_pagar']):,.2f}</span>
+        </div>
+
+        {notas_section}
+
+        <p style="margin-top:24px;font-size:12px;color:#9AA5BE;border-top:1px solid #E2E8F0;padding-top:16px;">
+          Este es un documento interno de Ideaconv S.A. de C.V. — {data['periodo_inicio']} al {data['periodo_fin']}
+        </p>
+      </div>
+    </div>
+    """
+
+
+@api_view(['POST'])
+@login_required(login_url='login')
+def estado_enviar(request, pk):
+    """
+    POST /api/estados/<pk>/enviar/
+    Body: { correo (optional override), asunto (optional), notas_extra (optional) }
+    Sends the estado de cuenta email to the investor.
+    """
+    estado = get_object_or_404(EstadoDeCuenta, pk=pk)
+    inv    = estado.inversion.inversionista
+
+    correo_destino = request.data.get('correo') or inv.correo
+    asunto         = request.data.get('asunto') or f'Estado de Cuenta — {estado.periodo_inicio} al {estado.periodo_fin}'
+    notas_extra    = request.data.get('notas_extra', '')
+
+    if not correo_destino:
+        return Response(
+            {'error': f'{inv.nombre_completo} no tiene correo registrado.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    data = {
+        'inversionista': inv.nombre_completo,
+        'rfc':           inv.rfc or '',
+        'capital':       str(estado.inversion.capital),
+        'tasa':          str(estado.inversion.tasa_anual),
+        'periodo_inicio': str(estado.periodo_inicio),
+        'periodo_fin':    str(estado.periodo_fin),
+        'dias_periodo':   estado.dias_periodo,
+        'interes_bruto':  str(estado.interes_bruto),
+        'isr':            str(estado.isr),
+        'iva':            str(estado.iva),
+        'interes_neto':   str(estado.interes_neto),
+        'pago_externo':   str(estado.pago_externo),
+        'total_pagar':    str(estado.total_pagar),
+    }
+
+    html_content = _build_email_html(data, notas_extra)
+    text_content = f"Estado de Cuenta de {inv.nombre_completo} — Total a pagar: ${float(estado.total_pagar):,.2f}"
+
+    try:
+        msg = EmailMultiAlternatives(
+            subject=asunto,
+            body=text_content,
+            from_email=django_settings.DEFAULT_FROM_EMAIL,
+            to=[correo_destino],
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+
+        # Mark as sent
+        estado.estado = 'enviado'
+        estado.save()
+
+        return Response({'message': f'Correo enviado a {correo_destino} exitosamente.'})
+
+    except Exception as e:
+        return Response(
+            {'error': f'Error al enviar correo: {str(e)}'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['POST'])
+@login_required(login_url='login')
+def enviar_estados_todos(request):
+    """
+    POST /api/estados/enviar-todos/
+    Sends emails to all investors with generado estados de cuenta.
+    Body: { asunto (optional), notas_extra (optional) }
+    """
+    asunto      = request.data.get('asunto', 'Estado de Cuenta Mensual — Ideaconv')
+    notas_extra = request.data.get('notas_extra', '')
+
+    estados = EstadoDeCuenta.objects.filter(
+        estado='generado'
+    ).select_related('inversion__inversionista')
+
+    enviados  = []
+    fallidos  = []
+    sin_correo = []
+
+    for estado in estados:
+        inv = estado.inversion.inversionista
+        if not inv.correo:
+            sin_correo.append(inv.nombre_completo)
+            continue
+
+        data = {
+            'inversionista': inv.nombre_completo,
+            'rfc':           inv.rfc or '',
+            'capital':       str(estado.inversion.capital),
+            'tasa':          str(estado.inversion.tasa_anual),
+            'periodo_inicio': str(estado.periodo_inicio),
+            'periodo_fin':    str(estado.periodo_fin),
+            'dias_periodo':   estado.dias_periodo,
+            'interes_bruto':  str(estado.interes_bruto),
+            'isr':            str(estado.isr),
+            'iva':            str(estado.iva),
+            'interes_neto':   str(estado.interes_neto),
+            'pago_externo':   str(estado.pago_externo),
+            'total_pagar':    str(estado.total_pagar),
+        }
+        html_content = _build_email_html(data, notas_extra)
+        text_content = f"Estado de Cuenta — Total a pagar: ${float(estado.total_pagar):,.2f}"
+
+        try:
+            msg = EmailMultiAlternatives(
+                subject=asunto,
+                body=text_content,
+                from_email=django_settings.DEFAULT_FROM_EMAIL,
+                to=[inv.correo],
+            )
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
+            estado.estado = 'enviado'
+            estado.save()
+            enviados.append(inv.nombre_completo)
+        except Exception as e:
+            fallidos.append({'nombre': inv.nombre_completo, 'error': str(e)})
+
+    return Response({
+        'enviados':    len(enviados),
+        'fallidos':    len(fallidos),
+        'sin_correo':  len(sin_correo),
+        'detalle_enviados':   enviados,
+        'detalle_fallidos':   fallidos,
+        'detalle_sin_correo': sin_correo,
     })

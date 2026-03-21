@@ -1186,8 +1186,44 @@
     <div class="topbar-title">{% block topbar_title %}Dashboard <span>General</span>{% endblock %}</div>
     <div class="topbar-right">
       <div class="date-badge"><i class="bi bi-calendar3 me-1"></i> <span id="topbar-fecha">—</span></div>
-      <button class="topbar-btn notif-dot"><i class="bi bi-bell"></i></button>
-      <button class="topbar-btn"><i class="bi bi-gear"></i></button>
+      <div style="position:relative">
+        <button class="topbar-btn" id="notif-btn" onclick="toggleNotifPanel()" style="position:relative">
+          <i class="bi bi-bell"></i>
+          <span id="notif-dot" style="display:none;position:absolute;top:6px;right:7px;width:7px;height:7px;border-radius:50%;background:var(--brand-red);border:2px solid #fff;"></span>
+        </button>
+        <div id="notif-panel" style="display:none;position:absolute;top:48px;right:0;width:320px;background:#fff;border-radius:12px;box-shadow:0 12px 40px rgba(26,35,64,.18);border:1px solid var(--border);z-index:2000;overflow:hidden;">
+          <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+            <div style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:14px;">Notificaciones</div>
+            <span id="notif-count" style="background:#FDECEA;color:var(--brand-red);border-radius:20px;padding:2px 8px;font-size:11px;font-weight:700;">0</span>
+          </div>
+          <div id="notif-list" style="max-height:320px;overflow-y:auto;padding:8px 0;">
+            <div style="text-align:center;padding:24px;color:var(--text-muted);font-size:13px;">
+              <i class="bi bi-bell-slash" style="font-size:22px;display:block;margin-bottom:8px;opacity:.4"></i>
+              Cargando...
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <button class="topbar-btn" onclick="toggleSettingsPanel()"><i class="bi bi-gear"></i></button>
+      <div id="settings-panel" style="display:none;position:fixed;top:0;right:0;width:400px;max-width:100vw;height:100vh;background:#fff;z-index:2000;box-shadow:-8px 0 40px rgba(26,35,64,.18);display:flex;flex-direction:column;transform:translateX(110%);transition:transform .35s cubic-bezier(.4,0,.2,1);">
+        <div style="background:var(--brand-navy);padding:20px 24px;display:flex;align-items:center;gap:12px;flex-shrink:0;">
+          <i class="bi bi-gear-fill" style="color:#fff;font-size:18px;"></i>
+          <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:16px;color:#fff;">Configuración de Pagos</div>
+          <button onclick="toggleSettingsPanel()" style="margin-left:auto;background:rgba(255,255,255,.1);border:none;color:#fff;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;">✕</button>
+        </div>
+        <div style="padding:16px 20px;background:#F8F9FB;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--text-muted);">
+          <i class="bi bi-info-circle me-1"></i>
+          Tipo de comprobante por inversionista según su preferencia fiscal.
+        </div>
+        <div style="flex:1;overflow-y:auto;padding:16px 20px;" id="settings-inv-list">
+          <div style="text-align:center;padding:40px;color:var(--text-muted);">
+            <i class="bi bi-arrow-repeat" style="font-size:22px;display:block;margin-bottom:8px;"></i>Cargando...
+          </div>
+        </div>
+      </div>
+      <div id="settings-overlay" onclick="toggleSettingsPanel()" style="display:none;position:fixed;inset:0;background:rgba(26,35,64,.4);z-index:1999;backdrop-filter:blur(2px);"></div>
+
     </div>
   </div>
 
@@ -1206,65 +1242,94 @@
   </div>
 
   <!-- Receipt Modal -->
-  <div id="receipt-modal"
-    style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3001;width:420px;max-width:95vw;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(26,35,64,.25);">
-    <div
-      style="background:var(--brand-navy);padding:20px 24px;display:flex;justify-content:space-between;align-items:center;">
+  <div id="receipt-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3001;width:460px;max-width:95vw;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(26,35,64,.25);">
+
+    <!-- Header -->
+    <div style="background:var(--brand-navy);padding:20px 24px;display:flex;justify-content:space-between;align-items:center;">
       <div>
-        <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:#fff;">IDEACONV S.A. de
-          C.V.</div>
-        <div style="font-size:11.5px;color:rgba(255,255,255,.5)">Comprobante de Pago de Intereses</div>
+        <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:#fff;">IDEACONV S.A. de C.V.</div>
+        <div style="font-size:11.5px;color:rgba(255,255,255,.5)" id="rec-modal-subtitle">Comprobante de Pago de Intereses</div>
       </div>
-      <button onclick="closeModal()"
-        style="background:rgba(255,255,255,.1);border:none;color:#fff;width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;">✕</button>
+      <button onclick="closeModal()" style="background:rgba(255,255,255,.1);border:none;color:#fff;width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;">✕</button>
     </div>
+
+    <!-- Tab switcher -->
+    <div style="display:flex;border-bottom:2px solid var(--border);background:#FAFBFD;" id="rec-tabs-wrap">
+      <button id="tab-btn-factura" onclick="switchRecTab('factura')"
+        style="flex:1;padding:12px;border:none;background:none;font-size:13px;font-weight:700;cursor:pointer;border-bottom:3px solid var(--brand-red);color:var(--brand-red);margin-bottom:-2px;">
+        <i class="bi bi-receipt me-1"></i>Con Factura
+      </button>
+      <button id="tab-btn-externo" onclick="switchRecTab('externo')"
+        style="flex:1;padding:12px;border:none;background:none;font-size:13px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;color:var(--text-muted);margin-bottom:-2px;">
+        <i class="bi bi-cash me-1"></i>Sin Factura
+      </button>
+    </div>
+
     <div style="padding:22px 24px;">
-      <div
-        style="display:flex;justify-content:space-between;margin-bottom:6px;padding-bottom:14px;border-bottom:1px solid var(--border)">
+
+      <!-- Investor info row (shared) -->
+      <div style="display:flex;justify-content:space-between;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)">
         <div>
-          <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px">Inversionista
-          </div>
+          <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px">Inversionista</div>
           <div style="font-weight:700;font-size:15px" id="rec-nombre">—</div>
           <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px" id="rec-rfc">—</div>
         </div>
         <div style="text-align:right">
-          <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px">No.
-            Comprobante</div>
+          <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px">No. Folio</div>
           <div style="font-weight:700;font-size:15px;color:var(--brand-red)" id="rec-folio">—</div>
-          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Ideaconv S.A. de C.V.</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px" id="rec-periodo">—</div>
         </div>
       </div>
-      <div id="rec-rows"></div>
-      <div
-        style="margin-top:14px;padding:14px;background:var(--brand-navy);border-radius:10px;display:flex;justify-content:space-between;align-items:center;">
-        <span style="color:rgba(255,255,255,.7);font-weight:600">TOTAL PAGADO</span>
-        <span style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:22px;color:#fff"
-          id="rec-total">—</span>
+
+      <!-- TAB: Con Factura -->
+      <div id="rec-tab-factura">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--brand-red);margin-bottom:10px;">
+          <i class="bi bi-file-earmark-text-fill me-1"></i>Desglose con Factura
+        </div>
+        <div id="rec-rows-factura"></div>
+        <div style="margin-top:12px;padding:12px 14px;background:var(--brand-navy);border-radius:10px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="color:rgba(255,255,255,.7);font-weight:600;font-size:13px;">TOTAL FACTURA</span>
+          <span style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:20px;color:#fff" id="rec-total-factura">—</span>
+        </div>
+        <div style="margin-top:8px;padding:8px 12px;background:#E8F9F2;border-radius:8px;font-size:12px;color:#0E7A54;">
+          <i class="bi bi-info-circle me-1"></i>Este monto se paga vía <strong>transferencia bancaria</strong> desde cuentas de Ideaconv.
+        </div>
       </div>
-      <div id="rec-notas-wrap"
-        style="display:none;margin-top:10px;padding:9px 12px;background:var(--bg);border-radius:8px;font-size:12px;color:var(--text-muted);">
+
+      <!-- TAB: Sin Factura -->
+      <div id="rec-tab-externo" style="display:none;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:10px;">
+          <i class="bi bi-cash-stack me-1"></i>Desglose sin Factura (Pago Externo)
+        </div>
+        <div id="rec-rows-externo"></div>
+        <div style="margin-top:12px;padding:12px 14px;background:var(--brand-navy);border-radius:10px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="color:rgba(255,255,255,.7);font-weight:600;font-size:13px;">TOTAL PAGO EXTERNO</span>
+          <span style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:20px;color:#fff" id="rec-total-externo">—</span>
+        </div>
+        <div style="margin-top:8px;padding:8px 12px;background:#FFF4E5;border-radius:8px;font-size:12px;color:#996200;">
+          <i class="bi bi-exclamation-circle me-1"></i>Este pago <strong>no genera factura ni retenciones fiscales</strong>. Se entrega por medio externo / tercero.
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div id="rec-notas-wrap" style="display:none;margin-top:10px;padding:9px 12px;background:var(--bg);border-radius:8px;font-size:12px;color:var(--text-muted);">
         <strong>Notas:</strong> <span id="rec-notas">—</span>
       </div>
-      <div
-        style="margin-top:14px;display:flex;justify-content:space-between;padding-top:14px;border-top:1px dashed var(--border);">
-        <div style="text-align:center;flex:1">
-          <div
-            style="border-top:1px solid var(--text-muted);margin:0 12px;padding-top:6px;font-size:11px;color:var(--text-muted)">
-            Firma Inversionista</div>
-        </div>
-        <div style="text-align:center;flex:1">
-          <div
-            style="border-top:1px solid var(--text-muted);margin:0 12px;padding-top:6px;font-size:11px;color:var(--text-muted)">
-            Sello / Firma Ideaconv</div>
-        </div>
+
+      <!-- Signatures -->
+      <div style="margin-top:14px;display:flex;justify-content:space-between;padding-top:14px;border-top:1px dashed var(--border);">
+        <div style="text-align:center;flex:1"><div style="border-top:1px solid var(--text-muted);margin:0 12px;padding-top:6px;font-size:11px;color:var(--text-muted)">Firma Inversionista</div></div>
+        <div style="text-align:center;flex:1"><div style="border-top:1px solid var(--text-muted);margin:0 12px;padding-top:6px;font-size:11px;color:var(--text-muted)">Sello / Firma Ideaconv</div></div>
       </div>
+
+      <!-- Buttons -->
       <div style="margin-top:12px;display:flex;gap:8px">
-        <button onclick="closeModal()"
-          style="flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:#fff;font-size:13px;font-weight:600;cursor:pointer;color:var(--text-muted)"><i
-            class="bi bi-x me-1"></i>Cerrar</button>
-        <button
-          style="flex:1;padding:10px;border-radius:8px;border:none;background:var(--brand-red);color:#fff;font-size:13px;font-weight:600;cursor:pointer"><i
-            class="bi bi-printer me-1"></i>Imprimir</button>
+        <button onclick="closeModal()" style="flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:#fff;font-size:13px;font-weight:600;cursor:pointer;color:var(--text-muted)">
+          <i class="bi bi-x me-1"></i>Cerrar
+        </button>
+        <button onclick="window.print()" style="flex:1;padding:10px;border-radius:8px;border:none;background:var(--brand-red);color:#fff;font-size:13px;font-weight:600;cursor:pointer">
+          <i class="bi bi-printer me-1"></i>Imprimir
+        </button>
       </div>
     </div>
   </div>
@@ -1302,6 +1367,8 @@
       ['modal-overlay', 'receipt-modal', 'convert-modal'].forEach(id => {
         const el = document.getElementById(id); if (el) el.style.display = 'none';
       });
+      // Reset tabs back to factura when closed
+      switchRecTab('factura');
     }
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
@@ -1320,6 +1387,53 @@
 
     function fmt(n) {
       return '$' + parseFloat(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    function switchRecTab(tab) {
+      const isFact = tab === 'factura';
+      document.getElementById('rec-tab-factura').style.display = isFact ? 'block' : 'none';
+      document.getElementById('rec-tab-externo').style.display = isFact ? 'none' : 'block';
+      const btnF = document.getElementById('tab-btn-factura');
+      const btnE = document.getElementById('tab-btn-externo');
+      btnF.style.borderBottomColor = isFact ? 'var(--brand-red)' : 'transparent';
+      btnF.style.color = isFact ? 'var(--brand-red)' : 'var(--text-muted)';
+      btnF.style.fontWeight = isFact ? '700' : '600';
+      btnE.style.borderBottomColor = isFact ? 'transparent' : 'var(--brand-navy)';
+      btnE.style.color = isFact ? 'var(--text-muted)' : 'var(--brand-navy)';
+      btnE.style.fontWeight = isFact ? '600' : '700';
+    }
+
+    function openReceiptFull(data) {
+      // data = { nombre, rfc, folio, periodo, totalFactura, totalExterno,
+      //           rowsFactura: [{label,value,color}], rowsExterno: [{label,value,color}],
+      //           notas, metodo }
+      document.getElementById('rec-nombre').textContent = data.nombre || '—';
+      document.getElementById('rec-rfc').textContent = data.rfc || '';
+      document.getElementById('rec-folio').textContent = data.folio || '—';
+      document.getElementById('rec-periodo').textContent = data.periodo || '—';
+      document.getElementById('rec-total-factura').textContent = data.totalFactura || '$0.00';
+      document.getElementById('rec-total-externo').textContent = data.totalExterno || '$0.00';
+
+      // Factura rows
+      document.getElementById('rec-rows-factura').innerHTML =
+        (data.rowsFactura || []).map(r => makeRow(r.label, r.value, r.color || '')).join('');
+
+      // Externo rows
+      document.getElementById('rec-rows-externo').innerHTML =
+        (data.rowsExterno || []).map(r => makeRow(r.label, r.value, r.color || '')).join('');
+
+      // Notes
+      const notasWrap = document.getElementById('rec-notas-wrap');
+      if (data.notas) { document.getElementById('rec-notas').textContent = data.notas; notasWrap.style.display = 'block'; }
+      else notasWrap.style.display = 'none';
+
+      // Hide externo tab if pago externo is $0
+      const externoIsZero = !data.totalExterno || parseFloat(data.totalExterno.replace(/[$,]/g, '')) === 0;
+      document.getElementById('rec-tabs-wrap').style.display = externoIsZero ? 'none' : 'flex';
+
+      switchRecTab('factura');
+      showOverlay();
+      document.getElementById('receipt-modal').style.display = 'block';
     }
 
     // Load sidebar badge counts from API
@@ -1354,6 +1468,148 @@
         const badgeEst = document.getElementById('badge-estados');
         if (badgeEst) badgeEst.textContent = '—';
       });
+
+    // ── Notifications ──
+    function toggleNotifPanel() {
+      const panel = document.getElementById('notif-panel');
+      panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    }
+    document.addEventListener('click', e => {
+      const btn = document.getElementById('notif-btn');
+      const panel = document.getElementById('notif-panel');
+      if (panel && btn && !btn.contains(e.target) && !panel.contains(e.target)) {
+        panel.style.display = 'none';
+      }
+    });
+
+    async function cargarNotificaciones() {
+      try {
+        const res = await fetch('/api/dashboard/');
+        const data = await res.json();
+        const list = document.getElementById('notif-list');
+        const dot = document.getElementById('notif-dot');
+        const count = document.getElementById('notif-count');
+
+        // Build notifications from inversiones venciendo + advertencias
+        const notifs = [];
+
+        // Contracts expiring within 60 days
+        if (data.inversiones_venciendo > 0) {
+          notifs.push({
+            icon: 'calendar-x-fill', color: '#FDECEA', iconColor: 'var(--brand-red)',
+            title: `${data.inversiones_venciendo} contrato${data.inversiones_venciendo > 1 ? 's' : ''} por vencer`,
+            detail: 'Vencimiento en los próximos 2 meses',
+            link: '/inversionistas/'
+          });
+        }
+
+        // Pending payments
+        if (data.pagos_pendientes > 0) {
+          notifs.push({
+            icon: 'credit-card-fill', color: '#FFF4E5', iconColor: 'var(--warning)',
+            title: `${data.pagos_pendientes} pago${data.pagos_pendientes > 1 ? 's' : ''} pendiente${data.pagos_pendientes > 1 ? 's' : ''}`,
+            detail: 'Requieren confirmación',
+            link: '/pagos/'
+          });
+        }
+
+        // Pending estados
+        if (data.estados_pendientes > 0) {
+          notifs.push({
+            icon: 'file-earmark-x-fill', color: '#FFF4E5', iconColor: 'var(--warning)',
+            title: `${data.estados_pendientes} estado${data.estados_pendientes > 1 ? 's' : ''} sin generar`,
+            detail: 'Estados de cuenta pendientes',
+            link: '/estados/'
+          });
+        }
+
+        // Extra warnings from API
+        if (data.advertencias) {
+          data.advertencias.forEach(a => {
+            notifs.push({
+              icon: a.icono, color: a.color === 'red' ? '#FDECEA' : '#FFF4E5',
+              iconColor: a.color === 'red' ? 'var(--brand-red)' : 'var(--warning)',
+              title: a.nombre, detail: a.detalle, link: '/inversionistas/'
+            });
+          });
+        }
+
+        count.textContent = notifs.length;
+        if (notifs.length > 0) {
+          dot.style.display = 'block';
+          list.innerHTML = notifs.map(n => `
+                <a href="${n.link}" style="display:flex;align-items:center;gap:12px;padding:12px 18px;text-decoration:none;border-bottom:1px solid var(--border);transition:background .15s;" onmouseover="this.style.background='#F8FAFF'" onmouseout="this.style.background=''">
+                  <div style="width:36px;height:36px;border-radius:9px;background:${n.color};display:flex;align-items:center;justify-content:center;flex-shrink:0;color:${n.iconColor};font-size:16px;">
+                    <i class="bi bi-${n.icon}"></i>
+                  </div>
+                  <div>
+                    <div style="font-size:13px;font-weight:600;color:var(--text-main)">${n.title}</div>
+                    <div style="font-size:11.5px;color:var(--text-muted)">${n.detail}</div>
+                  </div>
+                  <i class="bi bi-chevron-right ms-auto" style="color:var(--text-muted);font-size:12px;"></i>
+                </a>`).join('');
+        } else {
+          dot.style.display = 'none';
+          list.innerHTML = `<div style="text-align:center;padding:24px;color:var(--text-muted);font-size:13px;">
+                <i class="bi bi-check-circle-fill" style="font-size:22px;display:block;margin-bottom:8px;color:var(--success)"></i>
+                Sin notificaciones pendientes
+              </div>`;
+        }
+      } catch (e) { console.error('Notif error', e); }
+    }
+
+    // ── Settings panel ──
+    function toggleSettingsPanel() {
+      const panel = document.getElementById('settings-panel');
+      const overlay = document.getElementById('settings-overlay');
+      const isOpen = panel.style.transform === 'translateX(0px)' || panel.style.transform === 'translateX(0)';
+      panel.style.transform = isOpen ? 'translateX(110%)' : 'translateX(0)';
+      overlay.style.display = isOpen ? 'none' : 'block';
+      if (!isOpen) cargarSettingsInversionistas();
+    }
+
+    async function cargarSettingsInversionistas() {
+      const list = document.getElementById('settings-inv-list');
+      try {
+        const res = await fetch('/api/inversionistas/');
+        const data = await res.json();
+        if (!data.length) {
+          list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">No hay inversionistas registrados</div>';
+          return;
+        }
+        const COLORS = ['#C8282A', '#1A2340', '#1CB87E', '#F5A623', '#6B7A99'];
+        list.innerHTML = data.map((inv, i) => {
+          const inv_act = inv.inversion_activa;
+          const pct = inv_act ? parseFloat(inv_act.porcentaje_factura) : null;
+          let tipo, tipoBg, tipoColor;
+          if (pct === null) {
+            tipo = 'Sin inversión'; tipoBg = '#F4F6FA'; tipoColor = 'var(--text-muted)';
+          } else if (pct === 100) {
+            tipo = 'Pura Factura'; tipoBg = '#E8F9F2'; tipoColor = '#0E7A54';
+          } else if (pct === 0) {
+            tipo = 'Efectivo / Sindicato'; tipoBg = '#FFF4E5'; tipoColor = '#996200';
+          } else {
+            tipo = `Combinado (${pct}% factura)`; tipoBg = '#E8EBF4'; tipoColor = 'var(--brand-navy)';
+          }
+          const initials = inv.nombre_completo.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+          const color = COLORS[inv.id % COLORS.length];
+          return `
+                <div style="display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid var(--border);">
+                  <div style="width:36px;height:36px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px;color:#fff;flex-shrink:0;">${initials}</div>
+                  <div style="flex:1;min-width:0;">
+                    <div style="font-size:13px;font-weight:600;color:var(--text-main);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${inv.nombre_completo}</div>
+                    <div style="font-size:11.5px;color:var(--text-muted);">${inv.rfc || 'Sin RFC'}</div>
+                  </div>
+                  <span style="background:${tipoBg};color:${tipoColor};border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;white-space:nowrap;">${tipo}</span>
+                </div>`;
+        }).join('');
+      } catch {
+        list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--brand-red);">Error al cargar</div>';
+      }
+    }
+
+    // Load notifications on every page
+    cargarNotificaciones();
   </script>
   {% block extra_js %}{% endblock %}
 </body>

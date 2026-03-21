@@ -183,22 +183,48 @@
 
   async function openReceipt(pagoId){
     try{
-      const res=await fetch(`/api/pagos/${pagoId}/`);
-      const p=await res.json();
-      document.getElementById('rec-nombre').textContent=p.inversionista_nombre||'—';
-      document.getElementById('rec-rfc').textContent='';
-      document.getElementById('rec-folio').textContent=p.folio||'—';
-      document.getElementById('rec-total').textContent=fmtMoney(p.total_pagar);
-      document.getElementById('rec-rows').innerHTML=
-        makeRow('Método de pago',p.metodo_display||p.metodo)+
-        makeRow('Fecha de pago',p.fecha_pago||'—')+
-        makeRow('Confirmado por',p.confirmado_por||'—');
-      const notasWrap=document.getElementById('rec-notas-wrap');
-      if(p.notas){ document.getElementById('rec-notas').textContent=p.notas; notasWrap.style.display='block'; }
-      else notasWrap.style.display='none';
-      showOverlay();
-      document.getElementById('receipt-modal').style.display='block';
-    }catch{ showToast('No se pudo cargar el comprobante','x-circle-fill','#FCA5A5'); }
+      const res = await fetch(`/api/pagos/${pagoId}/`);
+      const p   = await res.json();
+      const edc = p.estado_de_cuenta || {};
+
+      const bruto       = parseFloat(edc.interes_bruto  || 0);
+      const isr         = parseFloat(edc.isr            || 0);
+      const iva         = parseFloat(edc.iva            || 0);
+      const neto        = parseFloat(edc.interes_neto   || 0);
+      const externo     = parseFloat(edc.pago_externo   || 0);
+      const totalPagar  = parseFloat(p.total_pagar      || 0);
+
+      openReceiptFull({
+        nombre:       p.inversionista_nombre || '—',
+        rfc:          '',
+        folio:        p.folio || '—',
+        periodo:      edc.periodo_inicio ? `${edc.periodo_inicio} → ${edc.periodo_fin}` : '—',
+        notas:        p.notas || '',
+        totalFactura: fmtMoney(neto),
+        totalExterno: fmtMoney(externo),
+        rowsFactura: [
+          { label: 'Período',              value: edc.periodo_inicio ? `${edc.periodo_inicio} → ${edc.periodo_fin}` : '—' },
+          { label: 'Días del período',     value: edc.dias_periodo ? `${edc.dias_periodo} días` : '—' },
+          { label: 'Interés bruto',        value: fmtMoney(bruto) },
+          { label: 'Retención ISR (20%)',  value: '– ' + fmtMoney(isr), color: '#C8282A' },
+          { label: 'Subtotal',             value: fmtMoney(bruto - isr) },
+          { label: 'IVA (16%)',            value: '+ ' + fmtMoney(iva), color: '#1CB87E' },
+          { label: 'Método de pago',       value: p.metodo_display || p.metodo || '—' },
+          { label: 'Fecha de pago',        value: p.fecha_pago || '—' },
+          { label: 'Confirmado por',       value: p.confirmado_por || '—' },
+        ],
+        rowsExterno: [
+          { label: 'Período',              value: edc.periodo_inicio ? `${edc.periodo_inicio} → ${edc.periodo_fin}` : '—' },
+          { label: 'Pago externo bruto',   value: fmtMoney(externo) },
+          { label: 'ISR',                  value: 'No aplica' },
+          { label: 'IVA',                  value: 'No aplica' },
+          { label: 'Método',               value: 'Efectivo / Sindicato / Tercero' },
+          { label: 'Fecha de entrega',     value: p.fecha_pago || '—' },
+        ],
+      });
+    } catch {
+      showToast('No se pudo cargar el comprobante','x-circle-fill','#FCA5A5');
+    }
   }
 
   function filtrarTabla(q){

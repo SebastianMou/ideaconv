@@ -25,9 +25,17 @@ SECRET_KEY = 'django-insecure-nzai$&@s-^4)7db(=%g9k!mv9oj$5^dcz)=mmm6_!klnxk21y7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["https://diana-luncheonless-unoccasionally.ngrok-free.dev/", "localhost", "127.0.0.1" "*"]
+# ALLOWED_HOSTS = ["https://diana-luncheonless-unoccasionally.ngrok-free.dev/", "localhost", "127.0.0.1" "*"]
 ALLOWED_HOSTS = ["diana-luncheonless-unoccasionally.ngrok-free.dev", "localhost", "127.0.0.1", "*"]
 # Application definition
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://diana-luncheonless-unoccasionally.ngrok-free.dev",
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "https://diana-luncheonless-unoccasionally.ngrok-free.dev",
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -42,6 +50,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -128,3 +137,12 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
 ]
+
+# ── Email (Gmail SMTP) ────────────────────────
+EMAIL_BACKEND       = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST          = 'smtp.gmail.com'
+EMAIL_PORT          = 587
+EMAIL_USE_TLS       = True
+EMAIL_HOST_USER     = 'tucorreo@gmail.com'
+EMAIL_HOST_PASSWORD = 'tu-app-password-de-16-digitos'
+DEFAULT_FROM_EMAIL  = 'Ideaconv <noreply@ideaconv.mx>'

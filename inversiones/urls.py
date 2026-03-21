@@ -47,4 +47,8 @@ urlpatterns = [
     path('api/prospectos/', views.prospectos_list, name='api-prospectos-list'),
     path('api/prospectos/<int:pk>/', views.prospecto_detail, name='api-prospecto-detail'),
     path('api/prospectos/<int:pk>/convertir/', views.convertir_prospecto, name='api-convertir-prospecto'),
+
+    path('api/estados/<int:pk>/preview/', views.estado_preview, name='api-estado-preview'),
+    path('api/estados/<int:pk>/enviar/', views.estado_enviar, name='api-estado-enviar'),
+    path('api/estados/enviar-todos/', views.enviar_estados_todos, name='api-enviar-todos'),
 ]

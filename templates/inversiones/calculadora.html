@@ -71,9 +71,9 @@
           </button>
         </div>
         <div class="col-12">
-          <button class="btn-outline-brand w-100" style="padding:10px;border-color:rgba(255,255,255,.3);color:#fff" onclick="calcularDesdeAPI()">
+          <!-- <button class="btn-outline-brand w-100" style="padding:10px;border-color:rgba(255,255,255,.3);color:#fff" onclick="calcularDesdeAPI()">
             <i class="bi bi-cloud-arrow-up me-2"></i>Calcular vía API
-          </button>
+          </button> -->
         </div>
       </div>
     </div>
@@ -101,7 +101,7 @@
         <div class="result-row total"><span class="label">TOTAL A PAGAR</span><span class="value" id="r-total">—</span></div>
       </div>
       <div class="d-flex gap-2 mt-3">
-        <button class="btn-outline-brand" style="flex:1;border-color:rgba(255,255,255,.3);color:#fff;font-size:12.5px">
+        <button  class="btn-outline-brand" style="flex:1;border-color:rgba(255,255,255,.3);color:#fff;font-size:12.5px">
           <i class="bi bi-printer me-1"></i>Imprimir
         </button>
         <button class="btn-brand" style="flex:1;font-size:12.5px">
@@ -118,7 +118,7 @@
       <div style="font-size:12.5px;color:var(--text-muted);line-height:1.8">
         <strong>Interés bruto</strong> = Capital × (Tasa / Base) × Días<br>
         <strong>ISR</strong> = Interés_factura × 20%<br>
-        <strong>IVA</strong> = (Interés_factura − ISR) × 16%<br>
+        <strong>IVA</strong> = Interés_factura × 16%<br>
         <strong>Total factura</strong> = Interés_factura − ISR + IVA<br>
         <strong>Total a pagar</strong> = Total_factura + Pago_externo
       </div>
@@ -156,7 +156,7 @@
     const baseFact     = bruto * (factPct / 100);
     const isr          = baseFact * 0.20;
     const subtotal     = baseFact - isr;
-    const iva          = subtotal * 0.16;
+    const iva          = baseFact * 0.16;
     const totalFact    = subtotal + iva;
     const externo      = bruto * (extPct / 100);
     const total        = totalFact + externo;
