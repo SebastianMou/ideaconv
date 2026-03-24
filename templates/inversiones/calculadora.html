@@ -81,7 +81,7 @@
 
   <!-- Result Card -->
   <div class="col-lg-7">
-    <div class="calc-card" style="height:100%">
+    <div class="calc-card">
       <div class="form-section-title" style="color:rgba(255,255,255,.8);border-color:rgba(255,255,255,.2);font-size:11px">
         <i class="bi bi-receipt-cutoff"></i> Resultado del Cálculo
       </div>
@@ -101,7 +101,7 @@
         <div class="result-row total"><span class="label">TOTAL A PAGAR</span><span class="value" id="r-total">—</span></div>
       </div>
       <div class="d-flex gap-2 mt-3">
-        <button  class="btn-outline-brand" style="flex:1;border-color:rgba(255,255,255,.3);color:#fff;font-size:12.5px">
+        <button class="btn-outline-brand" onclick="imprimirCalculadora()" style="flex:1;border-color:rgba(255,255,255,.3);font-size:12.5px">
           <i class="bi bi-printer me-1"></i>Imprimir
         </button>
         <button class="btn-brand" style="flex:1;font-size:12.5px">
@@ -129,6 +129,65 @@
 
 {% block extra_js %}
 <script>
+  function imprimirCalculadora(){
+    const capital  = document.getElementById('r-capital').textContent;
+    const tasa     = document.getElementById('r-tasa').textContent;
+    const periodo  = document.getElementById('r-periodo').textContent;
+    const bruto    = document.getElementById('r-bruto').textContent;
+    const labelFact= document.getElementById('r-label-factura').textContent;
+    const baseFact = document.getElementById('r-base-factura').textContent;
+    const isr      = document.getElementById('r-isr').textContent;
+    const subtotal = document.getElementById('r-subtotal').textContent;
+    const iva      = document.getElementById('r-iva').textContent;
+    const totalFact= document.getElementById('r-total-factura').textContent;
+    const labelExt = document.getElementById('r-label-externo').textContent;
+    const externo  = document.getElementById('r-externo').textContent;
+    const total    = document.getElementById('r-total').textContent;
+
+    if(capital === '—'){ showToast('Primero calcula los intereses','exclamation-circle','#F5A623'); return; }
+
+    const win = window.open('','_blank','width=600,height=700');
+    win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+    <title>Cálculo de Intereses — Ideaconv</title>
+    <style>
+      body{font-family:Arial,sans-serif;padding:32px;max-width:520px;margin:0 auto;color:#1A2340;}
+      .header{background:#1A2340;color:#fff;padding:20px 24px;border-radius:10px;margin-bottom:24px;}
+      .header h1{font-size:20px;margin:0 0 4px;}
+      .header p{font-size:12px;opacity:.6;margin:0;}
+      .row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #E2E8F0;font-size:13.5px;}
+      .label{color:#6B7A99;}
+      .value{font-weight:600;}
+      .section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6B7A99;padding:14px 0 6px;}
+      .total-box{background:#1A2340;color:#fff;border-radius:10px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-top:16px;}
+      .total-box .label{color:rgba(255,255,255,.7);font-weight:600;}
+      .total-box .value{font-size:22px;font-weight:800;}
+      .footer{margin-top:24px;font-size:11px;color:#9AA5BE;text-align:center;border-top:1px dashed #E2E8F0;padding-top:16px;}
+      @media print{body{padding:16px;}}
+    </style></head><body>
+    <div class="header">
+      <h1>IDEACONV S.A. de C.V.</h1>
+      <p>Cálculo de Intereses — ${new Date().toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'})}</p>
+    </div>
+    <div class="row"><span class="label">Capital</span><span class="value">${capital}</span></div>
+    <div class="row"><span class="label">Tasa anual / Base</span><span class="value">${tasa}</span></div>
+    <div class="row"><span class="label">Período</span><span class="value">${periodo}</span></div>
+    <div class="row"><span class="label">Interés Bruto</span><span class="value">${bruto}</span></div>
+    <div class="section-label">${labelFact}</div>
+    <div class="row"><span class="label">Interés base factura</span><span class="value">${baseFact}</span></div>
+    <div class="row"><span class="label">Retención ISR (20%)</span><span class="value" style="color:#C8282A">${isr}</span></div>
+    <div class="row"><span class="label">Subtotal</span><span class="value">${subtotal}</span></div>
+    <div class="row"><span class="label">IVA (16%)</span><span class="value" style="color:#1CB87E">${iva}</span></div>
+    <div class="row"><span class="label">Total factura</span><span class="value">${totalFact}</span></div>
+    <div class="section-label">${labelExt}</div>
+    <div class="row"><span class="label">Pago externo</span><span class="value">${externo}</span></div>
+    <div class="total-box"><span class="label">TOTAL A PAGAR</span><span class="value">${total}</span></div>
+    <div class="footer">Ideaconv S.A. de C.V. &nbsp;·&nbsp; Documento generado el ${new Date().toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'})}</div>
+    </body></html>`);
+    win.document.close();
+    win.focus();
+    setTimeout(()=>win.print(), 400);
+  }
+
   function recalcularTasaGlobal() {
     const tf = parseFloat(document.getElementById('c-tasa-factura').value) || 0;
     const te = parseFloat(document.getElementById('c-tasa-externa').value) || 0;
@@ -155,9 +214,8 @@
     const bruto        = capital * (tasa / 100 / base) * dias;
     const baseFact     = bruto * (factPct / 100);
     const isr          = baseFact * 0.20;
-    const subtotal     = baseFact - isr;
     const iva          = baseFact * 0.16;
-    const totalFact    = subtotal + iva;
+    const totalFact    = baseFact - isr + iva;
     const externo      = bruto * (extPct / 100);
     const total        = totalFact + externo;
 
@@ -168,7 +226,7 @@
     document.getElementById('r-label-factura').textContent = 'Parte con Factura (' + factPct + '%)';
     document.getElementById('r-base-factura').textContent  = fmt(baseFact);
     document.getElementById('r-isr').textContent           = '– ' + fmt(isr);
-    document.getElementById('r-subtotal').textContent      = fmt(subtotal);
+    document.getElementById('r-subtotal').textContent      = fmt(baseFact - isr);
     document.getElementById('r-iva').textContent           = '+ ' + fmt(iva);
     document.getElementById('r-total-factura').textContent = fmt(totalFact);
     document.getElementById('r-label-externo').textContent = 'Parte sin Factura (' + extPct + '%)';

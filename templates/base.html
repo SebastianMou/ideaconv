@@ -1327,7 +1327,7 @@
         <button onclick="closeModal()" style="flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:#fff;font-size:13px;font-weight:600;cursor:pointer;color:var(--text-muted)">
           <i class="bi bi-x me-1"></i>Cerrar
         </button>
-        <button onclick="window.print()" style="flex:1;padding:10px;border-radius:8px;border:none;background:var(--brand-red);color:#fff;font-size:13px;font-weight:600;cursor:pointer">
+        <button onclick="imprimirComprobante()" style="flex:1;padding:10px;border-radius:8px;border:none;background:var(--brand-red);color:#fff;font-size:13px;font-weight:600;cursor:pointer">
           <i class="bi bi-printer me-1"></i>Imprimir
         </button>
       </div>
@@ -1358,6 +1358,81 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
   <script>
+    function imprimirComprobante(){
+      const nombre  = document.getElementById('rec-nombre').textContent;
+      const rfc     = document.getElementById('rec-rfc').textContent;
+      const folio   = document.getElementById('rec-folio').textContent;
+      const periodo = document.getElementById('rec-periodo')?.textContent || '';
+
+      // Get active tab content
+      const factTab = document.getElementById('rec-tab-factura');
+      const extTab  = document.getElementById('rec-tab-externo');
+      const activeTab = factTab?.style.display !== 'none' ? factTab : extTab;
+      const totalEl = factTab?.style.display !== 'none'
+        ? document.getElementById('rec-total-factura')
+        : document.getElementById('rec-total-externo');
+
+      const rows    = activeTab ? activeTab.querySelectorAll('[style*="border-bottom"]') : [];
+      const total   = totalEl ? totalEl.textContent : '—';
+      const tabLabel= factTab?.style.display !== 'none' ? 'Comprobante Con Factura' : 'Comprobante Sin Factura (Pago Externo)';
+
+      let rowsHTML = '';
+      rows.forEach(row => {
+        const spans = row.querySelectorAll('span');
+        if(spans.length >= 2){
+          rowsHTML += `<div class="row"><span class="label">${spans[0].textContent}</span><span class="value" style="color:${spans[1].style.color||'#1A2340'}">${spans[1].textContent}</span></div>`;
+        }
+      });
+
+      const win = window.open('','_blank','width=560,height=680');
+      win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+      <title>Comprobante — ${folio}</title>
+      <style>
+        body{font-family:Arial,sans-serif;padding:32px;max-width:480px;margin:0 auto;color:#1A2340;}
+        .header{background:#1A2340;color:#fff;padding:20px 24px;border-radius:10px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-start;}
+        .header h1{font-size:17px;margin:0 0 4px;}
+        .header p{font-size:11px;opacity:.6;margin:0;}
+        .folio{text-align:right;}
+        .folio .label{font-size:10px;opacity:.6;text-transform:uppercase;}
+        .folio .num{font-size:16px;font-weight:800;color:#e84345;}
+        .investor{padding:12px 0;border-bottom:2px solid #E2E8F0;margin-bottom:14px;}
+        .investor .name{font-size:16px;font-weight:700;}
+        .investor .rfc{font-size:12px;color:#6B7A99;margin-top:2px;}
+        .tab-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#C8282A;margin-bottom:10px;}
+        .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #E2E8F0;font-size:13px;}
+        .label{color:#6B7A99;}
+        .value{font-weight:600;}
+        .total-box{background:#1A2340;color:#fff;border-radius:10px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-top:16px;}
+        .total-box .t-label{color:rgba(255,255,255,.7);font-weight:600;font-size:13px;}
+        .total-box .t-value{font-size:20px;font-weight:800;}
+        .sigs{display:flex;justify-content:space-between;margin-top:32px;padding-top:16px;border-top:1px dashed #E2E8F0;}
+        .sig{text-align:center;flex:1;}
+        .sig .line{border-top:1px solid #1A2340;margin:0 12px;padding-top:6px;font-size:11px;color:#6B7A99;}
+        .footer{margin-top:20px;font-size:11px;color:#9AA5BE;text-align:center;}
+        @media print{body{padding:16px;}}
+      </style></head><body>
+      <div class="header">
+        <div><h1>IDEACONV S.A. de C.V.</h1><p>Comprobante de Pago de Intereses</p></div>
+        <div class="folio"><div class="label">No. Folio</div><div class="num">${folio}</div></div>
+      </div>
+      <div class="investor">
+        <div class="name">${nombre}</div>
+        <div class="rfc">${rfc}${periodo ? ' &nbsp;·&nbsp; '+periodo : ''}</div>
+      </div>
+      <div class="tab-label">${tabLabel}</div>
+      ${rowsHTML}
+      <div class="total-box"><span class="t-label">TOTAL PAGADO</span><span class="t-value">${total}</span></div>
+      <div class="sigs">
+        <div class="sig"><div class="line">Firma Inversionista</div></div>
+        <div class="sig"><div class="line">Sello / Firma Ideaconv</div></div>
+      </div>
+      <div class="footer">Ideaconv S.A. de C.V. &nbsp;·&nbsp; ${new Date().toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'})}</div>
+      </body></html>`);
+      win.document.close();
+      win.focus();
+      setTimeout(()=>win.print(), 400);
+    }
+
     function toggleSidebar() {
       document.getElementById('sidebar').classList.toggle('open');
       document.getElementById('sidebar-overlay').classList.toggle('show');
@@ -1493,14 +1568,20 @@
         // Build notifications from inversiones venciendo + advertencias
         const notifs = [];
 
-        // Contracts expiring within 60 days
-        if (data.inversiones_venciendo > 0) {
-          notifs.push({
-            icon: 'calendar-x-fill', color: '#FDECEA', iconColor: 'var(--brand-red)',
-            title: `${data.inversiones_venciendo} contrato${data.inversiones_venciendo > 1 ? 's' : ''} por vencer`,
-            detail: 'Vencimiento en los próximos 2 meses',
-            link: '/inversionistas/'
-          });
+        // Contracts expiring within 60 days — one notification per investor
+        if (data.venciendo_detalle && data.venciendo_detalle.length > 0) {
+          data.venciendo_detalle
+            .filter(a => a.tipo === 'por_vencer')
+            .forEach(a => {
+              notifs.push({
+                icon: 'calendar-x-fill',
+                color: a.color === 'red' ? '#FDECEA' : '#FFF4E5',
+                iconColor: a.color === 'red' ? 'var(--brand-red)' : 'var(--warning)',
+                title: a.nombre,
+                detail: a.detalle,
+                link: '/inversionistas/'
+              });
+            });
         }
 
         // Pending payments
@@ -1568,45 +1649,144 @@
       if (!isOpen) cargarSettingsInversionistas();
     }
 
-    async function cargarSettingsInversionistas() {
+    async function cargarSettingsInversionistas(){
       const list = document.getElementById('settings-inv-list');
-      try {
-        const res = await fetch('/api/inversionistas/');
+      try{
+        const res  = await fetch('/api/inversionistas/');
         const data = await res.json();
-        if (!data.length) {
+        if(!data.length){
           list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">No hay inversionistas registrados</div>';
           return;
         }
-        const COLORS = ['#C8282A', '#1A2340', '#1CB87E', '#F5A623', '#6B7A99'];
-        list.innerHTML = data.map((inv, i) => {
+        const COLORS = ['#C8282A','#1A2340','#1CB87E','#F5A623','#6B7A99'];
+        list.innerHTML = data.map(inv => {
           const inv_act = inv.inversion_activa;
-          const pct = inv_act ? parseFloat(inv_act.porcentaje_factura) : null;
+          const pct     = inv_act ? parseFloat(inv_act.porcentaje_factura) : null;
           let tipo, tipoBg, tipoColor;
-          if (pct === null) {
-            tipo = 'Sin inversión'; tipoBg = '#F4F6FA'; tipoColor = 'var(--text-muted)';
-          } else if (pct === 100) {
-            tipo = 'Pura Factura'; tipoBg = '#E8F9F2'; tipoColor = '#0E7A54';
-          } else if (pct === 0) {
-            tipo = 'Efectivo / Sindicato'; tipoBg = '#FFF4E5'; tipoColor = '#996200';
+          if(pct === null){
+            tipo='Sin inversión'; tipoBg='#F4F6FA'; tipoColor='var(--text-muted)';
+          } else if(pct === 100){
+            tipo='Pura Factura'; tipoBg='#E8F9F2'; tipoColor='#0E7A54';
+          } else if(pct === 0){
+            tipo='Efectivo / Sindicato'; tipoBg='#FFF4E5'; tipoColor='#996200';
           } else {
-            tipo = `Combinado (${pct}% factura)`; tipoBg = '#E8EBF4'; tipoColor = 'var(--brand-navy)';
+            tipo=`Combinado (${pct}% factura)`; tipoBg='#E8EBF4'; tipoColor='var(--brand-navy)';
           }
-          const initials = inv.nombre_completo.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
-          const color = COLORS[inv.id % COLORS.length];
+          const initials = inv.nombre_completo.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+          const color    = COLORS[inv.id % COLORS.length];
+          const capital  = inv_act?.capital ? parseFloat(inv_act.capital) : null;
+          const tasa     = inv_act?.tasa_anual ? parseFloat(inv_act.tasa_anual) : null;
           return `
-                <div style="display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid var(--border);">
-                  <div style="width:36px;height:36px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px;color:#fff;flex-shrink:0;">${initials}</div>
-                  <div style="flex:1;min-width:0;">
-                    <div style="font-size:13px;font-weight:600;color:var(--text-main);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${inv.nombre_completo}</div>
-                    <div style="font-size:11.5px;color:var(--text-muted);">${inv.rfc || 'Sin RFC'}</div>
-                  </div>
-                  <span style="background:${tipoBg};color:${tipoColor};border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;white-space:nowrap;">${tipo}</span>
-                </div>`;
+            <div onclick="abrirDetalleInversionista(${JSON.stringify(inv).replace(/"/g,'&quot;')})"
+                style="display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;border-radius:8px;"
+                onmouseover="this.style.background='#F4F6FA'" onmouseout="this.style.background=''">
+              <div style="width:36px;height:36px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px;color:#fff;flex-shrink:0;">${initials}</div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:13px;font-weight:600;color:var(--text-main);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${inv.nombre_completo}</div>
+                <div style="font-size:11.5px;color:var(--text-muted);">${inv.rfc || 'Sin RFC'}</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="background:${tipoBg};color:${tipoColor};border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;white-space:nowrap;">${tipo}</span>
+                <i class="bi bi-chevron-right" style="color:var(--text-muted);font-size:12px;"></i>
+              </div>
+            </div>`;
         }).join('');
-      } catch {
+      }catch{
         list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--brand-red);">Error al cargar</div>';
       }
     }
+
+  function abrirDetalleInversionista(inv){
+    const inv_act  = inv.inversion_activa;
+    const pct      = inv_act ? parseFloat(inv_act.porcentaje_factura) : 0;
+    const pctExt   = 100 - pct;
+    const capital  = inv_act ? parseFloat(inv_act.capital) : 0;
+    const tasa     = inv_act ? parseFloat(inv_act.tasa_anual) : 0;
+
+    // Calculate example with 28 days base 360
+    const dias     = 28;
+    const base     = 360;
+    const bruto    = capital * (tasa / 100 / base) * dias;
+    const baseFact = bruto * (pct / 100);
+    const isr      = baseFact * 0.20;
+    const iva      = baseFact * 0.16;
+    const totalFact = baseFact - isr + iva;
+    const externo  = bruto * (pctExt / 100);
+    const total    = totalFact + externo;
+
+    const hasFact = pct > 0;
+    const hasExt  = pctExt > 0;
+
+    const factSection = hasFact ? `
+      <div style="margin-bottom:16px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--brand-red);margin-bottom:10px;">
+          <i class="bi bi-receipt me-1"></i>Comprobante Con Factura (${pct}%)
+        </div>
+        <div style="background:#F8F9FB;border-radius:10px;padding:14px;">
+          ${makeRow('Interés base factura', fmt(baseFact))}
+          ${makeRow('Retención ISR (20%)', '– '+fmt(isr), '#C8282A')}
+          ${makeRow('IVA (16%)', '+ '+fmt(iva), '#1CB87E')}
+          <div style="display:flex;justify-content:space-between;padding:10px 0 0;font-size:13.5px;font-weight:700;">
+            <span>Total con factura</span><span style="color:var(--brand-navy)">${fmt(totalFact)}</span>
+          </div>
+        </div>
+        <div style="margin-top:6px;padding:7px 10px;background:#E8F9F2;border-radius:7px;font-size:11.5px;color:#0E7A54;">
+          <i class="bi bi-bank me-1"></i>Pago vía transferencia bancaria desde Ideaconv
+        </div>
+      </div>` : '';
+
+    const extSection = hasExt ? `
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:10px;">
+          <i class="bi bi-cash-stack me-1"></i>Comprobante Sin Factura (${pctExt}%)
+        </div>
+        <div style="background:#F8F9FB;border-radius:10px;padding:14px;">
+          ${makeRow('Pago externo', fmt(externo))}
+          ${makeRow('ISR', 'No aplica')}
+          ${makeRow('IVA', 'No aplica')}
+          <div style="display:flex;justify-content:space-between;padding:10px 0 0;font-size:13.5px;font-weight:700;">
+            <span>Total sin factura</span><span style="color:var(--brand-navy)">${fmt(externo)}</span>
+          </div>
+        </div>
+        <div style="margin-top:6px;padding:7px 10px;background:#FFF4E5;border-radius:7px;font-size:11.5px;color:#996200;">
+          <i class="bi bi-exclamation-circle me-1"></i>Sin retenciones fiscales — entrega por medio externo
+        </div>
+      </div>` : '';
+
+    const noInvSection = !inv_act ? `
+      <div style="text-align:center;padding:30px;color:var(--text-muted);">
+        <i class="bi bi-graph-up" style="font-size:28px;display:block;margin-bottom:8px;opacity:.4"></i>
+        Sin inversión activa registrada
+      </div>` : '';
+
+    document.getElementById('settings-inv-list').innerHTML = `
+      <div style="margin-bottom:16px;">
+        <button onclick="cargarSettingsInversionistas()" style="background:none;border:none;color:var(--brand-red);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;padding:0;">
+          <i class="bi bi-arrow-left"></i> Volver a la lista
+        </button>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--brand-navy);border-radius:12px;margin-bottom:20px;">
+        <div style="width:44px;height:44px;border-radius:50%;background:var(--brand-red);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:16px;color:#fff;flex-shrink:0;">
+          ${inv.nombre_completo.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase()}
+        </div>
+        <div>
+          <div style="font-weight:700;font-size:15px;color:#fff;">${inv.nombre_completo}</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.5);">${inv.rfc || 'Sin RFC'} ${inv_act ? '· Capital: '+fmt(capital) : ''}</div>
+        </div>
+      </div>
+      ${inv_act ? `<div style="font-size:11.5px;color:var(--text-muted);margin-bottom:16px;padding:8px 12px;background:#F4F6FA;border-radius:8px;">
+        <i class="bi bi-info-circle me-1"></i>Ejemplo calculado con <strong>${dias} días</strong>, base <strong>${base}</strong> — Interés bruto: <strong>${fmt(bruto)}</strong>
+      </div>` : ''}
+      ${factSection}
+      ${extSection}
+      ${noInvSection}
+      ${inv_act ? `
+      <div style="margin-top:16px;padding:12px 14px;background:var(--brand-navy);border-radius:10px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="color:rgba(255,255,255,.7);font-weight:600;font-size:13px;">TOTAL A PAGAR</span>
+        <span style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:18px;color:#fff;">${fmt(total)}</span>
+      </div>` : ''}
+    `;
+  }
 
     // Load notifications on every page
     cargarNotificaciones();

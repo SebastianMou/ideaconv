@@ -225,8 +225,26 @@
                 <input class="form-control" id="f-factura-pct" placeholder="Ej. 50" value="100">
             </div>
             <div class="col-6">
-                <label class="form-label">Fecha de inicio *</label>
-                <input class="form-control" id="f-fecha-inicio" type="date">
+                <div class="col-6">
+                    <label class="form-label">Fecha de inicio *</label>
+                    <input class="form-control" id="f-fecha-inicio" type="date" oninput="calcularVencimiento()">
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Duración del contrato</label>
+                    <select class="form-select" id="f-duracion" onchange="calcularVencimiento()">
+                    <option value="6">6 meses</option>
+                    <option value="12" selected>12 meses</option>
+                    <option value="18">18 meses</option>
+                    <option value="24">24 meses</option>
+                    <option value="36">36 meses</option>
+                    <option value="0">Sin vencimiento</option>
+                    </select>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Fecha de vencimiento</label>
+                    <input class="form-control" id="f-fecha-vencimiento" type="date" style="opacity:.8">
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:3px">Se calcula automáticamente</div>
+                </div>
             </div>
             <div class="col-6">
                 <label class="form-label">Promotor</label>
@@ -453,6 +471,7 @@
                         base_calculo: parseInt(document.getElementById('f-base').value),
                         porcentaje_factura: document.getElementById('f-factura-pct').value || 100,
                         fecha_inicio: fechaInicio,
+                        fecha_vencimiento: document.getElementById('f-fecha-vencimiento').value || null,
                         estado: 'activo'
                     })
                 });
@@ -516,6 +535,16 @@
             document.getElementById('f-maps-label').textContent = direccion;
             document.getElementById('f-maps-wrap').style.display='block';
         }, 800); // waits 800ms after user stops typing before updating
+    }
+
+    function calcularVencimiento(){
+        const fechaInicio = document.getElementById('f-fecha-inicio').value;
+        const duracion    = parseInt(document.getElementById('f-duracion').value);
+        const vencEl      = document.getElementById('f-fecha-vencimiento');
+        if(!fechaInicio || duracion === 0){ vencEl.value = ''; return; }
+        const d = new Date(fechaInicio);
+        d.setMonth(d.getMonth() + duracion);
+        vencEl.value = d.toISOString().split('T')[0];
     }
 
     cargarPromotores();

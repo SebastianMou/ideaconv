@@ -210,7 +210,7 @@ def calcular_intereses(request):
     isr              = base_factura * Decimal('0.20')
     subtotal_factura = base_factura - isr
     iva              = base_factura * Decimal('0.16')
-    total_factura    = subtotal_factura + iva
+    total_factura    = base_factura - isr + iva
     pago_externo     = interes_bruto * pct_externo
     total_pagar      = total_factura + pago_externo
 
@@ -323,7 +323,7 @@ def generar_estados_todos(request):
         isr              = base_factura * Decimal('0.20')
         subtotal_factura = base_factura - isr
         iva              = base_factura * Decimal('0.16')
-        total_factura    = subtotal_factura + iva
+        total_factura    = base_factura - isr + iva
         pago_externo     = interes_bruto * pct_externo
         total_pagar      = total_factura + pago_externo
 
@@ -552,7 +552,7 @@ def dashboard_summary(request):
     inversiones_activas   = Inversion.objects.filter(estado='activo')
     inversiones_venciendo = Inversion.objects.filter(
         estado='activo',
-        fecha_vencimiento__range=[today, today + timedelta(days=15)]
+        fecha_vencimiento__range=[today, today + timedelta(days=60)]
     )
     inversiones_vencidas  = Inversion.objects.filter(estado='vencido').count()
 
@@ -577,15 +577,25 @@ def dashboard_summary(request):
     # ── Advertencias ──
     advertencias = []
 
-    # Inversiones por vencer en 15 días
-    for inv in inversiones_venciendo.select_related('inversionista')[:5]:
+    # Inversiones por vencer en 60 días (2 meses)
+    for inv in inversiones_venciendo.select_related('inversionista').order_by('fecha_vencimiento')[:10]:
         dias_restantes = (inv.fecha_vencimiento - today).days
+        if dias_restantes <= 7:
+            urgencia = 'red'
+            detalle  = f'⚠️ Vence en {dias_restantes} día{"s" if dias_restantes != 1 else ""} — URGENTE'
+        elif dias_restantes <= 30:
+            urgencia = 'red'
+            detalle  = f'Vence en {dias_restantes} días ({inv.fecha_vencimiento.strftime("%d/%m/%Y")})'
+        else:
+            urgencia = 'warning'
+            detalle  = f'Vence en {dias_restantes} días ({inv.fecha_vencimiento.strftime("%d/%m/%Y")})'
         advertencias.append({
-            'tipo': 'por_vencer',
+            'tipo':   'por_vencer',
             'nombre': inv.inversionista.nombre_completo,
-            'detalle': f'Vence en {dias_restantes} día{"s" if dias_restantes != 1 else ""}',
-            'icono': 'calendar-x-fill',
-            'color': 'red',
+            'detalle': detalle,
+            'icono':  'calendar-x-fill',
+            'color':  urgencia,
+            'capital': str(inv.capital),
         })
 
     # Inversionistas sin RFC
@@ -633,6 +643,7 @@ def dashboard_summary(request):
         'total_inversionistas':  total_inversionistas,
         'inversiones_activas':   inversiones_activas.count(),
         'inversiones_venciendo': inversiones_venciendo.count(),
+        'venciendo_detalle':     advertencias[:10],
         'inversiones_vencidas':  inversiones_vencidas,
         'capital_total':         str(capital_total),
         'total_intereses_mes':   str(total_intereses),
