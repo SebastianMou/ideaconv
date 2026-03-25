@@ -100,6 +100,32 @@
         <input class="form-control" id="email-asunto" placeholder="Estado de Cuenta — Marzo 2026">
       </div>
       <div class="col-12">
+        <label class="form-label" style="font-size:11.5px;font-weight:600;color:var(--text-muted);text-transform:uppercase;">¿Qué comprobante enviar al cliente?</label>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid var(--brand-red);border-radius:9px;cursor:pointer;" id="opt-ambos-wrap">
+            <input type="radio" name="tipo-comprobante" id="opt-ambos" value="ambos" checked style="accent-color:var(--brand-red);width:16px;height:16px;">
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--text-main);">Ambos comprobantes</div>
+              <div style="font-size:11.5px;color:var(--text-muted);">Con Factura + Sin Factura (Pago Externo)</div>
+            </div>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid var(--border);border-radius:9px;cursor:pointer;" id="opt-factura-wrap">
+            <input type="radio" name="tipo-comprobante" id="opt-factura" value="factura" style="accent-color:var(--brand-red);width:16px;height:16px;">
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--text-main);">Solo Con Factura</div>
+              <div style="font-size:11.5px;color:var(--text-muted);">Incluye ISR y IVA — pago vía transferencia</div>
+            </div>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid var(--border);border-radius:9px;cursor:pointer;" id="opt-externo-wrap">
+            <input type="radio" name="tipo-comprobante" id="opt-externo" value="externo" style="accent-color:var(--brand-red);width:16px;height:16px;">
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--text-main);">Solo Sin Factura (Pago Externo)</div>
+              <div style="font-size:11.5px;color:var(--text-muted);">Sin ISR ni IVA — pago por medio externo</div>
+            </div>
+          </label>
+        </div>
+      </div>
+      <div class="col-12">
         <label class="form-label" style="font-size:11.5px;font-weight:600;color:var(--text-muted);text-transform:uppercase;">Notas adicionales (opcional)</label>
         <div id="email-notas-editor" style="background:#fff;border:1.5px solid var(--border);border-radius:8px;min-height:80px;"></div>
         <input type="hidden" id="email-notas">
@@ -199,27 +225,41 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
 <script>
-  const quillTodos = new Quill('#enviar-todos-notas-editor', {
-    theme: 'snow',
-    placeholder: 'Ej. Recuerden que el pago se realiza los primeros 5 días del mes...',
-    modules: {
-      toolbar: [
-        ['bold', 'italic', 'underline'],
-        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-        ['clean']
-      ]
-    }
-  });
+  let quillTodos = null;
+  let quillEmail = null;
 
-  const quillEmail = new Quill('#email-notas-editor', {
-    theme: 'snow',
-    placeholder: 'Ej. Cualquier duda comuníquese al 744 100 2020...',
-    modules: {
-      toolbar: [
-        ['bold', 'italic', 'underline'],
-        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-        ['clean']
-      ]
+  function initQuillTodos(){
+    if(quillTodos) return;
+    const el = document.getElementById('enviar-todos-notas-editor');
+    if(!el) return;
+    quillTodos = new Quill('#enviar-todos-notas-editor', {
+      theme: 'snow',
+      placeholder: 'Ej. Recuerden que el pago se realiza los primeros 5 días del mes...',
+      modules: { toolbar: [['bold','italic','underline'],[{'list':'ordered'},{'list':'bullet'}],['clean']] }
+    });
+  }
+
+  function initQuillEmail(){
+    if(quillEmail) return;
+    const el = document.getElementById('email-notas-editor');
+    if(!el) return;
+    quillEmail = new Quill('#email-notas-editor', {
+      theme: 'snow',
+      placeholder: 'Ej. Cualquier duda comuníquese al 744 100 2020...',
+      modules: { toolbar: [['bold','italic','underline'],[{'list':'ordered'},{'list':'bullet'}],['clean']] }
+    });
+  }
+
+  function getTipoComprobante(){
+    return document.querySelector('input[name="tipo-comprobante"]:checked')?.value || 'ambos';
+  }
+
+  document.addEventListener('change', function(e){
+    if(e.target.name === 'tipo-comprobante'){
+      ['opt-ambos-wrap','opt-factura-wrap','opt-externo-wrap'].forEach(id=>{
+        document.getElementById(id).style.borderColor = 'var(--border)';
+      });
+      e.target.closest('label').style.borderColor = 'var(--brand-red)';
     }
   });
 
@@ -283,6 +323,7 @@
 
   // ── Email individual ──
   async function abrirEmailModal(edcId){
+    initQuillEmail();
     document.getElementById('email-error').style.display='none';
     document.getElementById('email-estado-id').value=edcId;
     document.getElementById('email-preview').innerHTML='<div style="padding:20px;text-align:center;color:var(--text-muted)"><i class="bi bi-arrow-repeat"></i> Cargando vista previa...</div>';
@@ -322,21 +363,24 @@
           <div id="email-preview-notas" style="display:none;margin-top:10px;padding:8px 12px;background:#FFF9E6;border-radius:6px;font-size:12px;color:#666;"></div>
         </div>`;
 
-      // Live notes preview
-      quillEmail.on('text-change', function(){
-        const notasEl = document.getElementById('email-preview-notas');
-        const content = quillEmail.root.innerHTML;
-        const isEmpty = quillEmail.getText().trim().length === 0;
-        if(!isEmpty){ notasEl.innerHTML='📝 <strong>Notas:</strong> '+content; notasEl.style.display='block'; }
-        else notasEl.style.display='none';
-      });
-
+      // Live notes preview — only register once
+      if(!quillEmail._notesListenerAdded){
+        quillEmail._notesListenerAdded = true;
+        quillEmail.on('text-change', function(){
+          const notasEl = document.getElementById('email-preview-notas');
+          if(!notasEl) return;
+          const isEmpty = quillEmail.getText().trim().length === 0;
+          if(!isEmpty){ notasEl.innerHTML='📝 <strong>Notas:</strong> '+quillEmail.root.innerHTML; notasEl.style.display='block'; }
+          else notasEl.style.display='none';
+        });
+      }
       document.getElementById('modal-overlay').style.display='block';
       const em = document.getElementById('email-modal');
       em.style.display = 'block';
       em.style.display = 'flex';
       em.style.flexDirection = 'column';
-    }catch{
+    }catch(err){
+      console.error('abrirEmailModal error:', err);
       showToast('No se pudo cargar el estado','x-circle-fill','#FCA5A5');
     }
   }
@@ -350,7 +394,7 @@
     const id     = document.getElementById('email-estado-id').value;
     const correo = document.getElementById('email-correo').value.trim();
     const asunto = document.getElementById('email-asunto').value.trim();
-    const notas = quillEmail.root.innerHTML;
+    const notas = quillEmail ? quillEmail.root.innerHTML : '';
     const errEl  = document.getElementById('email-error');
     const errMsg = document.getElementById('email-error-msg');
 
@@ -364,7 +408,7 @@
       const res  = await fetch(`/api/estados/${id}/enviar/`,{
         method:'POST',
         headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},
-        body:JSON.stringify({correo,asunto,notas_extra:notas})
+        body:JSON.stringify({correo, asunto, notas_extra:notas, tipo_comprobante: getTipoComprobante()})
       });
       const data = await res.json();
       if(res.ok){
@@ -386,6 +430,7 @@
 
   // ── Enviar todos ──
   function abrirEnviarTodos(){
+    initQuillTodos();
     document.getElementById('modal-overlay').style.display='block';
     document.getElementById('enviar-todos-modal').style.display='block';
   }
@@ -395,7 +440,7 @@
   }
   async function ejecutarEnviarTodos(){
     const asunto = document.getElementById('enviar-todos-asunto').value;
-    const notas = quillTodos.root.innerHTML;
+    const notas = quillTodos ? quillTodos.root.innerHTML : '';
     try{
       const res  = await fetch('/api/estados/enviar-todos/',{
         method:'POST',

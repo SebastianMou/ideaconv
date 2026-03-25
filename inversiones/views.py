@@ -690,9 +690,37 @@ def estado_preview(request, pk):
     })
 
 
-def _build_email_html(data, notas_extra=''):
+def _build_email_html(data, notas_extra='', tipo_comprobante='ambos'):
     """Builds the HTML email body for an estado de cuenta."""
     notas_section = f'<p style="margin-top:16px;padding:10px 14px;background:#FFF9E6;border-radius:8px;font-size:13px;color:#666;">📝 <strong>Notas:</strong> {notas_extra}</p>' if notas_extra else ''
+    
+    bruto   = float(data['interes_bruto'])
+    isr     = float(data['isr'])
+    iva     = float(data['iva'])
+    externo = float(data['pago_externo'])
+    neto    = float(data['interes_neto'])
+    total   = float(data['total_pagar'])
+
+    show_fact = tipo_comprobante in ('ambos', 'factura')
+    show_ext  = tipo_comprobante in ('ambos', 'externo')
+
+    fact_rows = f"""
+      <tr><td colspan="2" style="padding:8px 14px;font-size:10px;font-weight:700;text-transform:uppercase;color:#C8282A;background:#FFF5F5;">Con Factura</td></tr>
+      <tr style="background:#F4F6FA;"><td style="padding:10px 14px;color:#6B7A99;">Interés base factura</td><td style="padding:10px 14px;font-weight:700;text-align:right;">${bruto - externo:,.2f}</td></tr>
+      <tr><td style="padding:10px 14px;color:#C8282A;">ISR (20%)</td><td style="padding:10px 14px;font-weight:700;text-align:right;color:#C8282A;">– ${isr:,.2f}</td></tr>
+      <tr style="background:#F4F6FA;"><td style="padding:10px 14px;color:#1CB87E;">IVA (16%)</td><td style="padding:10px 14px;font-weight:700;text-align:right;color:#1CB87E;">+ ${iva:,.2f}</td></tr>
+    """ if show_fact and (bruto - externo) > 0 else ''
+
+    ext_rows = f"""
+      <tr><td colspan="2" style="padding:8px 14px;font-size:10px;font-weight:700;text-transform:uppercase;color:#6B7A99;background:#F8F9FB;">Sin Factura (Pago Externo)</td></tr>
+      <tr><td style="padding:10px 14px;color:#6B7A99;">Pago externo</td><td style="padding:10px 14px;font-weight:700;text-align:right;">${externo:,.2f}</td></tr>
+      <tr style="background:#F4F6FA;"><td style="padding:10px 14px;color:#6B7A99;">ISR / IVA</td><td style="padding:10px 14px;text-align:right;color:#6B7A99;">No aplica</td></tr>
+    """ if show_ext and externo > 0 else ''
+
+    total_mostrar = neto if tipo_comprobante == 'factura' else externo if tipo_comprobante == 'externo' else total
+
+    total_row = f'${total_mostrar:,.2f}'
+
     return f"""
     <div style="font-family:Arial,sans-serif;max-width:540px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.1);">
       <div style="background:#1A2340;padding:28px 32px;">
@@ -728,12 +756,13 @@ def _build_email_html(data, notas_extra=''):
             <td style="padding:10px 14px;color:#1CB87E;">IVA (16%)</td>
             <td style="padding:10px 14px;font-weight:700;text-align:right;color:#1CB87E;">+ ${float(data['iva']):,.2f}</td>
           </tr>
-          {'<tr style="background:#F4F6FA;"><td style="padding:10px 14px;color:#6B7A99;">Pago externo</td><td style="padding:10px 14px;font-weight:700;text-align:right;">${:,.2f}</td></tr>'.format(float(data['pago_externo'])) if float(data['pago_externo']) > 0 else ''}
+            {fact_rows}
+            {ext_rows}
         </table>
 
         <div style="background:#1A2340;border-radius:10px;padding:16px 20px;margin-top:16px;display:flex;justify-content:space-between;">
           <span style="color:rgba(255,255,255,.7);font-weight:600;">TOTAL A PAGAR</span>
-          <span style="color:#fff;font-weight:800;font-size:20px;">${float(data['total_pagar']):,.2f}</span>
+          <span style="color:#fff;font-weight:800;font-size:20px;">{total_row}</span>
         </div>
 
         {notas_section}
@@ -759,7 +788,8 @@ def estado_enviar(request, pk):
 
     correo_destino = request.data.get('correo') or inv.correo
     asunto         = request.data.get('asunto') or f'Estado de Cuenta — {estado.periodo_inicio} al {estado.periodo_fin}'
-    notas_extra    = request.data.get('notas_extra', '')
+    notas_extra        = request.data.get('notas_extra', '')
+    tipo_comprobante   = request.data.get('tipo_comprobante', 'ambos')
 
     if not correo_destino:
         return Response(
@@ -783,7 +813,7 @@ def estado_enviar(request, pk):
         'total_pagar':    str(estado.total_pagar),
     }
 
-    html_content = _build_email_html(data, notas_extra)
+    html_content = _build_email_html(data, notas_extra, tipo_comprobante)
     text_content = f"Estado de Cuenta de {inv.nombre_completo} — Total a pagar: ${float(estado.total_pagar):,.2f}"
 
     try:
