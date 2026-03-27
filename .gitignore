@@ -26,10 +26,6 @@ media/
 .env.production
 *.env
 
-# ── Static files (collected) ─────────────────────────────
-staticfiles/
-static_root/
-
 # ── IDE / Editor ─────────────────────────────────────────
 .vscode/
 .idea/
