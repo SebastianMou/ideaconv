@@ -10,6 +10,9 @@
     <p id="edc-subtitle">Cargando...</p>
   </div>
   <div class="d-flex gap-2">
+    <button class="btn-outline-brand" onclick="abrirResumen()">
+      <i class="bi bi-file-earmark-bar-graph-fill me-2"></i>Resumen de Corte
+    </button>
     <button class="btn-outline-brand" onclick="abrirEnviarTodos()">
       <i class="bi bi-send-fill me-2"></i>Enviar Todos
     </button>
@@ -185,6 +188,49 @@
   </div>
 </div>
 
+<!-- ── Resumen de Corte Modal ── -->
+<div id="resumen-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3001;width:780px;max-width:96vw;max-height:90vh;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(26,35,64,.25);flex-direction:column;">
+  <div style="background:var(--brand-navy);padding:18px 24px;display:flex;align-items:center;gap:12px;flex-shrink:0;">
+    <i class="bi bi-file-earmark-bar-graph-fill" style="color:#fff;font-size:18px;"></i>
+    <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:16px;color:#fff;">Resumen de Corte Mensual</div>
+    <button onclick="cerrarResumen()" style="margin-left:auto;background:rgba(255,255,255,.1);border:none;color:#fff;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;">✕</button>
+  </div>
+
+  <!-- Period selector -->
+  <div style="padding:16px 24px;background:#F8F9FB;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0;">
+    <div style="font-size:13px;font-weight:600;color:var(--text-muted);">Período:</div>
+    <select id="resumen-periodo" onchange="renderResumen()" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-main);">
+      <option value="">Todos los períodos</option>
+    </select>
+    <div style="margin-left:auto;display:flex;gap:8px;">
+      <button onclick="imprimirResumen()" class="btn-outline-brand" style="font-size:12.5px;padding:7px 14px;">
+        <i class="bi bi-printer me-1"></i>Imprimir
+      </button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div style="overflow-y:auto;flex:1;padding:0;">
+    <table style="width:100%;border-collapse:collapse;font-size:13.5px;">
+      <thead>
+        <tr style="background:#F8F9FB;position:sticky;top:0;">
+          <th style="padding:12px 16px;text-align:left;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:2px solid var(--border);">Inversionista</th>
+          <th style="padding:12px 16px;text-align:right;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:2px solid var(--border);">Capital</th>
+          <th style="padding:12px 16px;text-align:right;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:2px solid var(--border);">Días</th>
+          <th style="padding:12px 16px;text-align:right;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:2px solid var(--border);">Interés Bruto</th>
+          <th style="padding:12px 16px;text-align:right;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#C8282A;border-bottom:2px solid var(--border);">ISR (20%)</th>
+          <th style="padding:12px 16px;text-align:right;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#1CB87E;border-bottom:2px solid var(--border);">IVA (16%)</th>
+          <th style="padding:12px 16px;text-align:right;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:2px solid var(--border);">Pago Externo</th>
+          <th style="padding:12px 16px;text-align:right;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--brand-navy);border-bottom:2px solid var(--border);">Total a Pagar</th>
+          <th style="padding:12px 16px;text-align:center;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:2px solid var(--border);">Estado</th>
+        </tr>
+      </thead>
+      <tbody id="resumen-tbody"></tbody>
+      <tfoot id="resumen-tfoot"></tfoot>
+    </table>
+  </div>
+</div>
+
 <!-- Generar Modal -->
 <div id="gen-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3001;width:420px;max-width:95vw;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(26,35,64,.25);">
   <div style="background:var(--brand-navy);padding:20px 24px;display:flex;justify-content:space-between;align-items:center;">
@@ -225,6 +271,137 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
 <script>
+  // ── Resumen de Corte ──
+  let todosLosEstados = [];
+
+  function abrirResumen(){
+    document.getElementById('modal-overlay').style.display='block';
+    const modal = document.getElementById('resumen-modal');
+    modal.style.display = 'flex';
+    modal.style.flexDirection = 'column';
+    poblarPeriodos();
+    renderResumen();
+  }
+
+  function cerrarResumen(){
+    document.getElementById('modal-overlay').style.display='none';
+    document.getElementById('resumen-modal').style.display='none';
+  }
+
+  function poblarPeriodos(){
+    const sel = document.getElementById('resumen-periodo');
+    // Get unique periods from loaded data
+    const periodos = [...new Set(todosLosEstados.map(e => e.periodo_inicio))].sort().reverse();
+    sel.innerHTML = '<option value="">Todos los períodos</option>';
+    periodos.forEach(p => {
+      sel.innerHTML += `<option value="${p}">${p}</option>`;
+    });
+    // Auto-select most recent
+    if(periodos.length > 0) sel.value = periodos[0];
+  }
+
+  function renderResumen(){
+    const periodo  = document.getElementById('resumen-periodo').value;
+    const filtered = periodo
+      ? todosLosEstados.filter(e => e.periodo_inicio === periodo)
+      : todosLosEstados;
+
+    const tbody = document.getElementById('resumen-tbody');
+    const tfoot = document.getElementById('resumen-tfoot');
+
+    if(!filtered.length){
+      tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--text-muted);">No hay estados de cuenta para este período</td></tr>`;
+      tfoot.innerHTML = '';
+      return;
+    }
+
+    // Totals
+    const totCapital = filtered.reduce((s,e) => s + parseFloat(e.inversion?.capital || 0), 0);
+    const totBruto   = filtered.reduce((s,e) => s + parseFloat(e.interes_bruto  || 0), 0);
+    const totISR     = filtered.reduce((s,e) => s + parseFloat(e.isr            || 0), 0);
+    const totIVA     = filtered.reduce((s,e) => s + parseFloat(e.iva            || 0), 0);
+    const totExt     = filtered.reduce((s,e) => s + parseFloat(e.pago_externo   || 0), 0);
+    const totTotal   = filtered.reduce((s,e) => s + parseFloat(e.total_pagar    || 0), 0);
+
+    tbody.innerHTML = filtered.map((e, i) => {
+      const bg = i % 2 === 0 ? '#fff' : '#FAFBFD';
+      const badgeClass = e.estado==='generado'?'badge-activo':e.estado==='enviado'?'badge-pagado':'badge-pendiente';
+      return `<tr style="background:${bg};">
+        <td style="padding:11px 16px;font-weight:600;border-bottom:1px solid var(--border);">${e.inversionista_nombre||'—'}</td>
+        <td style="padding:11px 16px;text-align:right;border-bottom:1px solid var(--border);color:var(--text-muted);">—</td>
+        <td style="padding:11px 16px;text-align:right;border-bottom:1px solid var(--border);">${e.dias_periodo}</td>
+        <td style="padding:11px 16px;text-align:right;border-bottom:1px solid var(--border);font-weight:600;">${fmtMoney(e.interes_bruto)}</td>
+        <td style="padding:11px 16px;text-align:right;border-bottom:1px solid var(--border);color:#C8282A;font-weight:600;">– ${fmtMoney(e.isr)}</td>
+        <td style="padding:11px 16px;text-align:right;border-bottom:1px solid var(--border);color:#1CB87E;font-weight:600;">+ ${fmtMoney(e.iva)}</td>
+        <td style="padding:11px 16px;text-align:right;border-bottom:1px solid var(--border);">${parseFloat(e.pago_externo)>0 ? fmtMoney(e.pago_externo) : '—'}</td>
+        <td style="padding:11px 16px;text-align:right;border-bottom:1px solid var(--border);font-weight:700;color:var(--brand-navy);">${fmtMoney(e.total_pagar)}</td>
+        <td style="padding:11px 16px;text-align:center;border-bottom:1px solid var(--border);"><span class="badge-status ${badgeClass}">${e.estado_display}</span></td>
+      </tr>`;
+    }).join('');
+
+    tfoot.innerHTML = `
+      <tr style="background:var(--brand-navy);">
+        <td style="padding:13px 16px;font-family:'Montserrat',sans-serif;font-weight:800;font-size:13px;color:#fff;">TOTALES (${filtered.length} inversionistas)</td>
+        <td style="padding:13px 16px;text-align:right;color:rgba(255,255,255,.6);">—</td>
+        <td style="padding:13px 16px;text-align:right;color:rgba(255,255,255,.6);">—</td>
+        <td style="padding:13px 16px;text-align:right;font-weight:700;color:#fff;">${fmtMoney(totBruto)}</td>
+        <td style="padding:13px 16px;text-align:right;font-weight:700;color:#FCA5A5;">– ${fmtMoney(totISR)}</td>
+        <td style="padding:13px 16px;text-align:right;font-weight:700;color:#86EFAC;">+ ${fmtMoney(totIVA)}</td>
+        <td style="padding:13px 16px;text-align:right;font-weight:700;color:rgba(255,255,255,.8);">${totExt > 0 ? fmtMoney(totExt) : '—'}</td>
+        <td style="padding:13px 16px;text-align:right;font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:#fff;">${fmtMoney(totTotal)}</td>
+        <td></td>
+      </tr>`;
+  }
+
+  function imprimirResumen(){
+    const periodo  = document.getElementById('resumen-periodo').value || 'Todos los períodos';
+    const tbodyHTML = document.getElementById('resumen-tbody').innerHTML;
+    const tfootHTML = document.getElementById('resumen-tfoot').innerHTML;
+
+    const win = window.open('','_blank','width=900,height=650');
+    win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+    <title>Resumen de Corte — ${periodo}</title>
+    <style>
+      body{font-family:Arial,sans-serif;padding:24px;color:#1A2340;}
+      .header{background:#1A2340;color:#fff;padding:18px 24px;border-radius:8px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;}
+      .header h1{font-size:18px;margin:0;}
+      .header p{font-size:12px;opacity:.6;margin:0;}
+      table{width:100%;border-collapse:collapse;font-size:12.5px;}
+      thead th{background:#F8F9FB;padding:10px 12px;text-align:right;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#6B7A99;border-bottom:2px solid #E2E8F0;}
+      thead th:first-child{text-align:left;}
+      tbody td{padding:9px 12px;text-align:right;border-bottom:1px solid #E2E8F0;}
+      tbody td:first-child{text-align:left;font-weight:600;}
+      tbody tr:nth-child(even){background:#FAFBFD;}
+      tfoot td{padding:11px 12px;text-align:right;background:#1A2340;color:#fff;font-weight:700;}
+      tfoot td:first-child{text-align:left;font-weight:800;}
+      .footer{margin-top:20px;font-size:11px;color:#9AA5BE;text-align:center;border-top:1px dashed #E2E8F0;padding-top:12px;}
+      @media print{body{padding:8px;}.header{border-radius:0;}}
+    </style></head><body>
+    <div class="header">
+      <div><h1>IDEACONV S.A. de C.V.</h1><p>Resumen de Corte Mensual</p></div>
+      <div style="text-align:right;"><div style="font-size:15px;font-weight:800;">${periodo}</div><div style="font-size:11px;opacity:.6;">${new Date().toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'})}</div></div>
+    </div>
+    <table>
+      <thead><tr>
+        <th style="text-align:left;">Inversionista</th>
+        <th>Días</th>
+        <th>Interés Bruto</th>
+        <th style="color:#C8282A;">ISR (20%)</th>
+        <th style="color:#1CB87E;">IVA (16%)</th>
+        <th>Pago Externo</th>
+        <th>Total a Pagar</th>
+        <th>Estado</th>
+      </tr></thead>
+      <tbody>${tbodyHTML.replace(/class="badge-status [^"]*"/g, '').replace(/<span[^>]*>/g,'<span>').replace(/style="[^"]*color:[^"]*"/g,'')}</tbody>
+      <tfoot>${tfootHTML}</tfoot>
+    </table>
+    <div class="footer">Ideaconv S.A. de C.V. &nbsp;·&nbsp; Generado el ${new Date().toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'})}</div>
+    </body></html>`);
+    win.document.close();
+    win.focus();
+    setTimeout(()=>win.print(), 400);
+  }
+
   let quillTodos = null;
   let quillEmail = null;
 
@@ -273,6 +450,7 @@
     try{
       const res  = await fetch(url);
       const data = await res.json();
+      todosLosEstados = data;
       renderEstados(data);
     }catch{ document.getElementById('edc-subtitle').textContent='Error al cargar'; }
   }
