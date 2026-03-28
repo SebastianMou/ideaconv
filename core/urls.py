@@ -18,9 +18,11 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from inversiones import views as inv_views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', inv_views.honeypot_view, name='honeypot'),
+    path('secure-ideaconv-panel/', admin.site.urls),
     path('', include('inversiones.urls')),
 ]
 

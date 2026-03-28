@@ -3,6 +3,20 @@ from .models import (
     Promotor, Inversionista, Inversion,
     EstadoDeCuenta, Pago, Prospecto
 )
+from .models import HoneypotAttempt
+
+@admin.register(HoneypotAttempt)
+class HoneypotAttemptAdmin(admin.ModelAdmin):
+    list_display  = ('ip_address', 'username', 'timestamp', 'user_agent')
+    readonly_fields = ('ip_address', 'username', 'timestamp', 'user_agent')
+    list_filter   = ('timestamp',)
+    search_fields = ('ip_address', 'username')
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(Promotor)

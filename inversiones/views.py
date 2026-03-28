@@ -19,10 +19,53 @@ from .serializers import (
     ProspectoSerializer, CalculadoraInputSerializer
 )
 
-
 # ══════════════════════════════════════════════
 #  AUTH VIEWS
 # ══════════════════════════════════════════════
+
+import logging
+honeypot_logger = logging.getLogger('honeypot')
+
+def honeypot_view(request):
+    ip = request.META.get('HTTP_X_FORWARDED_FOR', request.META.get('REMOTE_ADDR', 'unknown'))
+    if request.method == 'POST':
+        username   = request.POST.get('username', '')
+        user_agent = request.META.get('HTTP_USER_AGENT', '')
+        honeypot_logger.warning(f'HONEYPOT HIT — IP: {ip} | Username: {username}')
+        from .models import HoneypotAttempt
+        HoneypotAttempt.objects.create(
+            ip_address=ip if ip != 'unknown' else '0.0.0.0',
+            username=username,
+            user_agent=user_agent,
+        )
+    from django.http import HttpResponse
+    from django.middleware.csrf import get_token
+    csrf_token = get_token(request)
+    return HttpResponse(f"""<!DOCTYPE html><html><head><title>Log in | Django site admin</title>
+    <style>
+      body{{font-family:sans-serif;background:#f8f8f8;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;}}
+      .login{{background:#fff;padding:40px;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.15);width:300px;}}
+      h1{{font-size:18px;color:#333;margin-bottom:6px;}}
+      .help{{font-size:13px;color:#666;margin-bottom:20px;}}
+      .error{{background:#ffefef;border:1px solid #e0b4b4;color:#a94442;padding:8px 12px;border-radius:3px;font-size:13px;margin-bottom:16px;}}
+      label{{font-size:13px;font-weight:bold;display:block;margin-bottom:4px;color:#333;}}
+      input[type=text],input[type=password]{{width:100%;padding:8px;margin-bottom:14px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box;font-size:14px;}}
+      button{{width:100%;padding:10px;background:#79aec8;color:#fff;border:none;border-radius:3px;cursor:pointer;font-size:14px;font-weight:bold;}}
+      button:hover{{background:#609ab6;}}
+    </style></head>
+    <body><div class="login">
+      <h1>Administration</h1>
+      <p class="help">Enter the correct username and password to access the admin.</p>
+      <div class="error">Please enter the correct username and password for a staff account. Note that both fields may be case-sensitive.</div>
+      <form method="post">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{csrf_token}">
+        <label for="id_username">Username:</label>
+        <input type="text" name="username" id="id_username" autocomplete="username">
+        <label for="id_password">Password:</label>
+        <input type="password" name="password" id="id_password" autocomplete="current-password">
+        <button type="submit">Log in</button>
+      </form>
+    </div></body></html>""", status=200)
 
 def login_view(request):
     if request.user.is_authenticated:

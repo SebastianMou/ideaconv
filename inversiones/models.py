@@ -1,5 +1,18 @@
 from django.db import models
 
+class HoneypotAttempt(models.Model):
+    ip_address = models.GenericIPAddressField()
+    username   = models.CharField(max_length=200, blank=True)
+    timestamp  = models.DateTimeField(auto_now_add=True)
+    user_agent = models.TextField(blank=True)
+
+    def __str__(self):
+        return f'{self.ip_address} — {self.username} — {self.timestamp}'
+
+    class Meta:
+        verbose_name = 'Intento de Acceso (Honeypot)'
+        verbose_name_plural = 'Intentos de Acceso (Honeypot)'
+        ordering = ['-timestamp']
 
 class Promotor(models.Model):
     nombre = models.CharField(max_length=200)
