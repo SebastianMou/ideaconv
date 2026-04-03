@@ -203,9 +203,9 @@
 
     // Stats under chart
     document.getElementById('chart-promedio').textContent = fmtMoney(promedio);
-    document.getElementById('chart-maximo').textContent   =
-      fmtMoney(maxMes.total) + ` <span style="font-size:11px;color:var(--success)">${maxMes.mes} ↑</span>`;
-  }
+    document.getElementById('chart-maximo').innerHTML   =
+      fmtMoney(maxMes.total) + ` <span style="font-size:11px;color:var(--success) bob">${maxMes.mes} ↑</span>`;
+    }
 
   async function cargarDashboard() {
     try {
