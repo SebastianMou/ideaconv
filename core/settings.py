@@ -32,7 +32,6 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-nzai$&@s-^4)7db(=%g9k
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-# ALLOWED_HOSTS = ["https://diana-luncheonless-unoccasionally.ngrok-free.dev/", "localhost", "127.0.0.1" "*"]
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,*').split(',')
 # Application definition
 
