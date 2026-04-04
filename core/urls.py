@@ -23,6 +23,7 @@ from inversiones import views as inv_views
 urlpatterns = [
     path('admin/', inv_views.honeypot_view, name='honeypot'),
     path('secure-ideaconv-panel/', admin.site.urls),
+    path('djrichtextfield/', include('djrichtextfield.urls')),
     path('', include('inversiones.urls')),
 ]
 

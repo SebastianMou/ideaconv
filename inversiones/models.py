@@ -1,4 +1,6 @@
 from django.db import models
+from django.db import models
+from djrichtextfield.models import RichTextField
 
 class HoneypotAttempt(models.Model):
     ip_address = models.GenericIPAddressField()
@@ -233,3 +235,29 @@ class Prospecto(models.Model):
     class Meta:
         verbose_name = "Prospecto"
         verbose_name_plural = "Prospectos"
+
+class BugReport(models.Model):
+    TIPO_CHOICES = [
+        ('calculo',    'Error en cálculo'),
+        ('visual',     'Error visual / diseño'),
+        ('formulario', 'Formulario no guarda'),
+        ('email',      'Error en envío de correo'),
+        ('carga',      'Página no carga / lenta'),
+        ('otro',       'Otro'),
+    ]
+    tipo        = models.CharField(max_length=20, choices=TIPO_CHOICES)
+    pagina      = models.CharField(max_length=200)
+    descripcion = RichTextField()
+    esperado    = RichTextField(blank=True)
+    url_actual  = models.URLField(blank=True)
+    usuario     = models.CharField(max_length=200, blank=True)
+    fecha       = models.DateTimeField(auto_now_add=True)
+    resuelto    = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.get_tipo_display()} — {self.pagina} — {self.fecha.strftime("%d/%m/%Y %H:%M")}'
+
+    class Meta:
+        verbose_name = 'Reporte de Error'
+        verbose_name_plural = 'Reportes de Errores'
+        ordering = ['-fecha']

@@ -1,9 +1,10 @@
 from django.contrib import admin
 from .models import (
     Promotor, Inversionista, Inversion,
-    EstadoDeCuenta, Pago, Prospecto
+    EstadoDeCuenta, Pago, Prospecto, BugReport
 )
 from .models import HoneypotAttempt
+from django.utils.html import mark_safe
 
 @admin.register(HoneypotAttempt)
 class HoneypotAttemptAdmin(admin.ModelAdmin):
@@ -97,3 +98,12 @@ class ProspectoAdmin(admin.ModelAdmin):
     list_display  = ('nombre_completo', 'telefono', 'monto_estimado', 'etapa', 'promotor', 'convertido', 'fecha_registro')
     list_filter   = ('etapa', 'convertido', 'promotor')
     search_fields = ('nombre_completo', 'correo')
+
+@admin.register(BugReport)
+class BugReportAdmin(admin.ModelAdmin):
+    list_display    = ('tipo', 'pagina', 'usuario', 'fecha', 'resuelto')
+    list_filter     = ('tipo', 'resuelto', 'fecha')
+    search_fields   = ('descripcion', 'pagina', 'usuario')
+    list_editable   = ('resuelto',)
+    readonly_fields = ('url_actual', 'usuario', 'fecha')
+    fields          = ('tipo', 'pagina', 'descripcion', 'esperado', 'url_actual', 'usuario', 'fecha', 'resuelto')

@@ -51,4 +51,7 @@ urlpatterns = [
     path('api/estados/<int:pk>/preview/', views.estado_preview, name='api-estado-preview'),
     path('api/estados/<int:pk>/enviar/', views.estado_enviar, name='api-estado-enviar'),
     path('api/estados/enviar-todos/', views.enviar_estados_todos, name='api-enviar-todos'),
+
+    path('api/bug-report/', views.bug_report, name='api-bug-report'),
+
 ]

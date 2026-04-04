@@ -948,3 +948,17 @@ def enviar_estados_todos(request):
         'detalle_fallidos':   fallidos,
         'detalle_sin_correo': sin_correo,
     })
+
+@api_view(['POST'])
+@login_required(login_url='login')
+def bug_report(request):
+    from .models import BugReport
+    BugReport.objects.create(
+        tipo        = request.data.get('tipo', ''),
+        pagina      = request.data.get('pagina', ''),
+        descripcion = request.data.get('descripcion', ''),
+        esperado    = request.data.get('esperado', ''),
+        url_actual  = request.data.get('url_actual', ''),
+        usuario     = request.data.get('usuario', ''),
+    )
+    return Response({'message': 'Reporte recibido'}, status=status.HTTP_201_CREATED)

@@ -157,7 +157,7 @@
 </div>
 
 <!-- ── Enviar Todos Modal ── -->
-<div id="enviar-todos-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3001;width:440px;max-width:95vw;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(26,35,64,.25);">
+<div id="enviar-todos-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3001;width:440px;max-width:95vw;max-height:90vh;overflow-y:auto;background:#fff;border-radius:16px;box-shadow:0 24px 60px rgba(26,35,64,.25);">
   <div style="background:var(--brand-navy);padding:18px 24px;display:flex;align-items:center;gap:12px;">
     <i class="bi bi-send-fill" style="color:#fff;font-size:18px;"></i>
     <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:16px;color:#fff;">Enviar a Todos</div>
@@ -175,7 +175,7 @@
       </div>
       <div class="col-12">
         <label class="form-label" style="font-size:11.5px;font-weight:600;color:var(--text-muted);text-transform:uppercase;">Notas para todos (opcional)</label>
-        <div id="enviar-todos-notas-editor" style="background:#fff;border:1.5px solid var(--border);border-radius:8px;min-height:80px;"></div>
+        <div id="enviar-todos-notas-editor" style="background:#fff;border:1.5px solid var(--border);border-radius:8px;height:100px;overflow-y:auto;"></div>
         <input type="hidden" id="enviar-todos-notas">
       </div>
     </div>
