@@ -1873,6 +1873,7 @@
   }
 
   async function enviarBugReport(){
+    console.log('enviarBugReport called, cookie:', getCookie('csrftoken'));
     const tipo        = document.getElementById('bug-tipo').value;
     const pagina      = document.getElementById('bug-pagina').value.trim();
     const descripcion = quillBugDesc     ? quillBugDesc.root.innerHTML     : '';
@@ -1946,6 +1947,16 @@
       });
     }
   </script>
+  <script>
+  function getCookie(name){
+    let v=null;
+    document.cookie.split(';').forEach(c=>{
+      const[k,val]=c.trim().split('=');
+      if(k===name) v=decodeURIComponent(val);
+    });
+    return v;
+  }
+</script>
   {% block extra_js %}{% endblock %}
 </body>
 

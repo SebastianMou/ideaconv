@@ -55,7 +55,6 @@
       </div>
       <div class="p-4">
         <div class="chart-bar-wrap" id="chart-bars">
-          <!-- rendered by JS -->
           <div class="chart-bar" style="height:20%;opacity:.3"></div>
           <div class="chart-bar" style="height:20%;opacity:.3"></div>
           <div class="chart-bar" style="height:20%;opacity:.3"></div>
@@ -141,6 +140,12 @@
 
 {% block extra_js %}
 <script>
+  console.log('Dashboard script starting...');
+
+  window.addEventListener('error', function(e){
+    console.error('JS Error:', e.message, 'at', e.filename, 'line', e.lineno);
+  });
+
   function fmtMoney(v) {
     const n = parseFloat(v);
     if (isNaN(n)) return '—';
@@ -184,39 +189,35 @@
   function renderChart(chart) {
     if (!chart || !chart.length) return;
 
-    const totals  = chart.map(c => parseFloat(c.total) || 0);
-    const maxVal  = Math.max(...totals, 1);
+    const totals   = chart.map(c => parseFloat(c.total) || 0);
+    const maxVal   = Math.max(...totals, 1);
     const promedio = totals.reduce((a,b) => a+b, 0) / totals.length;
-    const maxMes  = chart[totals.indexOf(Math.max(...totals))];
+    const maxMes   = chart[totals.indexOf(Math.max(...totals))];
 
-    // Bars
     document.getElementById('chart-bars').innerHTML = chart.map((c, i) => {
-      const pct = Math.max((parseFloat(c.total) / maxVal) * 100, 4);
+      const pct    = Math.max((parseFloat(c.total) / maxVal) * 100, 4);
       const isLast = i === chart.length - 1;
       return `<div class="chart-bar ${isLast?'active':''}" style="height:${pct}%"
                    title="${c.mes}: ${fmtMoney(c.total)}"></div>`;
     }).join('');
 
-    // Months
     document.getElementById('chart-months').innerHTML =
       chart.map(c => `<span>${c.mes}</span>`).join('');
 
-    // Stats under chart
     document.getElementById('chart-promedio').textContent = fmtMoney(promedio);
-    document.getElementById('chart-maximo').innerHTML   =
-      fmtMoney(maxMes.total) + ` <span style="font-size:11px;color:var(--success) bob">${maxMes.mes} ↑</span>`;
-    }
+    document.getElementById('chart-maximo').innerHTML =
+      fmtMoney(maxMes.total) + ` <span style="font-size:11px;color:var(--success)">${maxMes.mes} ↑</span>`;
+  }
 
   async function cargarDashboard() {
+    console.log('cargarDashboard called');
     try {
-      const res  = await fetch('/api/dashboard/');
+      const res  = await fetch('/api/dashboard/', {credentials: 'same-origin'});
       const data = await res.json();
 
-      // Subtitle
       document.getElementById('dash-subtitle').textContent =
         `Ciclo activo: ${today()} — Datos en tiempo real`;
 
-      // Stat cards
       document.getElementById('stat-inversionistas').textContent = data.inversiones_activas || 0;
       document.getElementById('stat-inv-change').innerHTML =
         `<i class="bi bi-people"></i> ${data.total_inversionistas} registrados total`;
@@ -231,20 +232,17 @@
 
       document.getElementById('stat-advertencias').textContent = data.advertencias?.length || 0;
 
-      // Quick stats
-      document.getElementById('stat-pagados').textContent    = data.pagos_pagados || 0;
-      document.getElementById('stat-pagos-pend').textContent = data.pagos_pendientes || 0;
-      document.getElementById('stat-venciendo').textContent  = data.inversiones_venciendo || 0;
+      document.getElementById('stat-pagados').textContent     = data.pagos_pagados || 0;
+      document.getElementById('stat-pagos-pend').textContent  = data.pagos_pendientes || 0;
+      document.getElementById('stat-venciendo').textContent   = data.inversiones_venciendo || 0;
       document.getElementById('stat-estados-gen').textContent = data.estados_generados || 0;
       document.getElementById('chart-pendientes').textContent = data.pagos_pendientes || 0;
 
-      // Advertencias
       renderAdvertencias(data.advertencias);
-
-      // Chart
       renderChart(data.chart);
 
     } catch(e) {
+      console.error('Dashboard error:', e);
       document.getElementById('dash-subtitle').textContent = 'Error al cargar datos';
       document.getElementById('advertencias-list').innerHTML = `
         <div style="text-align:center;padding:30px;color:var(--brand-red)">
@@ -254,6 +252,7 @@
     }
   }
 
+  console.log('About to call cargarDashboard...');
   cargarDashboard();
 </script>
 {% endblock %}
