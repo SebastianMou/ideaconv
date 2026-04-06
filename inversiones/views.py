@@ -803,10 +803,12 @@ def _build_email_html(data, notas_extra='', tipo_comprobante='ambos'):
             {ext_rows}
         </table>
 
-        <div style="background:#1A2340;border-radius:10px;padding:16px 20px;margin-top:16px;display:flex;justify-content:space-between;">
-          <span style="color:rgba(255,255,255,.7);font-weight:600;">TOTAL A PAGAR</span>
-          <span style="color:#fff;font-weight:800;font-size:20px;">{total_row}</span>
-        </div>
+        <table style="width:100%;border-collapse:collapse;background:#1A2340;border-radius:10px;margin-top:16px;">
+          <tr>
+            <td style="padding:16px 20px;color:rgba(255,255,255,.7);font-weight:600;font-size:13.5px;">TOTAL A PAGAR</td>
+            <td style="padding:16px 20px;color:#fff;font-weight:800;font-size:20px;text-align:right;">{total_row}</td>
+          </tr>
+        </table>
 
         {notas_section}
 

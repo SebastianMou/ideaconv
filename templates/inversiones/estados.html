@@ -4,20 +4,20 @@
 {% block topbar_title %}Estados de <span>Cuenta</span>{% endblock %}
 
 {% block content %}
-<div class="d-flex align-items-center justify-content-between mb-4">
+<div class="d-flex align-items-center justify-content-between mb-4" style="flex-wrap:wrap;gap:12px;">
   <div class="section-header mb-0">
     <h2>Estados de Cuenta</h2>
     <p id="edc-subtitle">Cargando...</p>
   </div>
-  <div class="d-flex gap-2">
+  <div class="d-flex gap-2" style="flex-wrap:wrap;">
     <button class="btn-outline-brand" onclick="abrirResumen()">
-      <i class="bi bi-file-earmark-bar-graph-fill me-2"></i>Resumen de Corte
+      <i class="bi bi-file-earmark-bar-graph-fill"></i><span class="d-none d-sm-inline ms-2">Resumen de Corte</span>
     </button>
     <button class="btn-outline-brand" onclick="abrirEnviarTodos()">
-      <i class="bi bi-send-fill me-2"></i>Enviar Todos
+      <i class="bi bi-send-fill"></i><span class="d-none d-sm-inline ms-2">Enviar Todos</span>
     </button>
     <button class="btn-brand" onclick="abrirGenerarTodos()">
-      <i class="bi bi-lightning-fill me-2"></i>Generar Todos
+      <i class="bi bi-lightning-fill"></i><span class="d-none d-sm-inline ms-2">Generar Todos</span>
     </button>
   </div>
 </div>
@@ -60,25 +60,27 @@
       <option value="enviado">Enviados</option>
     </select>
   </div>
-  <table class="table">
-    <thead><tr>
-      <th><input type="checkbox" id="check-all-edc" onchange="toggleAllEdc(this)"></th>
-      <th>Inversionista</th>
-      <th>Período</th>
-      <th>Días</th>
-      <th>Interés Bruto</th>
-      <th>ISR</th>
-      <th>IVA</th>
-      <th>Total</th>
-      <th>Estado</th>
-      <th>Acción</th>
-    </tr></thead>
-    <tbody id="edc-tbody">
-      <tr><td colspan="10" style="text-align:center;padding:40px;color:var(--text-muted)">
-        <i class="bi bi-arrow-repeat" style="font-size:22px;display:block;margin-bottom:8px"></i>Cargando...
-      </td></tr>
-    </tbody>
-  </table>
+  <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+    <table class="table" style="min-width:700px;">
+      <thead><tr>
+        <th><input type="checkbox" id="check-all-edc" onchange="toggleAllEdc(this)"></th>
+        <th>Inversionista</th>
+        <th>Período</th>
+        <th>Días</th>
+        <th>Interés Bruto</th>
+        <th>ISR</th>
+        <th>IVA</th>
+        <th>Total</th>
+        <th>Estado</th>
+        <th>Acción</th>
+      </tr></thead>
+      <tbody id="edc-tbody">
+        <tr><td colspan="10" style="text-align:center;padding:40px;color:var(--text-muted)">
+          <i class="bi bi-arrow-repeat" style="font-size:22px;display:block;margin-bottom:8px"></i>Cargando...
+        </td></tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <!-- ── Email Preview/Edit Modal ── -->

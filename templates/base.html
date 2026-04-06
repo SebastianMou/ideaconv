@@ -1097,7 +1097,9 @@
       }
 
       #topbar {
-        left: 0
+        left: 0;
+        padding: 0 12px;
+        gap: 8px
       }
 
       #main {
@@ -1113,11 +1115,70 @@
       }
 
       .page-content {
-        padding: 16px
+        padding: 12px
       }
 
       .stat-card .card-value {
         font-size: 20px
+      }
+
+      /* Hide date badge on mobile to save topbar space */
+      .date-badge {
+        display: none
+      }
+
+      /* Make tables horizontally scrollable */
+      .table-card {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch
+      }
+
+      .table {
+        min-width: 700px
+      }
+
+      /* Stack the header buttons vertically */
+      .d-flex.gap-2 {
+        flex-wrap: wrap;
+        gap: 6px !important
+      }
+
+      /* Shrink action buttons on mobile */
+      .btn-brand,
+      .btn-outline-brand {
+        padding: 7px 12px;
+        font-size: 12px
+      }
+
+      /* Section header row — stack title above buttons */
+      .d-flex.align-items-center.justify-content-between.mb-4 {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 12px
+      }
+
+      /* Stat cards — smaller padding */
+      .stat-card {
+        padding: 14px 16px
+      }
+
+      /* Table card header — stack title + filter */
+      .table-card-header {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px 14px
+      }
+
+      .table-card-header .form-select {
+        max-width: 100% !important;
+        width: 100%;
+        margin-left: 0 !important
+      }
+
+      /* Notification panel — full width on mobile */
+      #notif-panel {
+        width: calc(100vw - 24px) !important;
+        right: -60px !important
       }
     }
   </style>
