@@ -90,6 +90,50 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
+def register_view(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        username   = request.POST.get('username', '').strip()
+        password1  = request.POST.get('password1', '')
+        password2  = request.POST.get('password2', '')
+        first_name = request.POST.get('first_name', '').strip()
+        last_name  = request.POST.get('last_name', '').strip()
+
+        from django.contrib.auth.models import User
+
+        if not username or not password1:
+            return render(request, 'inversiones/register.html', {
+                'error': 'Usuario y contraseña son obligatorios.',
+                'username': username, 'first_name': first_name, 'last_name': last_name,
+            })
+        if password1 != password2:
+            return render(request, 'inversiones/register.html', {
+                'error': 'Las contraseñas no coinciden.',
+                'username': username, 'first_name': first_name, 'last_name': last_name,
+            })
+        if len(password1) < 6:
+            return render(request, 'inversiones/register.html', {
+                'error': 'La contraseña debe tener al menos 6 caracteres.',
+                'username': username, 'first_name': first_name, 'last_name': last_name,
+            })
+        if User.objects.filter(username=username).exists():
+            return render(request, 'inversiones/register.html', {
+                'error': f'El usuario "{username}" ya existe.',
+                'username': username, 'first_name': first_name, 'last_name': last_name,
+            })
+
+        user = User.objects.create_user(
+            username=username,
+            password=password1,
+            first_name=first_name,
+            last_name=last_name,
+        )
+        login(request, user)
+        return redirect('dashboard')
+
+    return render(request, 'inversiones/register.html')
 
 # ══════════════════════════════════════════════
 #  TEMPLATE VIEWS  (render HTML pages)
