@@ -67,9 +67,31 @@
         primero</button>
 </div>
 
+<!-- Detail side panel -->
+<div id="inv-detail-panel"
+    style="position:fixed;top:0;right:0;width:480px;max-width:100vw;height:100vh;background:#fff;z-index:2000;box-shadow:-8px 0 40px rgba(26,35,64,.18);display:flex;flex-direction:column;transform:translateX(110%);transition:transform .35s cubic-bezier(.4,0,.2,1);">
+    <div style="background:var(--brand-navy);padding:20px 24px;display:flex;align-items:center;gap:14px;flex-shrink:0">
+        <div id="detail-panel-avatar" style="width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff;flex-shrink:0"></div>
+        <div>
+            <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:16px;color:#fff" id="detail-panel-nombre"></div>
+            <div style="font-size:12px;color:rgba(255,255,255,.5)" id="detail-panel-rfc"></div>
+        </div>
+        <button onclick="cerrarDetalle()"
+            style="margin-left:auto;background:rgba(255,255,255,.1);border:none;color:#fff;width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">✕</button>
+    </div>
+    <div id="detail-panel-body" style="flex:1;overflow-y:auto;padding:24px">
+        <div style="text-align:center;color:var(--text-muted);padding:40px 0">
+            <i class="bi bi-arrow-repeat" style="font-size:22px;display:block;margin-bottom:8px"></i>Cargando...
+        </div>
+    </div>
+</div>
+<div id="inv-detail-overlay" onclick="cerrarDetalle()"
+    style="display:none;position:fixed;inset:0;background:rgba(26,35,64,.4);z-index:1999;backdrop-filter:blur(2px)">
+</div>
+
 <!-- Slide-in form panel -->
 <div id="inv-form-panel"
-    style="display:none;position:fixed;top:0;right:0;width:520px;max-width:100vw;height:100vh;background:#fff;z-index:2000;box-shadow:-8px 0 40px rgba(26,35,64,.18);display:flex;flex-direction:column;transform:translateX(110%);transition:transform .35s cubic-bezier(.4,0,.2,1);">
+    style="position:fixed;top:0;right:0;width:520px;max-width:100vw;height:100vh;background:#fff;z-index:2000;box-shadow:-8px 0 40px rgba(26,35,64,.18);display:flex;flex-direction:column;transform:translateX(110%);transition:transform .35s cubic-bezier(.4,0,.2,1);">
     <div style="background:var(--brand-navy);padding:20px 24px;display:flex;align-items:center;gap:14px;flex-shrink:0">
         <div>
             <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:16px;color:#fff"
@@ -275,6 +297,197 @@
 
 {% block extra_js %}
 <script>
+
+    window.toggleInversiones = async function(invId, clickedRow) {
+        const panel = document.getElementById('inv-detail-panel');
+        const body  = document.getElementById('detail-panel-body');
+
+        // Show panel immediately with loading state
+        document.getElementById('detail-panel-nombre').textContent = 'Cargando...';
+        document.getElementById('detail-panel-rfc').textContent = '';
+        document.getElementById('detail-panel-avatar').textContent = '';
+        body.innerHTML = `<div style="text-align:center;color:var(--text-muted);padding:40px 0">
+            <i class="bi bi-arrow-repeat" style="font-size:22px;display:block;margin-bottom:8px"></i>Cargando inversiones...
+        </div>`;
+        panel.style.transform = 'translateX(0)';
+        document.getElementById('inv-detail-overlay').style.display = 'block';
+
+        try {
+            const res  = await fetch(`/api/inversionistas/${invId}/`);
+            const data = await res.json();
+            const inversiones = data.inversiones || [];
+
+            // Fill header
+            const color = getColor(invId);
+            const avatar = document.getElementById('detail-panel-avatar');
+            avatar.textContent = getInitials(data.nombre_completo);
+            avatar.style.background = color;
+            document.getElementById('detail-panel-nombre').textContent = data.nombre_completo;
+            document.getElementById('detail-panel-rfc').textContent = data.rfc || 'Sin RFC';
+
+            if (!inversiones.length) {
+                body.innerHTML = `
+                    <div style="text-align:center;padding:60px 0;color:var(--text-muted)">
+                        <i class="bi bi-graph-up" style="font-size:36px;display:block;margin-bottom:12px;opacity:.4"></i>
+                        <div style="font-weight:600;font-size:14px;margin-bottom:6px">Sin inversiones registradas</div>
+                        <button class="btn-brand mt-2" onclick="nuevaInversion(${invId},'${data.nombre_completo}')">
+                            <i class="bi bi-plus-lg me-2"></i>Agregar inversión
+                        </button>
+                    </div>`;
+                return;
+            }
+
+            body.innerHTML = `
+                <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:16px;">
+                    ${inversiones.length} inversión${inversiones.length > 1 ? 'es' : ''}
+                </div>
+                ${inversiones.map(inv => {
+                    const badgeClass = inv.estado==='activo'?'badge-activo':inv.estado==='vencido'?'badge-vencido':'badge-por-vencer';
+                    return `
+                    <div style="border:1.5px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                            <div style="font-size:20px;font-weight:800;color:var(--brand-navy)">${fmtMoney(inv.capital)}</div>
+                            <span class="badge-status ${badgeClass}">${inv.estado_display}</span>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12.5px;">
+                            <div><span style="color:var(--text-muted)">Tasa anual</span><div style="font-weight:600">${inv.tasa_anual}%</div></div>
+                            <div><span style="color:var(--text-muted)">Base</span><div style="font-weight:600">${inv.base_calculo} días</div></div>
+                            <div><span style="color:var(--text-muted)">% Factura</span><div style="font-weight:600">${inv.porcentaje_factura}%</div></div>
+                            <div><span style="color:var(--text-muted)">Inicio</span><div style="font-weight:600">${inv.fecha_inicio||'—'}</div></div>
+                            <div><span style="color:var(--text-muted)">Vencimiento</span><div style="font-weight:600">${inv.fecha_vencimiento||'Sin vencimiento'}</div></div>
+                        </div>
+                    </div>`;
+                }).join('')}
+                <button class="btn-brand" style="width:100%;margin-top:4px" onclick="nuevaInversion(${invId},'${data.nombre_completo}')">
+                    <i class="bi bi-plus-lg me-2"></i>Agregar inversión
+                </button>`;
+        } catch {
+            body.innerHTML = `<div style="color:var(--brand-red);font-size:13px;padding:20px;">Error al cargar las inversiones.</div>`;
+        }
+    }
+
+    function nuevaInversion(invId, nombre){
+        document.getElementById('cv-title').innerHTML =
+        `<i class="bi bi-plus-circle-fill me-2" style="color:var(--success)"></i>Nueva Inversión`;
+        document.getElementById('cv-body').innerHTML = `
+        <div style="text-align:left">
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">
+            Agregar nueva inversión para <strong>${nombre}</strong>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+            <div>
+                <label style="font-size:11.5px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">CAPITAL ($) *</label>
+                <input type="text" id="ni-capital" placeholder="Ej. 150000" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;">
+            </div>
+            <div>
+                <label style="font-size:11.5px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">TASA ANUAL (%) *</label>
+                <input type="text" id="ni-tasa" placeholder="Ej. 15" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;">
+            </div>
+            <div style="display:flex;gap:10px;">
+                <div style="flex:1;">
+                <label style="font-size:11.5px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">BASE</label>
+                <select id="ni-base" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;">
+                    <option value="365">365 días</option>
+                    <option value="360">360 días</option>
+                </select>
+                </div>
+                <div style="flex:1;">
+                <label style="font-size:11.5px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">% A FACTURAR</label>
+                <input type="text" id="ni-factura" placeholder="Ej. 100" value="100" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;">
+                </div>
+            </div>
+            <div style="display:flex;gap:10px;">
+                <div style="flex:1;">
+                <label style="font-size:11.5px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">FECHA DE INICIO *</label>
+                <input type="date" id="ni-inicio" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;" value="${new Date().toISOString().split('T')[0]}">
+                </div>
+                <div style="flex:1;">
+                <label style="font-size:11.5px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">DURACIÓN</label>
+                <select id="ni-duracion" onchange="calcularVencimientoNI()" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;">
+                    <option value="6">6 meses</option>
+                    <option value="12" selected>12 meses</option>
+                    <option value="18">18 meses</option>
+                    <option value="24">24 meses</option>
+                    <option value="36">36 meses</option>
+                    <option value="0">Sin vencimiento</option>
+                </select>
+                </div>
+            </div>
+            <div>
+                <label style="font-size:11.5px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">FECHA DE VENCIMIENTO</label>
+                <input type="date" id="ni-vencimiento" readonly style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;opacity:.7;">
+            </div>
+            </div>
+            <div id="ni-error" style="display:none;background:#FDECEA;border:1px solid var(--brand-red);border-radius:8px;padding:9px 12px;font-size:12.5px;color:var(--brand-red);margin-top:10px;">
+            <i class="bi bi-exclamation-circle me-1"></i><span id="ni-error-msg"></span>
+            </div>
+        </div>`;
+
+        document.getElementById('cv-confirm-btn').style.background = 'var(--success)';
+        document.getElementById('cv-confirm-btn').innerHTML = '<i class="bi bi-plus-circle me-1"></i>Guardar Inversión';
+
+        // Auto-calc vencimiento on date change
+        document.getElementById('ni-inicio').oninput = calcularVencimientoNI;
+        calcularVencimientoNI();
+
+        document.getElementById('cv-confirm-btn').onclick = async () => {
+        const capital  = document.getElementById('ni-capital').value.replace(/,/g,'');
+        const tasa     = document.getElementById('ni-tasa').value;
+        const base     = document.getElementById('ni-base').value;
+        const factura  = document.getElementById('ni-factura').value || 100;
+        const inicio   = document.getElementById('ni-inicio').value;
+        const venc     = document.getElementById('ni-vencimiento').value || null;
+        const errEl    = document.getElementById('ni-error');
+        const errMsg   = document.getElementById('ni-error-msg');
+
+        if(!capital || !tasa || !inicio){
+            errMsg.textContent = 'Capital, tasa y fecha de inicio son obligatorios.';
+            errEl.style.display = 'block';
+            return;
+        }
+
+        try{
+            const res = await fetch('/api/inversiones/', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json','X-CSRFToken': getCookie('csrftoken')},
+            body: JSON.stringify({
+                inversionista: invId,
+                capital, tasa_anual: tasa,
+                base_calculo: parseInt(base),
+                porcentaje_factura: factura,
+                fecha_inicio: inicio,
+                fecha_vencimiento: venc,
+                estado: 'activo'
+            })
+            });
+            if(res.ok){
+            closeModal();
+            showToast(`Nueva inversión de ${nombre} guardada ✓`, 'check-circle-fill', '#1CB87E');
+            cargarInversionistas();
+            } else {
+            const d = await res.json();
+            errMsg.textContent = JSON.stringify(d);
+            errEl.style.display = 'block';
+            }
+        } catch {
+            errMsg.textContent = 'Sin conexión al servidor.';
+            errEl.style.display = 'block';
+        }
+        };
+
+        showOverlay();
+        document.getElementById('convert-modal').style.display = 'block';
+    }
+
+    function calcularVencimientoNI(){
+        const inicio   = document.getElementById('ni-inicio')?.value;
+        const duracion = parseInt(document.getElementById('ni-duracion')?.value);
+        const vencEl   = document.getElementById('ni-vencimiento');
+        if(!inicio || !vencEl || duracion === 0){ if(vencEl) vencEl.value = ''; return; }
+        const d = new Date(inicio);
+        d.setMonth(d.getMonth() + duracion);
+        vencEl.value = d.toISOString().split('T')[0];
+    }
     const COLORS = ['#C8282A', '#1A2340', '#1CB87E', '#F5A623', '#6B7A99', '#7C3AED', '#0284C7'];
     function getInitials(n) { return n.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase(); }
     function getColor(id) { return COLORS[id % COLORS.length]; }
@@ -314,23 +527,32 @@
 
         tbody.innerHTML = data.map(inv => {
             const capital = inv.inversion_activa?.capital;
-            return `
-                <tr>
+            return `<tr class="tr-clickable" onclick="toggleInversiones(${inv.id}, this)">
                     <td><div class="d-flex align-items-center gap-2">
                     <div class="avatar-sm" style="background:${getColor(inv.id)}">${getInitials(inv.nombre_completo)}</div>
                     <div><div style="font-weight:600">${inv.nombre_completo}</div>
-                    <div style="font-size:11.5px;color:var(--text-muted)">${inv.correo || '—'}</div></div>
+                    <div style="font-size:11.5px;color:var(--text-muted)">${inv.correo||'—'}</div></div>
                     </div></td>
-                    <td style="font-family:monospace;font-size:12.5px">${inv.rfc || '—'}</td>
+                    <td style="font-family:monospace;font-size:12.5px">${inv.rfc||'—'}</td>
                     <td><span class="badge-status badge-activo">${inv.tipo_display}</span></td>
-                    <td>${inv.telefono || '—'}</td>
-                    <td>${inv.promotor_nombre || '—'}</td>
-                    <td>${inv.fecha_ingreso || '—'}</td>
-                    <td>${capital ? fmtMoney(capital) : 'Sin inversión'}</td>
-                    <td><div class="d-flex gap-1">
+                    <td>${inv.telefono||'—'}</td>
+                    <td>${inv.promotor_nombre||'—'}</td>
+                    <td>${inv.fecha_ingreso||'—'}</td>
+                    <td>${capital?fmtMoney(capital)+(inv.inversion_activa?.count>1?` <span style="font-size:11px;color:var(--text-muted)">(${inv.inversion_activa.count} inv.)</span>`:''):'Sin inversión'}</td>
+                    <td onclick="event.stopPropagation()"><div class="d-flex gap-1">
                     <a class="btn-icon" onclick="editarInversionista(${inv.id})" title="Editar"><i class="bi bi-pencil"></i></a>
+                    <a class="btn-icon" onclick="nuevaInversion(${inv.id},'${inv.nombre_completo}')" title="Nueva Inversión" style="color:var(--success)"><i class="bi bi-plus-circle-fill"></i></a>
                     <a class="btn-icon" onclick="eliminarInversionista(${inv.id},'${inv.nombre_completo}')" title="Eliminar" style="color:var(--brand-red)"><i class="bi bi-trash"></i></a>
                     </div></td>
+                </tr>
+                <tr id="inv-detail-${inv.id}" style="display:none;background:#F8FAFF;">
+                    <td colspan="8" style="padding:0;">
+                    <div id="inv-detail-content-${inv.id}" style="padding:16px 24px;">
+                        <div style="text-align:center;color:var(--text-muted);font-size:13px;">
+                        <i class="bi bi-arrow-repeat"></i> Cargando inversiones...
+                        </div>
+                    </div>
+                    </td>
                 </tr>`;
             }).join('');
     }
@@ -365,6 +587,11 @@
     function cerrarFormulario() {
         document.getElementById('inv-form-panel').style.transform = 'translateX(110%)';
         document.getElementById('inv-form-overlay').style.display = 'none';
+    }
+
+    function cerrarDetalle() {
+        document.getElementById('inv-detail-panel').style.transform = 'translateX(110%)';
+        document.getElementById('inv-detail-overlay').style.display = 'none';
     }
 
     async function editarInversionista(id) {
