@@ -100,6 +100,18 @@ class PagoSerializer(serializers.ModelSerializer):
         source='estado_de_cuenta.total_pagar',
         max_digits=14, decimal_places=2, read_only=True
     )
+    capital = serializers.DecimalField(
+        source='estado_de_cuenta.inversion.capital',
+        max_digits=14, decimal_places=2, read_only=True
+    )
+    interes_neto = serializers.DecimalField(
+        source='estado_de_cuenta.interes_neto',
+        max_digits=14, decimal_places=2, read_only=True
+    )
+    pago_externo = serializers.DecimalField(
+        source='estado_de_cuenta.pago_externo',
+        max_digits=14, decimal_places=2, read_only=True
+    )
 
     class Meta:
         model = Pago

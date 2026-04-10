@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import request, status
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings as django_settings
 
@@ -344,10 +344,14 @@ def estados_list(request):
     if request.method == 'POST':
         serializer = EstadoDeCuentaSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            estado = serializer.save()
+            Pago.objects.create(
+                estado_de_cuenta=estado,
+                metodo='transferencia',
+                estado='pendiente',
+            )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 @api_view(['GET', 'PUT'])
 def estado_detail(request, pk):
@@ -426,6 +430,11 @@ def generar_estados_todos(request):
             pago_externo=pago_externo.quantize(Decimal('0.01')),
             total_pagar=total_pagar.quantize(Decimal('0.01')),
             estado='generado'
+        )
+        Pago.objects.create(
+            estado_de_cuenta=estado,
+            metodo='transferencia',
+            estado='pendiente',
         )
         generados.append(inv.inversionista.nombre_completo)
 

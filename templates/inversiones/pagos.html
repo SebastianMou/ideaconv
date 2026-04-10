@@ -135,9 +135,9 @@
       return `<tr id="pago-row-${p.id}">
         <td><input type="checkbox" class="pago-check" value="${p.id}"></td>
         <td><div class="d-flex align-items-center gap-2"><div class="avatar-sm" style="background:${color}">${getInitials(nombre)}</div>${nombre}</div></td>
-        <td>—</td>
-        <td>—</td>
-        <td>—</td>
+        <td>${p.capital ? fmtMoney(p.capital) : '—'}</td>
+        <td>${p.interes_neto ? fmtMoney(p.interes_neto) : '—'}</td>
+        <td>${p.pago_externo && parseFloat(p.pago_externo) > 0 ? fmtMoney(p.pago_externo) : '$0.00'}</td>
         <td><strong>${fmtMoney(p.total_pagar)}</strong></td>
         <td>${p.metodo_display||p.metodo||'—'}</td>
         <td id="estado-${p.id}">${badge}</td>
