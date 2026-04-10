@@ -94,6 +94,10 @@ class PagoSerializer(serializers.ModelSerializer):
         source='estado_de_cuenta.inversion.inversionista.nombre_completo',
         read_only=True
     )
+    inversionista_rfc = serializers.CharField(
+        source='estado_de_cuenta.inversion.inversionista.rfc',
+        read_only=True
+    )
     metodo_display = serializers.CharField(source='get_metodo_display', read_only=True)
     estado_display = serializers.CharField(source='get_estado_display', read_only=True)
     total_pagar = serializers.DecimalField(
@@ -112,10 +116,28 @@ class PagoSerializer(serializers.ModelSerializer):
         source='estado_de_cuenta.pago_externo',
         max_digits=14, decimal_places=2, read_only=True
     )
+    estado_de_cuenta_detalle = serializers.SerializerMethodField()
 
     class Meta:
         model = Pago
         fields = '__all__'
+
+    def get_estado_de_cuenta_detalle(self, obj):
+        edc = obj.estado_de_cuenta
+        return {
+            'id':              edc.id,
+            'periodo_inicio':  str(edc.periodo_inicio),
+            'periodo_fin':     str(edc.periodo_fin),
+            'dias_periodo':    edc.dias_periodo,
+            'interes_bruto':   str(edc.interes_bruto),
+            'isr':             str(edc.isr),
+            'iva':             str(edc.iva),
+            'interes_neto':    str(edc.interes_neto),
+            'pago_externo':    str(edc.pago_externo),
+            'total_pagar':     str(edc.total_pagar),
+            'capital':         str(edc.inversion.capital),
+            'tasa_anual':      str(edc.inversion.tasa_anual),
+        }
 
 
 class ProspectoSerializer(serializers.ModelSerializer):

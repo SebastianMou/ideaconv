@@ -185,46 +185,46 @@
     try{
       const res = await fetch(`/api/pagos/${pagoId}/`);
       const p   = await res.json();
-      const edc = p.estado_de_cuenta || {};
+      const edc = p.estado_de_cuenta_detalle || {};
 
-      const bruto       = parseFloat(edc.interes_bruto  || 0);
-      const isr         = parseFloat(edc.isr            || 0);
-      const iva         = parseFloat(edc.iva            || 0);
-      const neto        = parseFloat(edc.interes_neto   || 0);
-      const externo     = parseFloat(edc.pago_externo   || 0);
-      const totalPagar  = parseFloat(p.total_pagar      || 0);
+      const bruto   = parseFloat(edc.interes_bruto || 0);
+      const isr     = parseFloat(edc.isr           || 0);
+      const iva     = parseFloat(edc.iva           || 0);
+      const neto    = parseFloat(edc.interes_neto  || 0);
+      const externo = parseFloat(edc.pago_externo  || 0);
 
       openReceiptFull({
         nombre:       p.inversionista_nombre || '—',
-        rfc:          '',
+        rfc:          p.inversionista_rfc    || '',
         folio:        p.folio || '—',
         periodo:      edc.periodo_inicio ? `${edc.periodo_inicio} → ${edc.periodo_fin}` : '—',
         notas:        p.notas || '',
         totalFactura: fmtMoney(neto),
         totalExterno: fmtMoney(externo),
         rowsFactura: [
-          { label: 'Período',              value: edc.periodo_inicio ? `${edc.periodo_inicio} → ${edc.periodo_fin}` : '—' },
-          { label: 'Días del período',     value: edc.dias_periodo ? `${edc.dias_periodo} días` : '—' },
-          { label: 'Interés bruto',        value: fmtMoney(bruto) },
-          { label: 'Retención ISR (20%)',  value: '– ' + fmtMoney(isr), color: '#C8282A' },
-          { label: 'Subtotal',             value: fmtMoney(bruto - isr) },
-          { label: 'IVA (16%)',            value: '+ ' + fmtMoney(iva), color: '#1CB87E' },
-          { label: 'Método de pago',       value: p.metodo_display || p.metodo || '—' },
-          { label: 'Fecha de pago',        value: p.fecha_pago || '—' },
-          { label: 'Confirmado por',       value: p.confirmado_por || '—' },
+          { label: 'Período',             value: edc.periodo_inicio ? `${edc.periodo_inicio} → ${edc.periodo_fin}` : '—' },
+          { label: 'Días del período',    value: edc.dias_periodo   ? `${edc.dias_periodo} días` : '—' },
+          { label: 'Capital',             value: edc.capital        ? fmtMoney(edc.capital) : '—' },
+          { label: 'Tasa anual',          value: edc.tasa_anual     ? `${edc.tasa_anual}%` : '—' },
+          { label: 'Interés bruto',       value: fmtMoney(bruto) },
+          { label: 'Retención ISR (20%)', value: '– ' + fmtMoney(isr),  color: '#C8282A' },
+          { label: 'Subtotal',            value: fmtMoney(bruto - isr) },
+          { label: 'IVA (16%)',           value: '+ ' + fmtMoney(iva),  color: '#1CB87E' },
+          { label: 'Método de pago',      value: p.metodo_display || p.metodo || '—' },
+          { label: 'Fecha de pago',       value: p.fecha_pago     || '—' },
+          { label: 'Confirmado por',      value: p.confirmado_por || '—' },
         ],
         rowsExterno: [
-          { label: 'Período',              value: edc.periodo_inicio ? `${edc.periodo_inicio} → ${edc.periodo_fin}` : '—' },
-          { label: 'Pago externo bruto',   value: fmtMoney(externo) },
-          { label: 'ISR',                  value: 'No aplica' },
-          { label: 'IVA',                  value: 'No aplica' },
-          { label: 'Método',               value: 'Efectivo / Sindicato / Tercero' },
-          { label: 'Fecha de entrega',     value: p.fecha_pago || '—' },
+          { label: 'Período',             value: edc.periodo_inicio ? `${edc.periodo_inicio} → ${edc.periodo_fin}` : '—' },
+          { label: 'Capital',             value: edc.capital        ? fmtMoney(edc.capital) : '—' },
+          { label: 'Pago externo bruto',  value: fmtMoney(externo) },
+          { label: 'ISR',                 value: 'No aplica' },
+          { label: 'IVA',                 value: 'No aplica' },
+          { label: 'Método',              value: 'Efectivo / Sindicato / Tercero' },
+          { label: 'Fecha de entrega',    value: p.fecha_pago || '—' },
         ],
       });
-    } catch {
-      showToast('No se pudo cargar el comprobante','x-circle-fill','#FCA5A5');
-    }
+    }catch{ showToast('No se pudo cargar el comprobante','x-circle-fill','#FCA5A5'); }
   }
 
   function filtrarTabla(q){
