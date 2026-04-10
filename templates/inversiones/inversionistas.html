@@ -344,19 +344,25 @@
                 ${inversiones.map(inv => {
                     const badgeClass = inv.estado==='activo'?'badge-activo':inv.estado==='vencido'?'badge-vencido':'badge-por-vencer';
                     return `
-                    <div style="border:1.5px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;">
-                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-                            <div style="font-size:20px;font-weight:800;color:var(--brand-navy)">${fmtMoney(inv.capital)}</div>
-                            <span class="badge-status ${badgeClass}">${inv.estado_display}</span>
-                        </div>
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12.5px;">
-                            <div><span style="color:var(--text-muted)">Tasa anual</span><div style="font-weight:600">${inv.tasa_anual}%</div></div>
-                            <div><span style="color:var(--text-muted)">Base</span><div style="font-weight:600">${inv.base_calculo} días</div></div>
-                            <div><span style="color:var(--text-muted)">% Factura</span><div style="font-weight:600">${inv.porcentaje_factura}%</div></div>
-                            <div><span style="color:var(--text-muted)">Inicio</span><div style="font-weight:600">${inv.fecha_inicio||'—'}</div></div>
-                            <div><span style="color:var(--text-muted)">Vencimiento</span><div style="font-weight:600">${inv.fecha_vencimiento||'Sin vencimiento'}</div></div>
-                        </div>
-                    </div>`;
+                        <div style="border:1.5px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                                <div style="font-size:20px;font-weight:800;color:var(--brand-navy)">${fmtMoney(inv.capital)}</div>
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <span class="badge-status ${badgeClass}">${inv.estado_display}</span>
+                                    <button onclick="eliminarInversion(${inv.id}, ${invId})"
+                                        style="background:none;border:1.5px solid var(--brand-red);color:var(--brand-red);border-radius:7px;padding:3px 9px;cursor:pointer;font-size:12px;display:flex;align-items:center;gap:4px;">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12.5px;">
+                                <div><span style="color:var(--text-muted)">Tasa anual</span><div style="font-weight:600">${inv.tasa_anual}%</div></div>
+                                <div><span style="color:var(--text-muted)">Base</span><div style="font-weight:600">${inv.base_calculo} días</div></div>
+                                <div><span style="color:var(--text-muted)">% Factura</span><div style="font-weight:600">${inv.porcentaje_factura}%</div></div>
+                                <div><span style="color:var(--text-muted)">Inicio</span><div style="font-weight:600">${inv.fecha_inicio||'—'}</div></div>
+                                <div><span style="color:var(--text-muted)">Vencimiento</span><div style="font-weight:600">${inv.fecha_vencimiento||'Sin vencimiento'}</div></div>
+                            </div>
+                        </div>`;
                 }).join('')}
                 <button class="btn-brand" style="width:100%;margin-top:4px" onclick="nuevaInversion(${invId},'${data.nombre_completo}')">
                     <i class="bi bi-plus-lg me-2"></i>Agregar inversión
@@ -364,6 +370,28 @@
         } catch {
             body.innerHTML = `<div style="color:var(--brand-red);font-size:13px;padding:20px;">Error al cargar las inversiones.</div>`;
         }
+    }
+
+    async function eliminarInversion(inversionId, inversionistaId) {
+        document.getElementById('cv-title').textContent = '¿Eliminar inversión?';
+        document.getElementById('cv-body').innerHTML = `¿Estás seguro que deseas eliminar esta inversión? Esta acción no se puede deshacer y eliminará también sus estados de cuenta asociados.`;
+        document.getElementById('cv-confirm-btn').style.background = 'var(--brand-red)';
+        document.getElementById('cv-confirm-btn').innerHTML = '<i class="bi bi-trash me-1"></i>Eliminar';
+        document.getElementById('cv-confirm-btn').onclick = async () => {
+            closeModal();
+            try {
+                await fetch(`/api/inversiones/${inversionId}/`, {
+                    method: 'DELETE',
+                    headers: { 'X-CSRFToken': getCookie('csrftoken') }
+                });
+                showToast('Inversión eliminada', 'trash', '#F5A623');
+                toggleInversiones(inversionistaId, null); // refresh the panel
+            } catch {
+                showToast('Error al eliminar', 'x-circle-fill', '#FCA5A5');
+            }
+        };
+        showOverlay();
+        document.getElementById('convert-modal').style.display = 'block';
     }
 
     function nuevaInversion(invId, nombre){
