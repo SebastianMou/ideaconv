@@ -8,15 +8,19 @@ from rest_framework.response import Response
 from rest_framework import request, status
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings as django_settings
+from io import BytesIO
+from reportlab.platypus import Image as RLImage
+from urllib.request import urlopen
+from io import BytesIO as BIO
 
 from .models import (
     Promotor, Inversionista, Inversion,
-    EstadoDeCuenta, Pago, Prospecto
+    EstadoDeCuenta, Pago, Prospecto, Movimiento
 )
 from .serializers import (
     PromotorSerializer, InversionistaSerializer, InversionistaListSerializer,
     InversionSerializer, EstadoDeCuentaSerializer, PagoSerializer,
-    ProspectoSerializer, CalculadoraInputSerializer
+    ProspectoSerializer, CalculadoraInputSerializer, MovimientoSerializer
 )
 
 # ══════════════════════════════════════════════
@@ -252,7 +256,7 @@ def inversiones_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET', 'PUT'])
+@api_view(['GET', 'PUT', 'DELETE'])
 def inversion_detail(request, pk):
     inversion = get_object_or_404(Inversion, pk=pk)
 
@@ -267,6 +271,55 @@ def inversion_detail(request, pk):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    if request.method == 'DELETE':
+        inversion.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET', 'POST'])
+def movimientos_list(request, inversion_pk):
+    """
+    GET  /api/inversiones/<pk>/movimientos/  — list movements for an investment
+    POST /api/inversiones/<pk>/movimientos/  — add a new movement
+    """
+    inversion = get_object_or_404(Inversion, pk=inversion_pk)
+
+    if request.method == 'GET':
+        movimientos = inversion.movimientos.all().order_by('fecha')
+        serializer  = MovimientoSerializer(movimientos, many=True)
+        return Response(serializer.data)
+
+    if request.method == 'POST':
+        data = request.data.copy()
+        data['inversion'] = inversion_pk
+        serializer = MovimientoSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            # Update inversion.capital to reflect new balance
+            mov = serializer.instance
+            if mov.tipo == 'abono':
+                inversion.capital += mov.monto
+            else:
+                inversion.capital -= mov.monto
+            inversion.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['DELETE'])
+def movimiento_detail(request, pk):
+    """
+    DELETE /api/movimientos/<pk>/  — remove a movement and reverse its effect on capital
+    """
+    mov       = get_object_or_404(Movimiento, pk=pk)
+    inversion = mov.inversion
+    # Reverse the capital change
+    if mov.tipo == 'abono':
+        inversion.capital -= mov.monto
+    else:
+        inversion.capital += mov.monto
+    inversion.save()
+    mov.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 # ══════════════════════════════════════════════
 #  CALCULADORA API
@@ -353,7 +406,8 @@ def estados_list(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET', 'PUT'])
+
+@api_view(['GET', 'PUT', 'DELETE'])
 def estado_detail(request, pk):
     estado = get_object_or_404(EstadoDeCuenta, pk=pk)
 
@@ -367,6 +421,10 @@ def estado_detail(request, pk):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    if request.method == 'DELETE':
+        estado.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['POST'])
@@ -402,14 +460,11 @@ def generar_estados_todos(request):
             omitidos.append(inv.inversionista.nombre_completo)
             continue
 
-        capital       = inv.capital
-        tasa          = inv.tasa_anual / Decimal('100')
-        base          = Decimal(str(inv.base_calculo))
-        dias          = Decimal(str(dias_periodo))
         pct_factura   = inv.porcentaje_factura / Decimal('100')
         pct_externo   = Decimal('1') - pct_factura
 
-        interes_bruto    = capital * (tasa / base) * dias
+        # Use tranche calculation — accounts for abonos/retiros mid-period
+        interes_bruto    = _calcular_interes_con_movimientos(inv, periodo_inicio, periodo_fin)
         base_factura     = interes_bruto * pct_factura
         isr              = base_factura * Decimal('0.20')
         subtotal_factura = base_factura - isr
@@ -445,6 +500,55 @@ def generar_estados_todos(request):
         'detalle_omitidos':  omitidos,
     })
 
+def _calcular_interes_con_movimientos(inversion, periodo_inicio, periodo_fin):
+    """
+    Calculates interest for a period using pro-rated tranches.
+    Each deposit (abono) or withdrawal (retiro) splits the period.
+    Returns interes_bruto as Decimal.
+    """
+    from datetime import date, timedelta
+
+    p_inicio = periodo_inicio if isinstance(periodo_inicio, date) else date.fromisoformat(str(periodo_inicio))
+    p_fin    = periodo_fin    if isinstance(periodo_fin,    date) else date.fromisoformat(str(periodo_fin))
+
+    tasa = inversion.tasa_anual / Decimal('100')
+    base = Decimal(str(inversion.base_calculo))
+
+    # Get all movements within the period, sorted by date
+    movimientos = inversion.movimientos.filter(
+        fecha__gte=p_inicio,
+        fecha__lte=p_fin
+    ).order_by('fecha')
+
+    # Build tranches: list of (capital, start_date, end_date)
+    tranches = []
+    capital_actual = inversion.capital
+    tranche_start  = p_inicio
+
+    for mov in movimientos:
+        # Close current tranche on movement date
+        if mov.fecha > tranche_start:
+            tranches.append((capital_actual, tranche_start, mov.fecha))
+        # Apply movement
+        if mov.tipo == 'abono':
+            capital_actual += mov.monto
+        else:  # retiro
+            capital_actual -= mov.monto
+        tranche_start = mov.fecha
+
+    # Final tranche from last movement to period end
+    end_exclusive = p_fin + timedelta(days=1)
+    if tranche_start < end_exclusive:
+        tranches.append((capital_actual, tranche_start, end_exclusive))
+
+    # Sum interest across all tranches
+    interes_bruto = Decimal('0')
+    for capital_t, start_t, end_t in tranches:
+        dias_t = Decimal(str((end_t - start_t).days))
+        if dias_t > 0 and capital_t > 0:
+            interes_bruto += capital_t * (tasa / base) * dias_t
+
+    return interes_bruto.quantize(Decimal('0.01'))
 
 # ══════════════════════════════════════════════
 #  PAGOS API
@@ -467,7 +571,7 @@ def pagos_list(request):
     return Response(serializer.data)
 
 
-@api_view(['GET', 'PUT'])
+@api_view(['GET', 'PUT', 'DELETE'])
 def pago_detail(request, pk):
     pago = get_object_or_404(Pago, pk=pk)
 
@@ -481,6 +585,10 @@ def pago_detail(request, pk):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    if request.method == 'DELETE':
+        pago.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['POST'])
@@ -786,108 +894,414 @@ def estado_preview(request, pk):
     })
 
 
-def _build_email_html(data, notas_extra='', tipo_comprobante='ambos'):
-    """Builds the HTML email body for an estado de cuenta."""
-    notas_section = f'<p style="margin-top:16px;padding:10px 14px;background:#FFF9E6;border-radius:8px;font-size:13px;color:#666;">📝 <strong>Notas:</strong> {notas_extra}</p>' if notas_extra else ''
-    
-    bruto   = float(data['interes_bruto'])
-    isr     = float(data['isr'])
-    iva     = float(data['iva'])
-    externo = float(data['pago_externo'])
-    neto    = float(data['interes_neto'])
-    total   = float(data['total_pagar'])
 
-    show_fact = tipo_comprobante in ('ambos', 'factura')
-    show_ext  = tipo_comprobante in ('ambos', 'externo')
-
-    fact_rows = f"""
-      <tr><td colspan="2" style="padding:8px 14px;font-size:10px;font-weight:700;text-transform:uppercase;color:#C8282A;background:#FFF5F5;">Con Factura</td></tr>
-      <tr style="background:#F4F6FA;"><td style="padding:10px 14px;color:#6B7A99;">Interés base factura</td><td style="padding:10px 14px;font-weight:700;text-align:right;">${bruto - externo:,.2f}</td></tr>
-      <tr><td style="padding:10px 14px;color:#C8282A;">ISR (20%)</td><td style="padding:10px 14px;font-weight:700;text-align:right;color:#C8282A;">– ${isr:,.2f}</td></tr>
-      <tr style="background:#F4F6FA;"><td style="padding:10px 14px;color:#1CB87E;">IVA (16%)</td><td style="padding:10px 14px;font-weight:700;text-align:right;color:#1CB87E;">+ ${iva:,.2f}</td></tr>
-    """ if show_fact and (bruto - externo) > 0 else ''
-
-    ext_rows = f"""
-      <tr><td colspan="2" style="padding:8px 14px;font-size:10px;font-weight:700;text-transform:uppercase;color:#6B7A99;background:#F8F9FB;">Sin Factura (Pago Externo)</td></tr>
-      <tr><td style="padding:10px 14px;color:#6B7A99;">Pago externo</td><td style="padding:10px 14px;font-weight:700;text-align:right;">${externo:,.2f}</td></tr>
-      <tr style="background:#F4F6FA;"><td style="padding:10px 14px;color:#6B7A99;">ISR / IVA</td><td style="padding:10px 14px;text-align:right;color:#6B7A99;">No aplica</td></tr>
-    """ if show_ext and externo > 0 else ''
-
-    total_mostrar = neto if tipo_comprobante == 'factura' else externo if tipo_comprobante == 'externo' else total
-
-    total_row = f'${total_mostrar:,.2f}'
-
-    return f"""
-    <div style="font-family:Arial,sans-serif;max-width:540px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.1);">
-      <div style="background:#1A2340;padding:28px 32px;">
-        <div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:1px;">IDEACONV</div>
-        <div style="font-size:13px;color:rgba(255,255,255,.5);margin-top:4px;">Estado de Cuenta Mensual</div>
-      </div>
-      <div style="padding:28px 32px;">
-        <p style="font-size:15px;color:#1A2340;margin-bottom:4px;">Estimado(a) <strong>{data['inversionista']}</strong>,</p>
-        <p style="font-size:13px;color:#6B7A99;margin-bottom:24px;">Le compartimos el resumen de su inversión correspondiente al período <strong>{data['periodo_inicio']} al {data['periodo_fin']}</strong>.</p>
-
-        <table style="width:100%;border-collapse:collapse;font-size:13.5px;">
-          <tr style="background:#F4F6FA;">
-            <td style="padding:10px 14px;color:#6B7A99;">Capital invertido</td>
-            <td style="padding:10px 14px;font-weight:700;text-align:right;">${float(data['capital']):,.2f}</td>
-          </tr>
-          <tr>
-            <td style="padding:10px 14px;color:#6B7A99;">Tasa anual</td>
-            <td style="padding:10px 14px;font-weight:700;text-align:right;">{data['tasa']}%</td>
-          </tr>
-          <tr style="background:#F4F6FA;">
-            <td style="padding:10px 14px;color:#6B7A99;">Días del período</td>
-            <td style="padding:10px 14px;font-weight:700;text-align:right;">{data['dias_periodo']} días</td>
-          </tr>
-          <tr>
-            <td style="padding:10px 14px;color:#6B7A99;">Interés bruto</td>
-            <td style="padding:10px 14px;font-weight:700;text-align:right;">${float(data['interes_bruto']):,.2f}</td>
-          </tr>
-          <tr style="background:#F4F6FA;">
-            <td style="padding:10px 14px;color:#C8282A;">Retención ISR (20%)</td>
-            <td style="padding:10px 14px;font-weight:700;text-align:right;color:#C8282A;">– ${float(data['isr']):,.2f}</td>
-          </tr>
-          <tr>
-            <td style="padding:10px 14px;color:#1CB87E;">IVA (16%)</td>
-            <td style="padding:10px 14px;font-weight:700;text-align:right;color:#1CB87E;">+ ${float(data['iva']):,.2f}</td>
-          </tr>
-            {fact_rows}
-            {ext_rows}
-        </table>
-
-        <table style="width:100%;border-collapse:collapse;background:#1A2340;border-radius:10px;margin-top:16px;">
-          <tr>
-            <td style="padding:16px 20px;color:rgba(255,255,255,.7);font-weight:600;font-size:13.5px;">TOTAL A PAGAR</td>
-            <td style="padding:16px 20px;color:#fff;font-weight:800;font-size:20px;text-align:right;">{total_row}</td>
-          </tr>
-        </table>
-
-        {notas_section}
-
-        <p style="margin-top:24px;font-size:12px;color:#9AA5BE;border-top:1px solid #E2E8F0;padding-top:16px;">
-          Este es un documento interno de Ideaconv S.A. de C.V. — {data['periodo_inicio']} al {data['periodo_fin']}
-        </p>
-      </div>
-    </div>
+# ══════════════════════════════════════════════════════════════
+#  PDF BUILDER  —  replace / add this function in views.py
+# ══════════════════════════════════════════════════════════════
+ 
+def _build_estado_pdf(data):
     """
+    Builds a PDF Estado de Cuenta that mirrors the Ideaconv PDF format.
+ 
+    `data` dict must contain everything _build_email_html uses, PLUS:
+        data['curp']           str   — investor CURP (blank OK)
+        data['calle']          str   — street address
+        data['ciudad']         str
+        data['estado_dir']     str   — state (named estado_dir to avoid clash with estado de cuenta)
+        data['codigo_postal']  str
+        data['inversiones']    list  — each item:
+            {
+              'folio':            str,
+              'capital':          str,
+              'tasa_anual':       str,
+              'base_calculo':     int,
+              'fecha_inicio':     str,
+              'fecha_vencimiento':str,
+              'dias':             int,   # days in this period
+              'interes_bruto':    str,
+              'retencion':        str,   # ISR amount, '0.00' if N/A
+              'iva_inv':          str,   # IVA amount, '0.00' if N/A
+              'interes_neto':     str,
+            }
+    Returns: bytes  (the raw PDF)
+    """
+    from io import BytesIO
+    from datetime import datetime
+    from reportlab.lib.pagesizes import letter
+    from reportlab.platypus import (
+        SimpleDocTemplate, Paragraph, Spacer,
+        Table, TableStyle, HRFlowable,
+    )
+    from reportlab.lib.styles import ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.units import inch
+    from reportlab.lib.enums import TA_CENTER, TA_RIGHT
+ 
+    # ── Brand colours ──
+    NAVY       = colors.HexColor('#1A2340')
+    RED        = colors.HexColor('#C8282A')
+    GRAY       = colors.HexColor('#6B7A99')
+    BGBLUE     = colors.HexColor('#1A5276')
+    ROWBG      = colors.HexColor('#F4F6FA')
+    WHITE      = colors.white
+    BORDER     = colors.HexColor('#E2E8F0')
+    LIGHT_BLUE = colors.HexColor('#AED6F1')
+ 
+    # ── Quick style factory ──
+    def S(name, **kw):
+        p = ParagraphStyle(name)
+        for k, v in kw.items():
+            setattr(p, k, v)
+        return p
+ 
+    fmt = lambda v: '${:,.2f}'.format(float(v))
+ 
+    # ── Derive month label from periodo_fin ──
+    MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+             'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
+    try:
+        d = datetime.strptime(data['periodo_fin'], '%Y-%m-%d')
+        mes_nombre = MESES[d.month - 1] + ' ' + str(d.year)
+    except Exception:
+        mes_nombre = data['periodo_fin']
+ 
+    buf = BytesIO()
+    doc = SimpleDocTemplate(buf, pagesize=letter,
+        leftMargin=0.6*inch, rightMargin=0.6*inch,
+        topMargin=0.5*inch,  bottomMargin=0.6*inch)
+ 
+    story = []
+ 
+    # ════════════════════════════════
+    #  HEADER  — investor info + logo
+    # ════════════════════════════════
+    inv_lines = [
+        Paragraph('<b>' + data['inversionista'] + '</b>',
+                  S('ih', fontName='Helvetica-Bold', fontSize=9, textColor=NAVY)),
+        Paragraph('RFC: ' + (data.get('rfc') or 'N/A'),
+                  S('ir', fontName='Helvetica', fontSize=8, textColor=GRAY)),
+    ]
+    if data.get('curp'):
+        inv_lines.append(Paragraph('CURP: ' + data['curp'],
+                  S('ic', fontName='Helvetica', fontSize=8, textColor=GRAY)))
+    if data.get('calle'):
+        inv_lines.append(Paragraph('CALLE: ' + data['calle'],
+                  S('ia', fontName='Helvetica', fontSize=8, textColor=GRAY)))
+    city_line = ' '.join(filter(None, [
+        data.get('ciudad',''),
+        'C.P ' + data.get('codigo_postal','') if data.get('codigo_postal') else '',
+        data.get('estado_dir',''),
+    ]))
+    if city_line.strip():
+        inv_lines.append(Paragraph(city_line,
+                  S('il', fontName='Helvetica', fontSize=8, textColor=GRAY, leading=11)))
+ 
+    LOGO_URL = 'https://res.cloudinary.com/dgzhlipft/image/upload/q_auto/f_auto/v1775856062/logo_ideacon_1000x431_nretqf.png'
+    try:
+        logo_data = BIO(urlopen(LOGO_URL).read())
+        logo_img  = RLImage(logo_data, width=1.6*inch, height=0.69*inch)  # keeps 1000x431 ratio
+        logo_el   = logo_img
+    except Exception:
+        logo_el = Paragraph('<b>IDEACONV</b>',
+                  S('lo', fontName='Helvetica-Bold', fontSize=20, textColor=NAVY, alignment=TA_RIGHT))
 
+    logo_lines = [
+        logo_el,
+        Spacer(1, 6),
+        Paragraph('¡El poder de querer...!', S('lt', fontName='Helvetica-Oblique', fontSize=9, textColor=RED, alignment=TA_RIGHT)),
+        Spacer(1, 4),
+        Paragraph('Mes de corte: ' + mes_nombre, S('lm', fontName='Helvetica', fontSize=8, textColor=GRAY, alignment=TA_RIGHT)),
+    ]
+ 
+    header_tbl = Table([[inv_lines, logo_lines]], colWidths=[3.8*inch, 3.2*inch])
+    header_tbl.setStyle(TableStyle([
+        ('VALIGN',        (0,0), (-1,-1), 'TOP'),
+        ('LEFTPADDING',   (0,0), (-1,-1), 0),
+        ('RIGHTPADDING',  (0,0), (-1,-1), 0),
+        ('TOPPADDING',    (0,0), (-1,-1), 0),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 0),
+    ]))
+    story.append(header_tbl)
+    story.append(Spacer(1, 10))
+    story.append(HRFlowable(width='100%', thickness=1, color=BORDER))
+    story.append(Spacer(1, 12))
+ 
+    # ════════════════════════════════
+    #  TITLE
+    # ════════════════════════════════
+    story.append(Paragraph(
+        'ESTADO DE CUENTA ' + mes_nombre.upper(),
+        S('title', fontName='Helvetica-Bold', fontSize=14, textColor=NAVY, alignment=TA_CENTER)
+    ))
+    story.append(Spacer(1, 14))
+ 
+    # ════════════════════════════════
+    #  KPI SUMMARY BOXES
+    # ════════════════════════════════
+    kpi_val_s = S('kv', fontName='Helvetica-Bold', fontSize=14, textColor=WHITE,  alignment=TA_CENTER)
+    kpi_lbl_s = S('kl', fontName='Helvetica',      fontSize=8,  textColor=LIGHT_BLUE, alignment=TA_CENTER)
+ 
+    kpi_tbl = Table([
+        [Paragraph(fmt(data['capital']),       kpi_val_s),
+         Paragraph(fmt(data['interes_bruto']), kpi_val_s),
+         Paragraph(fmt(data['total_pagar']),   kpi_val_s)],
+        [Paragraph('Monto capital',   kpi_lbl_s),
+         Paragraph('Interés Bruto',   kpi_lbl_s),
+         Paragraph('Interés a Pagar', kpi_lbl_s)],
+    ], colWidths=[2.33*inch]*3)
+    kpi_tbl.setStyle(TableStyle([
+        ('ROWBACKGROUNDS', (0,0), (-1,-1), [BGBLUE, colors.HexColor('#154360')]),
+        ('TOPPADDING',     (0,0), (-1,-1), 10),
+        ('BOTTOMPADDING',  (0,0), (-1,-1), 10),
+        ('GRID',           (0,0), (-1,-1), 0.5, colors.HexColor('#2E86C1')),
+    ]))
+    story.append(kpi_tbl)
+    story.append(Spacer(1, 16))
+ 
+    # ════════════════════════════════
+    #  PAGARÉ BREAKDOWN TABLE
+    # ════════════════════════════════
+    # Section header bar
+    story.append(Table(
+        [[Paragraph('Desglose de Pagarés en MXN del mes',
+            S('dh', fontName='Helvetica-Bold', fontSize=9, textColor=WHITE, alignment=TA_CENTER))]],
+        colWidths=[7.0*inch],
+        style=TableStyle([
+            ('BACKGROUND',    (0,0), (-1,-1), BGBLUE),
+            ('TOPPADDING',    (0,0), (-1,-1), 8),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 8),
+            ('LEFTPADDING',   (0,0), (-1,-1), 6),
+        ])
+    ))
+    story.append(Spacer(1, 1))
+ 
+    hdr_s = S('ch', fontName='Helvetica-Bold', fontSize=8, textColor=WHITE, alignment=TA_CENTER)
+    val_s = S('cv', fontName='Helvetica',      fontSize=8, textColor=NAVY,  alignment=TA_CENTER)
+    vbl_s = S('cb', fontName='Helvetica-Bold', fontSize=8, textColor=NAVY,  alignment=TA_CENTER)
+    tot_s = S('ct', fontName='Helvetica-Bold', fontSize=8, textColor=WHITE, alignment=TA_CENTER)
+ 
+    col_w = [0.65*inch, 1.1*inch, 0.5*inch, 1.0*inch, 0.9*inch, 0.7*inch, 0.55*inch, 0.9*inch]
+    hdrs  = ['#Pagaré', 'Capital', 'Plazo', 'Tasa Bruta Anual',
+             'Interés Bruto', 'Retención', 'IVA', 'Interés Neto']
+ 
+    rows = [[Paragraph(h, hdr_s) for h in hdrs]]
+    totals = {'bruto': 0.0, 'ret': 0.0, 'iva': 0.0, 'neto': 0.0}
+ 
+    for inv in data.get('inversiones', []):
+        b  = float(inv['interes_bruto'])
+        r  = float(inv.get('retencion', 0))
+        iv = float(inv.get('iva_inv', 0))
+        n  = float(inv['interes_neto'])
+        totals['bruto'] += b
+        totals['ret']   += r
+        totals['iva']   += iv
+        totals['neto']  += n
+        rows.append([
+            Paragraph(inv['folio'],         vbl_s),
+            Paragraph(fmt(inv['capital']),  val_s),
+            Paragraph(str(inv['dias']),     val_s),
+            Paragraph(str(inv['tasa_anual']) + ' %', val_s),
+            Paragraph(fmt(inv['interes_bruto']), val_s),
+            Paragraph('-' if r  == 0 else fmt(r),  val_s),
+            Paragraph('-' if iv == 0 else fmt(iv), val_s),
+            Paragraph(fmt(inv['interes_neto']), vbl_s),
+        ])
+ 
+    rows.append([
+        Paragraph('Total:', tot_s),
+        Paragraph('',                       tot_s),
+        Paragraph('',                       tot_s),
+        Paragraph('',                       tot_s),
+        Paragraph(fmt(totals['bruto']),     tot_s),
+        Paragraph(fmt(totals['ret']),       tot_s),
+        Paragraph(fmt(totals['iva']),       tot_s),
+        Paragraph(fmt(totals['neto']),      tot_s),
+    ])
+ 
+    breakdown = Table(rows, colWidths=col_w)
+    breakdown.setStyle(TableStyle([
+        ('BACKGROUND',    (0,0),  (-1,0),  BGBLUE),
+        ('BACKGROUND',    (0,-1), (-1,-1), BGBLUE),
+        ('ROWBACKGROUNDS',(0,1),  (-1,-2), [WHITE, ROWBG]),
+        ('GRID',          (0,0),  (-1,-1), 0.5, BORDER),
+        ('VALIGN',        (0,0),  (-1,-1), 'MIDDLE'),
+        ('TOPPADDING',    (0,0),  (-1,-1), 6),
+        ('BOTTOMPADDING', (0,0),  (-1,-1), 6),
+    ]))
+    story.append(breakdown)
+    story.append(Spacer(1, 28))
+ 
+    # ════════════════════════════════
+    #  FOOTER
+    # ════════════════════════════════
+    story.append(HRFlowable(width='100%', thickness=0.5, color=BORDER))
+    story.append(Spacer(1, 6))
+    footer_tbl = Table([[
+        Paragraph('Ignacio López Rayón No. 385\nCol. Centro\nC.P. 64000 Monterrey, Nuevo León',
+                  S('ft',  fontName='Helvetica', fontSize=7, textColor=GRAY, leading=11)),
+        Paragraph('IDEACONV S.A. de C.V.',
+                  S('ft2', fontName='Helvetica-Bold', fontSize=7, textColor=NAVY, alignment=TA_RIGHT)),
+    ]], colWidths=[3.5*inch, 3.5*inch])
+    footer_tbl.setStyle(TableStyle([
+        ('VALIGN',        (0,0), (-1,-1), 'TOP'),
+        ('LEFTPADDING',   (0,0), (-1,-1), 0),
+        ('RIGHTPADDING',  (0,0), (-1,-1), 0),
+        ('TOPPADDING',    (0,0), (-1,-1), 0),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 0),
+    ]))
+    story.append(footer_tbl)
+ 
+    doc.build(story)
+    return buf.getvalue()
+ 
+ 
+# ══════════════════════════════════════════════════════════════
+#  EMAIL HTML BUILDER  — replace the existing _build_email_html
+# ══════════════════════════════════════════════════════════════
+ 
+def _build_email_html(data, notas_extra='', tipo_comprobante='ambos'):
+    """
+    Clean notification-style HTML email.
+    All financial detail lives in the PDF attachment — this email is just
+    a branded greeting card that tells the investor to check the PDF.
+    """
+    from datetime import datetime
+ 
+    MESES = ['enero','febrero','marzo','abril','mayo','junio',
+             'julio','agosto','septiembre','octubre','noviembre','diciembre']
+    try:
+        d = datetime.strptime(data['periodo_fin'], '%Y-%m-%d')
+        fecha_display = f"{d.day} de {MESES[d.month-1]} de {d.year}"
+    except Exception:
+        fecha_display = data['periodo_fin']
+ 
+    notas_row = ''
+    if notas_extra:
+        notas_row = f"""
+        <tr>
+          <td style="padding:0 32px 20px;">
+            <div style="background:#FFF9E6;border-radius:8px;padding:12px 16px;
+                        font-size:13px;color:#666;border:1px solid #FFE58F;">
+              <b>Nota:</b> {notas_extra}
+            </div>
+          </td>
+        </tr>"""
+ 
+    return f"""<!DOCTYPE html>
+        <html lang="es">
+        <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+        <body style="margin:0;padding:0;background:#F5E6E6;font-family:Arial,sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#F5E6E6;padding:24px 0;">
+        <tr><td align="center">
+        <table width="480" cellpadding="0" cellspacing="0"
+                style="max-width:480px;width:100%;background:#fff;border-radius:10px;
+                        overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.10);">
+        
+            <!-- TOP BAR -->
+            <tr>
+            <td style="background:#fff;padding:12px 20px;border-bottom:1px solid #e8e8e8;">
+                <table width="100%" cellpadding="0" cellspacing="0"><tr>
+                <td style="font-size:13px;font-weight:700;color:#1A2340;">Notificacion</td>
+                <td align="right">
+                    <img src="https://res.cloudinary.com/dgzhlipft/image/upload/q_auto/f_auto/v1775856062/logo_ideacon_1000x431_nretqf.png"
+                        alt="IDEACONV" height="32" style="display:block;height:32px;width:auto;">
+                </td>
+                </tr></table>
+            </td>
+            </tr>
 
+            <!-- HERO BANNER -->
+            <tr>
+            <td style="background:#C8282A;padding:40px 32px 36px;text-align:center;">
+                <div style="width:64px;height:64px;background:rgba(255,255,255,.15);border-radius:14px;
+                            margin:0 auto 20px;font-size:30px;line-height:64px;text-align:center;">&#128196;</div>
+                <div style="font-size:22px;font-weight:800;color:#fff;margin-bottom:8px;">
+                Estado de Cuenta</div>
+                <div style="font-size:13px;color:rgba(255,255,255,.65);">{fecha_display}</div>
+            </td>
+            </tr>
+        
+            <!-- GREETING -->
+            <tr>
+            <td style="padding:28px 32px 8px;">
+                <p style="margin:0 0 10px;font-size:14px;font-weight:700;color:#1A2340;">
+                Estimado {data['inversionista']},</p>
+                <p style="margin:0;font-size:13px;color:#555;line-height:1.6;">
+                Gracias por su confianza. Adjunto encontrara su estado de cuenta
+                correspondiente al periodo
+                <b>{data['periodo_inicio']} al {data['periodo_fin']}</b>.</p>
+            </td>
+            </tr>
+        
+            {notas_row}
+        
+            <!-- PDF NOTICE -->
+            <tr>
+            <td style="padding:0 32px 24px;">
+                <div style="background:#FFF0F0;border-radius:8px;padding:11px 14px;
+                    font-size:12px;color:#C8282A;border:1px solid #F5C6C6;">
+                    &#128206; <b>Adjunto:</b> Estado de cuenta con desglose completo en formato PDF.
+                    </div>
+            </td>
+            </tr>
+        
+            <!-- FOOTER -->
+            <tr>
+            <td style="background:#f7f8fa;border-top:1px solid #e8e8e8;padding:20px 32px;">
+                <table width="100%" cellpadding="0" cellspacing="0"><tr>
+                <td valign="top">
+                    <p style="margin:0 0 4px;font-size:11.5px;color:#888;">
+                    Para dudas, no responder a este correo.</p>
+                    <p style="margin:0 0 4px;font-size:11.5px;color:#888;">
+                    Favor de oprimir el boton de AYUDA.</p>
+                    <p style="margin:0 0 10px;font-size:11.5px;color:#888;">
+                    Agreganos a tu lista de correos seguros:</p>
+                    <p style="margin:0 0 10px;">
+                    <a href="mailto:ideacon@ideaconv.com.mx"
+                        style="font-size:11.5px;color:#1A5276;text-decoration:none;">
+                        ideacon@ideaconv.com.mx</a></p>
+                    <p style="margin:0 0 2px;">
+                    <a href="#" style="font-size:11px;color:#888;text-decoration:underline;">
+                        Consulta Nuestro Aviso de Privacidad</a></p>
+                    <p style="margin:0;">
+                    <a href="#" style="font-size:11px;color:#888;text-decoration:underline;">
+                        Consulta Terminos y Condiciones</a></p>
+                </td>
+                <td align="right" valign="top" width="90">
+                   <img src="https://res.cloudinary.com/dgzhlipft/image/upload/q_auto/f_auto/v1775856062/logo_ideacon_1000x431_nretqf.png" alt="IDEACONV" height="24" style="display:block;height:24px;width:auto;">
+                </td>
+                </tr></table>
+            </td>
+            </tr>
+        
+        </table>
+        </td></tr>
+        </table>
+        </body>
+        </html>
+    """
+ 
+ 
+# ══════════════════════════════════════════════════════════════════════════════
+#  estado_enviar  — replace your existing view with this
+# ══════════════════════════════════════════════════════════════════════════════
+ 
 @api_view(['POST'])
 @login_required(login_url='login')
 def estado_enviar(request, pk):
     """
     POST /api/estados/<pk>/enviar/
-    Body: { correo (optional override), asunto (optional), notas_extra (optional) }
-    Sends the estado de cuenta email to the investor.
+    Sends branded HTML email + PDF attachment to the investor.
     """
+    from io import BytesIO
+
     estado = get_object_or_404(EstadoDeCuenta, pk=pk)
     inv    = estado.inversion.inversionista
 
-    correo_destino = request.data.get('correo') or inv.correo
-    asunto         = request.data.get('asunto') or f'Estado de Cuenta — {estado.periodo_inicio} al {estado.periodo_fin}'
-    notas_extra        = request.data.get('notas_extra', '')
-    tipo_comprobante   = request.data.get('tipo_comprobante', 'ambos')
+    correo_destino   = request.data.get('correo') or inv.correo
+    asunto           = request.data.get('asunto') or f'Estado de Cuenta — {estado.periodo_inicio} al {estado.periodo_fin}'
+    notas_extra      = request.data.get('notas_extra', '')
+    tipo_comprobante = request.data.get('tipo_comprobante', 'ambos')
 
     if not correo_destino:
         return Response(
@@ -896,10 +1310,15 @@ def estado_enviar(request, pk):
         )
 
     data = {
-        'inversionista': inv.nombre_completo,
-        'rfc':           inv.rfc or '',
-        'capital':       str(estado.inversion.capital),
-        'tasa':          str(estado.inversion.tasa_anual),
+        'inversionista':  inv.nombre_completo,
+        'rfc':            inv.rfc or '',
+        'curp':           getattr(inv, 'curp', '') or '',
+        'calle':          getattr(inv, 'calle', '') or '',
+        'ciudad':         getattr(inv, 'ciudad', '') or '',
+        'estado_dir':     getattr(inv, 'estado', '') or '',
+        'codigo_postal':  getattr(inv, 'codigo_postal', '') or '',
+        'capital':        str(estado.inversion.capital),
+        'tasa':           str(estado.inversion.tasa_anual),
         'periodo_inicio': str(estado.periodo_inicio),
         'periodo_fin':    str(estado.periodo_fin),
         'dias_periodo':   estado.dias_periodo,
@@ -911,8 +1330,38 @@ def estado_enviar(request, pk):
         'total_pagar':    str(estado.total_pagar),
     }
 
+    # Build per-investment rows for the PDF breakdown table
+    inversiones_pdf = []
+    for inversion in inv.inversiones.filter(estado='activo').order_by('id'):
+        dias     = estado.dias_periodo
+        cap      = float(inversion.capital)
+        tasa_i   = float(inversion.tasa_anual)
+        base_i   = int(inversion.base_calculo)
+        pct_fact = float(inversion.porcentaje_factura) / 100
+        bruto_i  = cap * (tasa_i / 100 / base_i) * dias
+        fact_i   = bruto_i * pct_fact
+        isr_i    = fact_i * 0.20
+        iva_i    = fact_i * 0.16
+        neto_i   = fact_i - isr_i + iva_i + (bruto_i * (1 - pct_fact))
+        inversiones_pdf.append({
+            'folio':             f'INV-{inversion.id}',
+            'capital':           str(inversion.capital),
+            'tasa_anual':        str(inversion.tasa_anual),
+            'base_calculo':      inversion.base_calculo,
+            'fecha_inicio':      str(inversion.fecha_inicio),
+            'fecha_vencimiento': str(inversion.fecha_vencimiento) if inversion.fecha_vencimiento else 'Sin vencimiento',
+            'dias':              dias,
+            'interes_bruto':     f'{bruto_i:.2f}',
+            'retencion':         f'{isr_i:.2f}',
+            'iva_inv':           f'{iva_i:.2f}',
+            'interes_neto':      f'{neto_i:.2f}',
+        })
+    data['inversiones'] = inversiones_pdf
+
     html_content = _build_email_html(data, notas_extra, tipo_comprobante)
     text_content = f"Estado de Cuenta de {inv.nombre_completo} — Total a pagar: ${float(estado.total_pagar):,.2f}"
+    pdf_bytes    = _build_estado_pdf(data)
+    pdf_filename = f"estado-cuenta-{inv.nombre_completo.replace(' ', '-').lower()}-{estado.periodo_fin}.pdf"
 
     try:
         msg = EmailMultiAlternatives(
@@ -921,10 +1370,10 @@ def estado_enviar(request, pk):
             from_email=django_settings.DEFAULT_FROM_EMAIL,
             to=[correo_destino],
         )
-        msg.attach_alternative(html_content, "text/html")
+        msg.attach_alternative(html_content, 'text/html')
+        msg.attach(pdf_filename, pdf_bytes, 'application/pdf')  # filename, bytes, mimetype
         msg.send()
 
-        # Mark as sent
         estado.estado = 'enviado'
         estado.save()
 
@@ -935,8 +1384,7 @@ def estado_enviar(request, pk):
             {'error': f'Error al enviar correo: {str(e)}'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
-
-
+    
 @api_view(['POST'])
 @login_required(login_url='login')
 def enviar_estados_todos(request):

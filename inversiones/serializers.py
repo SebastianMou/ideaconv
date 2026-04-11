@@ -1,9 +1,8 @@
 from rest_framework import serializers
 from .models import (
-    Promotor, Inversionista, Inversion,
+    Promotor, Inversionista, Inversion, Movimiento,
     EstadoDeCuenta, Pago, Prospecto
 )
-
 
 class PromotorSerializer(serializers.ModelSerializer):
     total_referidos = serializers.SerializerMethodField()
@@ -25,15 +24,23 @@ class PromotorSerializer(serializers.ModelSerializer):
         return total
 
 
+class MovimientoSerializer(serializers.ModelSerializer):
+    tipo_display = serializers.CharField(source='get_tipo_display', read_only=True)
+
+    class Meta:
+        model = Movimiento
+        fields = '__all__'
+
+
 class InversionSerializer(serializers.ModelSerializer):
     porcentaje_externo = serializers.ReadOnlyField()
     estado_display = serializers.CharField(source='get_estado_display', read_only=True)
     base_display = serializers.CharField(source='get_base_calculo_display', read_only=True)
+    movimientos = MovimientoSerializer(many=True, read_only=True)
 
     class Meta:
         model = Inversion
         fields = '__all__'
-
 
 class InversionistaSerializer(serializers.ModelSerializer):
     promotor_nombre = serializers.CharField(source='promotor.nombre', read_only=True)

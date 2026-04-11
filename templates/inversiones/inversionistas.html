@@ -343,26 +343,58 @@
                 </div>
                 ${inversiones.map(inv => {
                     const badgeClass = inv.estado==='activo'?'badge-activo':inv.estado==='vencido'?'badge-vencido':'badge-por-vencer';
-                    return `
-                        <div style="border:1.5px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;">
-                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-                                <div style="font-size:20px;font-weight:800;color:var(--brand-navy)">${fmtMoney(inv.capital)}</div>
-                                <div style="display:flex;align-items:center;gap:8px;">
-                                    <span class="badge-status ${badgeClass}">${inv.estado_display}</span>
-                                    <button onclick="eliminarInversion(${inv.id}, ${invId})"
-                                        style="background:none;border:1.5px solid var(--brand-red);color:var(--brand-red);border-radius:7px;padding:3px 9px;cursor:pointer;font-size:12px;display:flex;align-items:center;gap:4px;">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
+                    const movsList = (inv.movimientos || []).map(m => {
+                    const isAbono = m.tipo === 'abono';
+                    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;">
+                        <div style="display:flex;align-items:center;gap:6px;">
+                            <span style="width:18px;height:18px;border-radius:50%;background:${isAbono ? '#E8F9F2' : '#FDECEA'};display:flex;align-items:center;justify-content:center;font-size:9px;color:${isAbono ? '#1CB87E' : 'var(--brand-red)'}">
+                                ${isAbono ? '▲' : '▼'}
+                            </span>
+                            <span style="font-weight:600;color:${isAbono ? '#1CB87E' : 'var(--brand-red)'}">${m.tipo_display}</span>
+                            <span style="color:var(--text-muted)">${m.fecha}</span>
+                            ${m.notas ? `<span style="color:var(--text-muted);font-style:italic">${m.notas}</span>` : ''}
+                        </div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span style="font-weight:700;color:${isAbono ? '#1CB87E' : 'var(--brand-red)'}">${isAbono ? '+' : '-'}${fmtMoney(m.monto)}</span>
+                            <button onclick="eliminarMovimiento(${m.id}, ${inv.id}, ${invId})" style="background:none;border:none;color:var(--text-muted);cursor:pointer;padding:0;font-size:12px;" title="Eliminar"><i class="bi bi-x"></i></button>
+                        </div>
+                    </div>`;
+                }).join('');
+
+                return `
+                    <div style="border:1.5px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                            <div style="font-size:20px;font-weight:800;color:var(--brand-navy)">${fmtMoney(inv.capital)}</div>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span class="badge-status ${badgeClass}">${inv.estado_display}</span>
+                                <button onclick="eliminarInversion(${inv.id}, ${invId})"
+                                    style="background:none;border:1.5px solid var(--brand-red);color:var(--brand-red);border-radius:7px;padding:3px 9px;cursor:pointer;font-size:12px;">
+                                    <i class="bi bi-trash"></i>
+                                </button>
                             </div>
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12.5px;">
-                                <div><span style="color:var(--text-muted)">Tasa anual</span><div style="font-weight:600">${inv.tasa_anual}%</div></div>
-                                <div><span style="color:var(--text-muted)">Base</span><div style="font-weight:600">${inv.base_calculo} días</div></div>
-                                <div><span style="color:var(--text-muted)">% Factura</span><div style="font-weight:600">${inv.porcentaje_factura}%</div></div>
-                                <div><span style="color:var(--text-muted)">Inicio</span><div style="font-weight:600">${inv.fecha_inicio||'—'}</div></div>
-                                <div><span style="color:var(--text-muted)">Vencimiento</span><div style="font-weight:600">${inv.fecha_vencimiento||'Sin vencimiento'}</div></div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12.5px;margin-bottom:14px;">
+                            <div><span style="color:var(--text-muted)">Tasa anual</span><div style="font-weight:600">${inv.tasa_anual}%</div></div>
+                            <div><span style="color:var(--text-muted)">Base</span><div style="font-weight:600">${inv.base_calculo} dias</div></div>
+                            <div><span style="color:var(--text-muted)">% Factura</span><div style="font-weight:600">${inv.porcentaje_factura}%</div></div>
+                            <div><span style="color:var(--text-muted)">Inicio</span><div style="font-weight:600">${inv.fecha_inicio||'—'}</div></div>
+                            <div><span style="color:var(--text-muted)">Vencimiento</span><div style="font-weight:600">${inv.fecha_vencimiento||'Sin vencimiento'}</div></div>
+                        </div>
+                        <div style="border-top:1.5px solid var(--border);padding-top:12px;">
+                            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);margin-bottom:8px;">Movimientos</div>
+                            ${movsList || '<div style="font-size:12px;color:var(--text-muted);padding:6px 0;">Sin movimientos registrados</div>'}
+                            <div style="display:flex;gap:8px;margin-top:10px;">
+                                <button onclick="agregarMovimiento(${inv.id}, ${invId}, 'abono')"
+                                    style="flex:1;background:#E8F9F2;border:1.5px solid #1CB87E;color:#1CB87E;border-radius:8px;padding:7px;font-size:12px;font-weight:700;cursor:pointer;">
+                                    <i class="bi bi-plus-circle me-1"></i>Abono
+                                </button>
+                                <button onclick="agregarMovimiento(${inv.id}, ${invId}, 'retiro')"
+                                    style="flex:1;background:#FDECEA;border:1.5px solid var(--brand-red);color:var(--brand-red);border-radius:8px;padding:7px;font-size:12px;font-weight:700;cursor:pointer;">
+                                    <i class="bi bi-dash-circle me-1"></i>Retiro
+                                </button>
                             </div>
-                        </div>`;
+                        </div>
+                    </div>`;
                 }).join('')}
                 <button class="btn-brand" style="width:100%;margin-top:4px" onclick="nuevaInversion(${invId},'${data.nombre_completo}')">
                     <i class="bi bi-plus-lg me-2"></i>Agregar inversión
@@ -389,6 +421,67 @@
             } catch {
                 showToast('Error al eliminar', 'x-circle-fill', '#FCA5A5');
             }
+        };
+        showOverlay();
+        document.getElementById('convert-modal').style.display = 'block';
+    }
+
+    function agregarMovimiento(inversionId, inversionistaId, tipo) {
+        const isAbono = tipo === 'abono';
+        document.getElementById('cv-title').innerHTML =
+            `<i class="bi bi-${isAbono ? 'plus-circle-fill' : 'dash-circle-fill'} me-2" style="color:${isAbono ? '#1CB87E' : 'var(--brand-red)'}"></i>${isAbono ? 'Agregar Abono' : 'Registrar Retiro'}`;
+        document.getElementById('cv-body').innerHTML = `
+            <div style="text-align:left;display:flex;flex-direction:column;gap:10px;">
+                <div>
+                    <label style="font-size:11.5px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">MONTO ($) *</label>
+                    <input type="text" id="mov-monto" placeholder="Ej. 500000" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;">
+                </div>
+                <div>
+                    <label style="font-size:11.5px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">FECHA *</label>
+                    <input type="date" id="mov-fecha" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;" value="${new Date().toISOString().split('T')[0]}">
+                </div>
+                <div>
+                    <label style="font-size:11.5px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">NOTAS (opcional)</label>
+                    <input type="text" id="mov-notas" placeholder="Ej. Transferencia SPEI" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;">
+                </div>
+            </div>`;
+        document.getElementById('cv-confirm-btn').style.background = isAbono ? '#1CB87E' : 'var(--brand-red)';
+        document.getElementById('cv-confirm-btn').innerHTML = `<i class="bi bi-check2 me-1"></i>Guardar`;
+        document.getElementById('cv-confirm-btn').onclick = async () => {
+            const monto = document.getElementById('mov-monto').value.replace(/,/g, '');
+            const fecha = document.getElementById('mov-fecha').value;
+            const notas = document.getElementById('mov-notas').value;
+            if (!monto || !fecha) return;
+            closeModal();
+            try {
+                await fetch(`/api/inversiones/${inversionId}/movimientos/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                    body: JSON.stringify({ tipo, monto, fecha, notas, inversion: inversionId })
+                });
+                showToast(`${isAbono ? 'Abono' : 'Retiro'} registrado`, isAbono ? 'plus-circle-fill' : 'dash-circle-fill', isAbono ? '#1CB87E' : '#F5A623');
+                toggleInversiones(inversionistaId, null);
+            } catch { showToast('Error al guardar', 'x-circle-fill', '#FCA5A5'); }
+        };
+        showOverlay();
+        document.getElementById('convert-modal').style.display = 'block';
+    }
+
+    async function eliminarMovimiento(movId, inversionId, inversionistaId) {
+        document.getElementById('cv-title').textContent = 'Eliminar movimiento';
+        document.getElementById('cv-body').innerHTML = 'Se eliminara el movimiento y se revertira el efecto en el capital de la inversion.';
+        document.getElementById('cv-confirm-btn').style.background = 'var(--brand-red)';
+        document.getElementById('cv-confirm-btn').innerHTML = '<i class="bi bi-trash me-1"></i>Eliminar';
+        document.getElementById('cv-confirm-btn').onclick = async () => {
+            closeModal();
+            try {
+                await fetch(`/api/movimientos/${movId}/`, {
+                    method: 'DELETE',
+                    headers: { 'X-CSRFToken': getCookie('csrftoken') }
+                });
+                showToast('Movimiento eliminado', 'trash', '#F5A623');
+                toggleInversiones(inversionistaId, null);
+            } catch { showToast('Error al eliminar', 'x-circle-fill', '#FCA5A5'); }
         };
         showOverlay();
         document.getElementById('convert-modal').style.display = 'block';

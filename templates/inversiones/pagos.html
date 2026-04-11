@@ -130,8 +130,14 @@
       const isPagado=p.estado==='pagado';
       const badge=isPagado?`<span class="badge-status badge-pagado">Pagado</span>`:`<span class="badge-status badge-pendiente">Pendiente</span>`;
       const accion=isPagado
-        ?`<a class="btn-icon" onclick="openReceipt(${p.id})" title="Ver comprobante"><i class="bi bi-receipt"></i></a>`
-        :`<button class="btn-brand" style="font-size:11.5px;padding:5px 10px" onclick="confirmarPago(${p.id},'${fmtMoney(p.total_pagar)}','${p.metodo_display||p.metodo}','${nombre}')">Marcar pagado</button>`;
+        ?`<div class="d-flex gap-1">
+            <a class="btn-icon" onclick="openReceipt(${p.id})" title="Ver comprobante"><i class="bi bi-receipt"></i></a>
+            <a class="btn-icon" onclick="eliminarPago(${p.id},'${nombre}')" title="Eliminar" style="color:var(--brand-red)"><i class="bi bi-trash"></i></a>
+          </div>`
+        :`<div class="d-flex gap-1 align-items-center">
+            <button class="btn-brand" style="font-size:11.5px;padding:5px 10px" onclick="confirmarPago(${p.id},'${fmtMoney(p.total_pagar)}','${p.metodo_display||p.metodo}','${nombre}')">Marcar pagado</button>
+            <a class="btn-icon" onclick="eliminarPago(${p.id},'${nombre}')" title="Eliminar" style="color:var(--brand-red)"><i class="bi bi-trash"></i></a>
+          </div>`;
       return `<tr id="pago-row-${p.id}">
         <td><input type="checkbox" class="pago-check" value="${p.id}"></td>
         <td><div class="d-flex align-items-center gap-2"><div class="avatar-sm" style="background:${color}">${getInitials(nombre)}</div>${nombre}</div></td>
@@ -243,6 +249,30 @@
     const first=pagosData.find(p=>checked.includes(String(p.id))&&p.estado==='pendiente');
     if(first) confirmarPago(first.id,fmtMoney(first.total_pagar),first.metodo_display||first.metodo,first.inversionista_nombre);
     else showToast('Los pagos seleccionados ya están pagados','check-circle-fill','#1CB87E');
+  }
+
+  function eliminarPago(id, nombre) {
+    document.getElementById('cv-title').textContent = '¿Eliminar pago?';
+    document.getElementById('cv-body').innerHTML = `¿Estás seguro que deseas eliminar el registro de pago de <strong>${nombre}</strong>? Esta acción no se puede deshacer.`;
+    document.getElementById('cv-confirm-btn').style.background = 'var(--brand-red)';
+    document.getElementById('cv-confirm-btn').innerHTML = '<i class="bi bi-trash me-1"></i>Eliminar';
+    document.getElementById('cv-confirm-btn').onclick = async () => {
+      closeModal();
+      try {
+        const res = await fetch(`/api/pagos/${id}/`, {
+          method: 'DELETE',
+          headers: { 'X-CSRFToken': getCookie('csrftoken') }
+        });
+        if (res.ok || res.status === 204) {
+          showToast(`Pago de ${nombre} eliminado`, 'trash', '#F5A623');
+          cargarPagos();
+        } else {
+          showToast('Error al eliminar', 'x-circle-fill', '#FCA5A5');
+        }
+      } catch { showToast('Sin conexión al servidor', 'wifi-off-fill', '#FCA5A5'); }
+    };
+    showOverlay();
+    document.getElementById('convert-modal').style.display = 'block';
   }
 
   cargarPagos();

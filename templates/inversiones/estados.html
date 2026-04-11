@@ -19,6 +19,7 @@
     <button class="btn-brand" onclick="abrirGenerarTodos()">
       <i class="bi bi-lightning-fill"></i><span class="d-none d-sm-inline ms-2">Generar Todos</span>
     </button>
+    <a class="btn-icon" onclick="eliminarEstado(${e.id})" title="Eliminar" style="color:var(--brand-red)"><i class="bi bi-trash"></i></a>
   </div>
 </div>
 
@@ -445,6 +446,30 @@
   function getCookie(n){ let v=null; document.cookie.split(';').forEach(c=>{ const[k,val]=c.trim().split('='); if(k===n) v=decodeURIComponent(val); }); return v; }
   function fmtMoney(v){ return '$'+parseFloat(v).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 
+  function eliminarEstado(id) {
+    document.getElementById('cv-title').textContent = 'Eliminar estado de cuenta';
+    document.getElementById('cv-body').innerHTML = 'Esta accion eliminara el estado de cuenta y su pago asociado. No se puede deshacer.';
+    document.getElementById('cv-confirm-btn').style.background = 'var(--brand-red)';
+    document.getElementById('cv-confirm-btn').innerHTML = '<i class="bi bi-trash me-1"></i>Eliminar';
+    document.getElementById('cv-confirm-btn').onclick = async () => {
+      closeModal();
+      try {
+        const res = await fetch(`/api/estados/${id}/`, {
+          method: 'DELETE',
+          headers: { 'X-CSRFToken': getCookie('csrftoken') }
+        });
+        if (res.ok || res.status === 204) {
+          showToast('Estado eliminado', 'trash', '#F5A623');
+          cargarEstados();
+        } else {
+          showToast('Error al eliminar', 'x-circle-fill', '#FCA5A5');
+        }
+      } catch { showToast('Sin conexion', 'wifi-off-fill', '#FCA5A5'); }
+    };
+    showOverlay();
+    document.getElementById('convert-modal').style.display = 'block';
+  }
+
   // ── Load table ──
   async function cargarEstados(){
     const estado = document.getElementById('filtro-edc').value;
@@ -492,7 +517,10 @@
         <td style="color:var(--success)">+ ${fmtMoney(e.iva)}</td>
         <td><strong>${fmtMoney(e.total_pagar)}</strong></td>
         <td><span class="badge-status ${badgeClass}">${e.estado_display}</span></td>
-        <td>${accionBtn}</td>
+        <td><div class="d-flex gap-1 align-items-center">
+          ${accionBtn}
+          <a class="btn-icon" onclick="eliminarEstado(${e.id})" title="Eliminar" style="color:var(--brand-red)"><i class="bi bi-trash"></i></a>
+        </div></td>
       </tr>`;
     }).join('');
   }

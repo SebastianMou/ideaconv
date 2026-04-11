@@ -53,6 +53,9 @@ urlpatterns = [
     path('api/estados/<int:pk>/enviar/', views.estado_enviar, name='api-estado-enviar'),
     path('api/estados/enviar-todos/', views.enviar_estados_todos, name='api-enviar-todos'),
 
+    path('api/inversiones/<int:inversion_pk>/movimientos/', views.movimientos_list),
+    path('api/movimientos/<int:pk>/', views.movimiento_detail),
+
     path('api/bug-report/', views.bug_report, name='api-bug-report'),
 
 ]

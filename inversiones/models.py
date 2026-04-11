@@ -236,6 +236,30 @@ class Prospecto(models.Model):
         verbose_name = "Prospecto"
         verbose_name_plural = "Prospectos"
 
+class Movimiento(models.Model):
+    TIPO_CHOICES = [
+        ('abono', 'Abono'),
+        ('retiro', 'Retiro'),
+    ]
+
+    inversion   = models.ForeignKey(
+        Inversion, on_delete=models.CASCADE,
+        related_name='movimientos'
+    )
+    tipo        = models.CharField(max_length=10, choices=TIPO_CHOICES)
+    monto       = models.DecimalField(max_digits=14, decimal_places=2)
+    fecha       = models.DateField()
+    notas       = models.TextField(blank=True)
+    fecha_registro = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.get_tipo_display()} ${self.monto} — {self.fecha}"
+
+    class Meta:
+        verbose_name = "Movimiento"
+        verbose_name_plural = "Movimientos"
+        ordering = ['fecha']
+
 class BugReport(models.Model):
     TIPO_CHOICES = [
         ('calculo',    'Error en cálculo'),
