@@ -147,13 +147,22 @@ class EstadoDeCuenta(models.Model):
         ('pendiente', 'Pendiente'),
     ]
 
+    # Now linked to investor directly — one per investor per month
+    inversionista = models.ForeignKey(
+        Inversionista, on_delete=models.CASCADE,
+        related_name='estados_de_cuenta',
+        null=True, blank=True  # null during migration
+    )
+    # Keep inversion FK as nullable for backwards compatibility
     inversion = models.ForeignKey(
         Inversion, on_delete=models.CASCADE,
-        related_name='estados_de_cuenta'
+        related_name='estados_de_cuenta',
+        null=True, blank=True
     )
     periodo_inicio = models.DateField()
     periodo_fin = models.DateField()
     dias_periodo = models.IntegerField()
+    # Totals across ALL investments for this investor this period
     interes_bruto = models.DecimalField(max_digits=14, decimal_places=2)
     isr = models.DecimalField(max_digits=14, decimal_places=2)
     iva = models.DecimalField(max_digits=14, decimal_places=2)
@@ -165,11 +174,14 @@ class EstadoDeCuenta(models.Model):
     notas = models.TextField(blank=True)
 
     def __str__(self):
-        return f"Estado {self.inversion.inversionista.nombre_completo} — {self.periodo_inicio}"
+        nombre = self.inversionista.nombre_completo if self.inversionista else '—'
+        return f"Estado {nombre} — {self.periodo_inicio}"
 
     class Meta:
         verbose_name = "Estado de Cuenta"
         verbose_name_plural = "Estados de Cuenta"
+        # One estado per investor per period
+        unique_together = [['inversionista', 'periodo_inicio']]
 
 
 class Pago(models.Model):

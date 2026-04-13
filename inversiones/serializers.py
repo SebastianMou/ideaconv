@@ -83,17 +83,27 @@ class InversionistaListSerializer(serializers.ModelSerializer):
 
 
 class EstadoDeCuentaSerializer(serializers.ModelSerializer):
-    inversionista_nombre = serializers.CharField(
-        source='inversion.inversionista.nombre_completo', read_only=True
-    )
-    inversionista_rfc = serializers.CharField(
-        source='inversion.inversionista.rfc', read_only=True
-    )
-    estado_display = serializers.CharField(source='get_estado_display', read_only=True)
+    inversionista_nombre = serializers.SerializerMethodField()
+    inversionista_rfc    = serializers.SerializerMethodField()
+    estado_display       = serializers.CharField(source='get_estado_display', read_only=True)
 
     class Meta:
         model = EstadoDeCuenta
         fields = '__all__'
+
+    def get_inversionista_nombre(self, obj):
+        if obj.inversionista:
+            return obj.inversionista.nombre_completo
+        if obj.inversion:
+            return obj.inversion.inversionista.nombre_completo
+        return '—'
+
+    def get_inversionista_rfc(self, obj):
+        if obj.inversionista:
+            return obj.inversionista.rfc
+        if obj.inversion:
+            return obj.inversion.inversionista.rfc
+        return ''
 
 
 class PagoSerializer(serializers.ModelSerializer):

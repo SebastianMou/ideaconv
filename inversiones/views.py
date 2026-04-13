@@ -14,8 +14,8 @@ from urllib.request import urlopen
 from io import BytesIO as BIO
 
 from .models import (
-    Promotor, Inversionista, Inversion,
-    EstadoDeCuenta, Pago, Prospecto, Movimiento
+    Promotor, Inversionista, Inversion, Movimiento,
+    EstadoDeCuenta, Pago, Prospecto
 )
 from .serializers import (
     PromotorSerializer, InversionistaSerializer, InversionistaListSerializer,
@@ -431,13 +431,13 @@ def estado_detail(request, pk):
 def generar_estados_todos(request):
     """
     POST /api/estados/generar-todos/
-    Generates monthly statements for ALL active inversiones
-    that don't have a statement for the current month yet.
+    Generates ONE EstadoDeCuenta per investor (consolidating all their
+    active inversiones) for the given period.
     Body: { periodo_inicio, periodo_fin, dias_periodo }
     """
     periodo_inicio = request.data.get('periodo_inicio')
     periodo_fin    = request.data.get('periodo_fin')
-    dias_periodo   = request.data.get('dias_periodo', 28)
+    dias_periodo   = int(request.data.get('dias_periodo', 28))
 
     if not periodo_inicio or not periodo_fin:
         return Response(
@@ -445,53 +445,68 @@ def generar_estados_todos(request):
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    inversiones = Inversion.objects.filter(estado='activo').select_related('inversionista')
+    # Get all investors that have at least one active investment
+    inversionistas = Inversionista.objects.filter(
+        inversiones__estado='activo'
+    ).distinct()
+
     generados = []
     omitidos  = []
 
-    for inv in inversiones:
-        # Skip if already has a statement for this period
+    for inversionista in inversionistas:
+        # Skip if already has a consolidated estado for this period
         already_exists = EstadoDeCuenta.objects.filter(
-            inversion=inv,
+            inversionista=inversionista,
             periodo_inicio=periodo_inicio
         ).exists()
 
         if already_exists:
-            omitidos.append(inv.inversionista.nombre_completo)
+            omitidos.append(inversionista.nombre_completo)
             continue
 
-        pct_factura   = inv.porcentaje_factura / Decimal('100')
-        pct_externo   = Decimal('1') - pct_factura
+        inversiones_activas = inversionista.inversiones.filter(estado='activo')
 
-        # Use tranche calculation — accounts for abonos/retiros mid-period
-        interes_bruto    = _calcular_interes_con_movimientos(inv, periodo_inicio, periodo_fin)
-        base_factura     = interes_bruto * pct_factura
-        isr              = base_factura * Decimal('0.20')
-        subtotal_factura = base_factura - isr
-        iva              = base_factura * Decimal('0.16')
-        total_factura    = base_factura - isr + iva
-        pago_externo     = interes_bruto * pct_externo
-        total_pagar      = total_factura + pago_externo
+        # Sum across all investments using tranche calculation
+        total_bruto   = Decimal('0')
+        total_isr     = Decimal('0')
+        total_iva     = Decimal('0')
+        total_externo = Decimal('0')
 
-        estado = EstadoDeCuenta.objects.create(
-            inversion=inv,
+        for inv in inversiones_activas:
+            pct_factura = inv.porcentaje_factura / Decimal('100')
+            pct_externo = Decimal('1') - pct_factura
+
+            bruto_inv    = _calcular_interes_con_movimientos(inv, periodo_inicio, periodo_fin)
+            fact_inv     = bruto_inv * pct_factura
+            isr_inv      = fact_inv * Decimal('0.20')
+            iva_inv      = fact_inv * Decimal('0.16')
+            externo_inv  = bruto_inv * pct_externo
+
+            total_bruto   += bruto_inv
+            total_isr     += isr_inv
+            total_iva     += iva_inv
+            total_externo += externo_inv
+
+        subtotal_fact = (total_bruto - total_externo) - total_isr
+        total_fact    = subtotal_fact + total_iva
+        interes_neto  = subtotal_fact + total_iva
+        total_pagar   = total_fact + total_externo
+
+        EstadoDeCuenta.objects.create(
+            inversionista=inversionista,
+            inversion=None,
             periodo_inicio=periodo_inicio,
             periodo_fin=periodo_fin,
             dias_periodo=dias_periodo,
-            interes_bruto=interes_bruto.quantize(Decimal('0.01')),
-            isr=isr.quantize(Decimal('0.01')),
-            iva=iva.quantize(Decimal('0.01')),
-            interes_neto=(subtotal_factura + iva).quantize(Decimal('0.01')),
-            pago_externo=pago_externo.quantize(Decimal('0.01')),
+            interes_bruto=total_bruto.quantize(Decimal('0.01')),
+            isr=total_isr.quantize(Decimal('0.01')),
+            iva=total_iva.quantize(Decimal('0.01')),
+            interes_neto=interes_neto.quantize(Decimal('0.01')),
+            pago_externo=total_externo.quantize(Decimal('0.01')),
             total_pagar=total_pagar.quantize(Decimal('0.01')),
             estado='generado'
         )
-        Pago.objects.create(
-            estado_de_cuenta=estado,
-            metodo='transferencia',
-            estado='pendiente',
-        )
-        generados.append(inv.inversionista.nombre_completo)
+        generados.append(inversionista.nombre_completo)
 
     return Response({
         'generados': len(generados),
@@ -499,6 +514,7 @@ def generar_estados_todos(request):
         'detalle_generados': generados,
         'detalle_omitidos':  omitidos,
     })
+
 
 def _calcular_interes_con_movimientos(inversion, periodo_inicio, periodo_fin):
     """
@@ -1149,8 +1165,172 @@ def _build_estado_pdf(data):
         ('TOPPADDING',    (0,0), (-1,-1), 0),
         ('BOTTOMPADDING', (0,0), (-1,-1), 0),
     ]))
+    
     story.append(footer_tbl)
- 
+
+    # ════════════════════════════════
+    #  DETAIL PAGES — one per investment
+    # ════════════════════════════════
+    from reportlab.platypus import PageBreak
+
+    for inv in data.get('inversiones', []):
+        story.append(PageBreak())
+
+        # Investment header
+        inv_hdr_data = [
+            [Paragraph('<b>' + data['inversionista'] + '</b>',
+                S('dih', fontName='Helvetica-Bold', fontSize=9, textColor=NAVY)),
+             Paragraph('', S('x'))],
+        ]
+
+        left_lines = [
+            Paragraph('<b>FOLIO: ' + inv['folio'] + '</b>',
+                S('fl', fontName='Helvetica-Bold', fontSize=9, textColor=NAVY)),
+            Paragraph('Divisa: MXN',
+                S('fd', fontName='Helvetica', fontSize=8, textColor=GRAY)),
+            Paragraph('Inversion inicial: $' + '{:,.2f}'.format(float(inv['capital'])) + ' MXN',
+                S('fi', fontName='Helvetica', fontSize=8, textColor=GRAY)),
+            Paragraph('Fecha de Inicio: ' + inv['fecha_inicio'],
+                S('fs', fontName='Helvetica', fontSize=8, textColor=GRAY)),
+            Paragraph('Fecha de Vencimiento: ' + inv['fecha_vencimiento'],
+                S('fv', fontName='Helvetica', fontSize=8, textColor=GRAY)),
+            Paragraph('Dia de corte: Ultimo dia del mes',
+                S('fc', fontName='Helvetica', fontSize=8, textColor=GRAY)),
+        ]
+        right_lines = [
+            Paragraph('Interes Anual Bruto: ' + str(inv['tasa_anual']) + ' %',
+                S('ri', fontName='Helvetica', fontSize=8, textColor=GRAY, alignment=TA_RIGHT)),
+            Paragraph('Tasa de Retencion: 20.0 %',
+                S('rr', fontName='Helvetica', fontSize=8, textColor=GRAY, alignment=TA_RIGHT)),
+            Paragraph('IVA: 16.0 %',
+                S('rv', fontName='Helvetica', fontSize=8, textColor=GRAY, alignment=TA_RIGHT)),
+            Paragraph('Tipo de Pago de Intereses: Simple',
+                S('rt', fontName='Helvetica', fontSize=8, textColor=GRAY, alignment=TA_RIGHT)),
+        ]
+
+        detail_hdr = Table([[left_lines, right_lines]], colWidths=[3.5*inch, 3.5*inch])
+        detail_hdr.setStyle(TableStyle([
+            ('VALIGN', (0,0), (-1,-1), 'TOP'),
+            ('LEFTPADDING', (0,0), (-1,-1), 0),
+            ('RIGHTPADDING', (0,0), (-1,-1), 0),
+        ]))
+
+        # Re-add top investor name
+        story.append(Paragraph('<b>' + data['inversionista'] + '</b>',
+            S('dn', fontName='Helvetica-Bold', fontSize=9, textColor=NAVY)))
+        story.append(Paragraph(data.get('rfc', ''),
+            S('dr', fontName='Helvetica', fontSize=8, textColor=GRAY)))
+        story.append(Spacer(1, 10))
+        story.append(detail_hdr)
+        story.append(Spacer(1, 16))
+
+        # Detail table header
+        story.append(Table(
+            [[Paragraph('Detalle de operaciones ' + inv['folio'],
+                S('dth', fontName='Helvetica-Bold', fontSize=9, textColor=WHITE, alignment=TA_CENTER))]],
+            colWidths=[7.0*inch],
+            style=TableStyle([
+                ('BACKGROUND', (0,0), (-1,-1), BGBLUE),
+                ('TOPPADDING', (0,0), (-1,-1), 8),
+                ('BOTTOMPADDING', (0,0), (-1,-1), 8),
+            ])
+        ))
+        story.append(Spacer(1, 1))
+
+        dhdr_s = S('dhd', fontName='Helvetica-Bold', fontSize=8, textColor=WHITE, alignment=TA_CENTER)
+        dval_s = S('dvl', fontName='Helvetica', fontSize=8, textColor=NAVY, alignment=TA_CENTER)
+        dvbl_s = S('dvb', fontName='Helvetica-Bold', fontSize=8, textColor=NAVY, alignment=TA_CENTER)
+        dtot_s = S('dtt', fontName='Helvetica-Bold', fontSize=8, textColor=WHITE, alignment=TA_CENTER)
+        dlft_s = S('dlf', fontName='Helvetica', fontSize=8, textColor=NAVY, alignment=TA_LEFT)
+        dlbl_s = S('dlb', fontName='Helvetica-Bold', fontSize=8, textColor=NAVY, alignment=TA_LEFT)
+
+        dcol_w = [0.85*inch, 0.6*inch, 1.1*inch, 1.2*inch, 0.95*inch, 0.85*inch, 0.65*inch, 0.8*inch]
+        dhdrs  = ['Fecha', 'Plazo', 'Monto', 'Concepto', 'Interes Bruto', 'Retencion', 'IVA', 'Interes Neto']
+
+        drows = [[Paragraph(h, dhdr_s) for h in dhdrs]]
+
+        # Capital inicial row
+        drows.append([
+            Paragraph(inv['fecha_inicio'], dval_s),
+            Paragraph('', dval_s),
+            Paragraph('$' + '{:,.2f}'.format(float(inv['capital'])), dvbl_s),
+            Paragraph('Capital Inicial', dlbl_s),
+            Paragraph('-', dval_s),
+            Paragraph('-', dval_s),
+            Paragraph('-', dval_s),
+            Paragraph('-', dval_s),
+        ])
+
+        # Historical payment rows
+        d_bruto_total = 0.0
+        d_ret_total   = 0.0
+        d_iva_total   = 0.0
+        d_neto_total  = 0.0
+
+        for hist in inv.get('estados_historicos', []):
+            b = float(hist['interes_bruto'])
+            r = float(hist['isr'])
+            v = float(hist['iva'])
+            n = float(hist['interes_neto'])
+            d_bruto_total += b
+            d_ret_total   += r
+            d_iva_total   += v
+            d_neto_total  += n
+            drows.append([
+                Paragraph(hist['periodo_fin'], dval_s),
+                Paragraph(str(hist['dias_periodo']), dval_s),
+                Paragraph('-', dval_s),
+                Paragraph('Pago de Intereses', dlft_s),
+                Paragraph('$' + '{:,.2f}'.format(b), dval_s),
+                Paragraph('$' + '{:,.2f}'.format(r) if r > 0 else '-', dval_s),
+                Paragraph('$' + '{:,.2f}'.format(v) if v > 0 else '-', dval_s),
+                Paragraph('$' + '{:,.2f}'.format(n), dvbl_s),
+            ])
+
+            # Insert movements on their date if any match this period
+            for mov in inv.get('movimientos', []):
+                if hist['periodo_inicio'] <= mov['fecha'] <= hist['periodo_fin']:
+                    drows.append([
+                        Paragraph(mov['fecha'], dval_s),
+                        Paragraph('', dval_s),
+                        Paragraph('$' + '{:,.2f}'.format(float(mov['monto'])), dvbl_s),
+                        Paragraph(mov['tipo_display'] + ' a Capital', dlft_s),
+                        Paragraph('-', dval_s),
+                        Paragraph('-', dval_s),
+                        Paragraph('-', dval_s),
+                        Paragraph('-', dval_s),
+                    ])
+
+        # Total row
+        drows.append([
+            Paragraph('Total', dtot_s),
+            Paragraph('', dtot_s),
+            Paragraph('$' + '{:,.2f}'.format(float(inv['capital'])), dtot_s),
+            Paragraph('', dtot_s),
+            Paragraph('$' + '{:,.2f}'.format(d_bruto_total), dtot_s),
+            Paragraph('$' + '{:,.2f}'.format(d_ret_total),   dtot_s),
+            Paragraph('$' + '{:,.2f}'.format(d_iva_total),   dtot_s),
+            Paragraph('$' + '{:,.2f}'.format(d_neto_total),  dtot_s),
+        ])
+
+        detail_tbl = Table(drows, colWidths=dcol_w)
+        detail_tbl.setStyle(TableStyle([
+            ('BACKGROUND',    (0,0),  (-1,0),  BGBLUE),
+            ('BACKGROUND',    (0,-1), (-1,-1), BGBLUE),
+            ('ROWBACKGROUNDS',(0,1),  (-1,-2), [WHITE, ROWBG]),
+            ('GRID',          (0,0),  (-1,-1), 0.5, BORDER),
+            ('VALIGN',        (0,0),  (-1,-1), 'MIDDLE'),
+            ('TOPPADDING',    (0,0),  (-1,-1), 5),
+            ('BOTTOMPADDING', (0,0),  (-1,-1), 5),
+        ]))
+        story.append(detail_tbl)
+        story.append(Spacer(1, 20))
+
+        # Footer on detail page
+        story.append(HRFlowable(width='100%', thickness=0.5, color=BORDER))
+        story.append(Spacer(1, 4))
+        story.append(footer_tbl)
+
     doc.build(story)
     return buf.getvalue()
  
@@ -1291,34 +1471,41 @@ def _build_email_html(data, notas_extra='', tipo_comprobante='ambos'):
 def estado_enviar(request, pk):
     """
     POST /api/estados/<pk>/enviar/
-    Sends branded HTML email + PDF attachment to the investor.
+    Sends ONE consolidated email + PDF per investor covering ALL their investments.
     """
     from io import BytesIO
 
     estado = get_object_or_404(EstadoDeCuenta, pk=pk)
-    inv    = estado.inversion.inversionista
 
-    correo_destino   = request.data.get('correo') or inv.correo
-    asunto           = request.data.get('asunto') or f'Estado de Cuenta — {estado.periodo_inicio} al {estado.periodo_fin}'
+    # Resolve the investor — works for both old (inversion FK) and new (inversionista FK) records
+    if estado.inversionista:
+        inv_obj = estado.inversionista
+    else:
+        inv_obj = estado.inversion.inversionista
+
+    correo_destino   = request.data.get('correo') or inv_obj.correo
+    asunto           = request.data.get('asunto') or \
+        f'Estado de Cuenta — {estado.periodo_inicio} al {estado.periodo_fin}'
     notas_extra      = request.data.get('notas_extra', '')
     tipo_comprobante = request.data.get('tipo_comprobante', 'ambos')
 
     if not correo_destino:
         return Response(
-            {'error': f'{inv.nombre_completo} no tiene correo registrado.'},
+            {'error': f'{inv_obj.nombre_completo} no tiene correo registrado.'},
             status=status.HTTP_400_BAD_REQUEST
         )
 
+    # Build the shared data dict
     data = {
-        'inversionista':  inv.nombre_completo,
-        'rfc':            inv.rfc or '',
-        'curp':           getattr(inv, 'curp', '') or '',
-        'calle':          getattr(inv, 'calle', '') or '',
-        'ciudad':         getattr(inv, 'ciudad', '') or '',
-        'estado_dir':     getattr(inv, 'estado', '') or '',
-        'codigo_postal':  getattr(inv, 'codigo_postal', '') or '',
-        'capital':        str(estado.inversion.capital),
-        'tasa':           str(estado.inversion.tasa_anual),
+        'inversionista':  inv_obj.nombre_completo,
+        'rfc':            inv_obj.rfc or '',
+        'curp':           getattr(inv_obj, 'curp', '') or '',
+        'calle':          getattr(inv_obj, 'calle', '') or '',
+        'ciudad':         getattr(inv_obj, 'ciudad', '') or '',
+        'estado_dir':     getattr(inv_obj, 'estado', '') or '',
+        'codigo_postal':  getattr(inv_obj, 'codigo_postal', '') or '',
+        'capital':        str(estado.interes_bruto),  # shown as context in email
+        'tasa':           '—',
         'periodo_inicio': str(estado.periodo_inicio),
         'periodo_fin':    str(estado.periodo_fin),
         'dias_periodo':   estado.dias_periodo,
@@ -1330,19 +1517,23 @@ def estado_enviar(request, pk):
         'total_pagar':    str(estado.total_pagar),
     }
 
-    # Build per-investment rows for the PDF breakdown table
+    # Build per-investment rows — summary page (page 1)
+    inversiones_activas = inv_obj.inversiones.filter(estado='activo').order_by('id')
+    total_capital = sum(inv.capital for inv in inversiones_activas)
+    data['capital'] = str(total_capital)
+
     inversiones_pdf = []
-    for inversion in inv.inversiones.filter(estado='activo').order_by('id'):
+    for inversion in inversiones_activas:
         dias     = estado.dias_periodo
-        cap      = float(inversion.capital)
-        tasa_i   = float(inversion.tasa_anual)
-        base_i   = int(inversion.base_calculo)
         pct_fact = float(inversion.porcentaje_factura) / 100
-        bruto_i  = cap * (tasa_i / 100 / base_i) * dias
+        bruto_i  = float(_calcular_interes_con_movimientos(
+            inversion, estado.periodo_inicio, estado.periodo_fin
+        ))
         fact_i   = bruto_i * pct_fact
         isr_i    = fact_i * 0.20
         iva_i    = fact_i * 0.16
         neto_i   = fact_i - isr_i + iva_i + (bruto_i * (1 - pct_fact))
+
         inversiones_pdf.append({
             'folio':             f'INV-{inversion.id}',
             'capital':           str(inversion.capital),
@@ -1355,13 +1546,44 @@ def estado_enviar(request, pk):
             'retencion':         f'{isr_i:.2f}',
             'iva_inv':           f'{iva_i:.2f}',
             'interes_neto':      f'{neto_i:.2f}',
+            # Full history for detail pages
+            'movimientos': [
+                {
+                    'fecha': str(m.fecha),
+                    'monto': str(m.monto),
+                    'tipo':  m.tipo,
+                    'tipo_display': m.get_tipo_display(),
+                }
+                for m in inversion.movimientos.order_by('fecha')
+            ],
+            'estados_historicos': [
+                {
+                    'periodo_inicio': str(e.periodo_inicio),
+                    'periodo_fin':    str(e.periodo_fin),
+                    'dias_periodo':   e.dias_periodo,
+                    'interes_bruto':  str(e.interes_bruto),
+                    'isr':            str(e.isr),
+                    'iva':            str(e.iva),
+                    'interes_neto':   str(e.interes_neto),
+                }
+                for e in EstadoDeCuenta.objects.filter(
+                    inversionista=inv_obj
+                ).order_by('periodo_inicio')
+            ],
         })
+
     data['inversiones'] = inversiones_pdf
 
     html_content = _build_email_html(data, notas_extra, tipo_comprobante)
-    text_content = f"Estado de Cuenta de {inv.nombre_completo} — Total a pagar: ${float(estado.total_pagar):,.2f}"
+    text_content = (
+        f"Estado de Cuenta de {inv_obj.nombre_completo} — "
+        f"Total a pagar: ${float(estado.total_pagar):,.2f}"
+    )
     pdf_bytes    = _build_estado_pdf(data)
-    pdf_filename = f"estado-cuenta-{inv.nombre_completo.replace(' ', '-').lower()}-{estado.periodo_fin}.pdf"
+    pdf_filename = (
+        f"estado-cuenta-{inv_obj.nombre_completo.replace(' ', '-').lower()}"
+        f"-{estado.periodo_fin}.pdf"
+    )
 
     try:
         msg = EmailMultiAlternatives(
@@ -1371,7 +1593,7 @@ def estado_enviar(request, pk):
             to=[correo_destino],
         )
         msg.attach_alternative(html_content, 'text/html')
-        msg.attach(pdf_filename, pdf_bytes, 'application/pdf')  # filename, bytes, mimetype
+        msg.attach(pdf_filename, pdf_bytes, 'application/pdf')
         msg.send()
 
         estado.estado = 'enviado'
@@ -1384,37 +1606,53 @@ def estado_enviar(request, pk):
             {'error': f'Error al enviar correo: {str(e)}'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
-    
+
+
 @api_view(['POST'])
 @login_required(login_url='login')
 def enviar_estados_todos(request):
     """
     POST /api/estados/enviar-todos/
-    Sends emails to all investors with generado estados de cuenta.
-    Body: { asunto (optional), notas_extra (optional) }
+    Sends ONE consolidated email per investor for all their generado estados.
+    Groups multiple estados by investor and sends a single email each.
     """
     asunto      = request.data.get('asunto', 'Estado de Cuenta Mensual — Ideaconv')
     notas_extra = request.data.get('notas_extra', '')
 
+    # Get all generado estados, grouped by investor
     estados = EstadoDeCuenta.objects.filter(
         estado='generado'
-    ).select_related('inversion__inversionista')
+    ).select_related('inversionista', 'inversion__inversionista')
 
-    enviados  = []
-    fallidos  = []
+    # Group by investor
+    from collections import defaultdict
+    por_inversionista = defaultdict(list)
+    for estado in estados:
+        inv_obj = estado.inversionista or estado.inversion.inversionista
+        por_inversionista[inv_obj.id].append((inv_obj, estado))
+
+    enviados   = []
+    fallidos   = []
     sin_correo = []
 
-    for estado in estados:
-        inv = estado.inversion.inversionista
-        if not inv.correo:
-            sin_correo.append(inv.nombre_completo)
+    for inv_id, items in por_inversionista.items():
+        inv_obj = items[0][0]
+        # Use the most recent estado for totals
+        estado  = items[-1][1]
+
+        if not inv_obj.correo:
+            sin_correo.append(inv_obj.nombre_completo)
             continue
 
         data = {
-            'inversionista': inv.nombre_completo,
-            'rfc':           inv.rfc or '',
-            'capital':       str(estado.inversion.capital),
-            'tasa':          str(estado.inversion.tasa_anual),
+            'inversionista':  inv_obj.nombre_completo,
+            'rfc':            inv_obj.rfc or '',
+            'curp':           getattr(inv_obj, 'curp', '') or '',
+            'calle':          getattr(inv_obj, 'calle', '') or '',
+            'ciudad':         getattr(inv_obj, 'ciudad', '') or '',
+            'estado_dir':     getattr(inv_obj, 'estado', '') or '',
+            'codigo_postal':  getattr(inv_obj, 'codigo_postal', '') or '',
+            'tasa':           '—',
             'periodo_inicio': str(estado.periodo_inicio),
             'periodo_fin':    str(estado.periodo_fin),
             'dias_periodo':   estado.dias_periodo,
@@ -1425,32 +1663,91 @@ def enviar_estados_todos(request):
             'pago_externo':   str(estado.pago_externo),
             'total_pagar':    str(estado.total_pagar),
         }
+
+        inversiones_activas = inv_obj.inversiones.filter(estado='activo').order_by('id')
+        total_capital = sum(inv.capital for inv in inversiones_activas)
+        data['capital'] = str(total_capital)
+
+        inversiones_pdf = []
+        for inversion in inversiones_activas:
+            dias     = estado.dias_periodo
+            pct_fact = float(inversion.porcentaje_factura) / 100
+            bruto_i  = float(_calcular_interes_con_movimientos(
+                inversion, estado.periodo_inicio, estado.periodo_fin
+            ))
+            fact_i = bruto_i * pct_fact
+            isr_i  = fact_i * 0.20
+            iva_i  = fact_i * 0.16
+            neto_i = fact_i - isr_i + iva_i + (bruto_i * (1 - pct_fact))
+
+            inversiones_pdf.append({
+                'folio':             f'INV-{inversion.id}',
+                'capital':           str(inversion.capital),
+                'tasa_anual':        str(inversion.tasa_anual),
+                'base_calculo':      inversion.base_calculo,
+                'fecha_inicio':      str(inversion.fecha_inicio),
+                'fecha_vencimiento': str(inversion.fecha_vencimiento) if inversion.fecha_vencimiento else 'Sin vencimiento',
+                'dias':              dias,
+                'interes_bruto':     f'{bruto_i:.2f}',
+                'retencion':         f'{isr_i:.2f}',
+                'iva_inv':           f'{iva_i:.2f}',
+                'interes_neto':      f'{neto_i:.2f}',
+                'movimientos': [
+                    {'fecha': str(m.fecha), 'monto': str(m.monto),
+                     'tipo': m.tipo, 'tipo_display': m.get_tipo_display()}
+                    for m in inversion.movimientos.order_by('fecha')
+                ],
+                'estados_historicos': [
+                    {'periodo_inicio': str(e.periodo_inicio),
+                     'periodo_fin':    str(e.periodo_fin),
+                     'dias_periodo':   e.dias_periodo,
+                     'interes_bruto':  str(e.interes_bruto),
+                     'isr':            str(e.isr),
+                     'iva':            str(e.iva),
+                     'interes_neto':   str(e.interes_neto)}
+                    for e in EstadoDeCuenta.objects.filter(
+                        inversionista=inv_obj
+                    ).order_by('periodo_inicio')
+                ],
+            })
+        data['inversiones'] = inversiones_pdf
+
         html_content = _build_email_html(data, notas_extra)
-        text_content = f"Estado de Cuenta — Total a pagar: ${float(estado.total_pagar):,.2f}"
+        text_content = f"Estado de Cuenta — {inv_obj.nombre_completo}"
+        pdf_bytes    = _build_estado_pdf(data)
+        pdf_filename = (
+            f"estado-cuenta-{inv_obj.nombre_completo.replace(' ','-').lower()}"
+            f"-{estado.periodo_fin}.pdf"
+        )
 
         try:
             msg = EmailMultiAlternatives(
-                subject=asunto,
-                body=text_content,
+                subject=asunto, body=text_content,
                 from_email=django_settings.DEFAULT_FROM_EMAIL,
-                to=[inv.correo],
+                to=[inv_obj.correo],
             )
-            msg.attach_alternative(html_content, "text/html")
+            msg.attach_alternative(html_content, 'text/html')
+            msg.attach(pdf_filename, pdf_bytes, 'application/pdf')
             msg.send()
-            estado.estado = 'enviado'
-            estado.save()
-            enviados.append(inv.nombre_completo)
+
+            # Mark all this investor's estados as enviado
+            for _, e in items:
+                e.estado = 'enviado'
+                e.save()
+
+            enviados.append(inv_obj.nombre_completo)
         except Exception as e:
-            fallidos.append({'nombre': inv.nombre_completo, 'error': str(e)})
+            fallidos.append({'nombre': inv_obj.nombre_completo, 'error': str(e)})
 
     return Response({
-        'enviados':    len(enviados),
-        'fallidos':    len(fallidos),
-        'sin_correo':  len(sin_correo),
+        'enviados':   len(enviados),
+        'fallidos':   len(fallidos),
+        'sin_correo': len(sin_correo),
         'detalle_enviados':   enviados,
         'detalle_fallidos':   fallidos,
         'detalle_sin_correo': sin_correo,
     })
+
 
 @api_view(['POST'])
 @login_required(login_url='login')
