@@ -12,7 +12,16 @@ from io import BytesIO
 from reportlab.platypus import Image as RLImage
 from urllib.request import urlopen
 from io import BytesIO as BIO
-
+from datetime import datetime
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import (
+SimpleDocTemplate, Paragraph, Spacer,
+Table, TableStyle, HRFlowable,
+)
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib import colors
+from reportlab.lib.units import inch
+from reportlab.lib.enums import TA_CENTER, TA_RIGHT, TA_LEFT
 from .models import (
     Promotor, Inversionista, Inversion, Movimiento,
     EstadoDeCuenta, Pago, Prospecto
@@ -941,17 +950,6 @@ def _build_estado_pdf(data):
             }
     Returns: bytes  (the raw PDF)
     """
-    from io import BytesIO
-    from datetime import datetime
-    from reportlab.lib.pagesizes import letter
-    from reportlab.platypus import (
-        SimpleDocTemplate, Paragraph, Spacer,
-        Table, TableStyle, HRFlowable,
-    )
-    from reportlab.lib.styles import ParagraphStyle
-    from reportlab.lib import colors
-    from reportlab.lib.units import inch
-    from reportlab.lib.enums import TA_CENTER, TA_RIGHT
  
     # ── Brand colours ──
     NAVY       = colors.HexColor('#1A2340')
@@ -1023,8 +1021,6 @@ def _build_estado_pdf(data):
 
     logo_lines = [
         logo_el,
-        Spacer(1, 6),
-        Paragraph('¡El poder de querer...!', S('lt', fontName='Helvetica-Oblique', fontSize=9, textColor=RED, alignment=TA_RIGHT)),
         Spacer(1, 4),
         Paragraph('Mes de corte: ' + mes_nombre, S('lm', fontName='Helvetica', fontSize=8, textColor=GRAY, alignment=TA_RIGHT)),
     ]
@@ -1096,7 +1092,7 @@ def _build_estado_pdf(data):
     vbl_s = S('cb', fontName='Helvetica-Bold', fontSize=8, textColor=NAVY,  alignment=TA_CENTER)
     tot_s = S('ct', fontName='Helvetica-Bold', fontSize=8, textColor=WHITE, alignment=TA_CENTER)
  
-    col_w = [0.65*inch, 1.1*inch, 0.5*inch, 1.0*inch, 0.9*inch, 0.7*inch, 0.55*inch, 0.9*inch]
+    col_w = [0.6*inch, 1.0*inch, 0.55*inch, 0.9*inch, 0.95*inch, 0.8*inch, 0.65*inch, 0.85*inch]
     hdrs  = ['#Pagaré', 'Capital', 'Plazo', 'Tasa Bruta Anual',
              'Interés Bruto', 'Retención', 'IVA', 'Interés Neto']
  
@@ -1165,7 +1161,7 @@ def _build_estado_pdf(data):
         ('TOPPADDING',    (0,0), (-1,-1), 0),
         ('BOTTOMPADDING', (0,0), (-1,-1), 0),
     ]))
-    
+
     story.append(footer_tbl)
 
     # ════════════════════════════════
@@ -1244,7 +1240,7 @@ def _build_estado_pdf(data):
         dlft_s = S('dlf', fontName='Helvetica', fontSize=8, textColor=NAVY, alignment=TA_LEFT)
         dlbl_s = S('dlb', fontName='Helvetica-Bold', fontSize=8, textColor=NAVY, alignment=TA_LEFT)
 
-        dcol_w = [0.85*inch, 0.6*inch, 1.1*inch, 1.2*inch, 0.95*inch, 0.85*inch, 0.65*inch, 0.8*inch]
+        dcol_w = [0.9*inch, 0.5*inch, 0.95*inch, 1.15*inch, 0.95*inch, 0.85*inch, 0.6*inch, 0.9*inch]
         dhdrs  = ['Fecha', 'Plazo', 'Monto', 'Concepto', 'Interes Bruto', 'Retencion', 'IVA', 'Interes Neto']
 
         drows = [[Paragraph(h, dhdr_s) for h in dhdrs]]
