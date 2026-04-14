@@ -16,8 +16,8 @@
     <button class="btn-outline-brand" onclick="abrirEnviarTodos()">
       <i class="bi bi-send-fill"></i><span class="d-none d-sm-inline ms-2">Enviar Todos</span>
     </button>
-    <button class="btn-brand" onclick="abrirGenerarTodos()">
-      <i class="bi bi-lightning-fill"></i><span class="d-none d-sm-inline ms-2">Generar Todos</span>
+    <button class="btn-brand" onclick="abrirCierreMes()">
+      <i class="bi bi-calendar-check-fill"></i><span class="d-none d-sm-inline ms-2">Cierre de Mes</span>
     </button>
     <a class="btn-icon" onclick="eliminarEstado(${e.id})" title="Eliminar" style="color:var(--brand-red)"><i class="bi bi-trash"></i></a>
   </div>
@@ -106,32 +106,6 @@
         <input class="form-control" id="email-asunto" placeholder="Estado de Cuenta — Marzo 2026">
       </div>
       <div class="col-12">
-        <label class="form-label" style="font-size:11.5px;font-weight:600;color:var(--text-muted);text-transform:uppercase;">¿Qué comprobante enviar al cliente?</label>
-        <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
-          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid var(--brand-red);border-radius:9px;cursor:pointer;" id="opt-ambos-wrap">
-            <input type="radio" name="tipo-comprobante" id="opt-ambos" value="ambos" checked style="accent-color:var(--brand-red);width:16px;height:16px;">
-            <div>
-              <div style="font-size:13px;font-weight:600;color:var(--text-main);">Ambos comprobantes</div>
-              <div style="font-size:11.5px;color:var(--text-muted);">Con Factura + Sin Factura (Pago Externo)</div>
-            </div>
-          </label>
-          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid var(--border);border-radius:9px;cursor:pointer;" id="opt-factura-wrap">
-            <input type="radio" name="tipo-comprobante" id="opt-factura" value="factura" style="accent-color:var(--brand-red);width:16px;height:16px;">
-            <div>
-              <div style="font-size:13px;font-weight:600;color:var(--text-main);">Solo Con Factura</div>
-              <div style="font-size:11.5px;color:var(--text-muted);">Incluye ISR y IVA — pago vía transferencia</div>
-            </div>
-          </label>
-          <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid var(--border);border-radius:9px;cursor:pointer;" id="opt-externo-wrap">
-            <input type="radio" name="tipo-comprobante" id="opt-externo" value="externo" style="accent-color:var(--brand-red);width:16px;height:16px;">
-            <div>
-              <div style="font-size:13px;font-weight:600;color:var(--text-main);">Solo Sin Factura (Pago Externo)</div>
-              <div style="font-size:11.5px;color:var(--text-muted);">Sin ISR ni IVA — pago por medio externo</div>
-            </div>
-          </label>
-        </div>
-      </div>
-      <div class="col-12">
         <label class="form-label" style="font-size:11.5px;font-weight:600;color:var(--text-muted);text-transform:uppercase;">Notas adicionales (opcional)</label>
         <div id="email-notas-editor" style="background:#fff;border:1.5px solid var(--border);border-radius:8px;min-height:80px;"></div>
         <input type="hidden" id="email-notas">
@@ -217,15 +191,15 @@
     <table style="width:100%;border-collapse:collapse;font-size:13.5px;">
       <thead>
         <tr style="background:#F8F9FB;position:sticky;top:0;">
-          <th style="padding:12px 16px;text-align:left;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:2px solid var(--border);">Inversionista</th>
-          <th style="padding:12px 16px;text-align:right;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:2px solid var(--border);">Capital</th>
-          <th style="padding:12px 16px;text-align:right;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:2px solid var(--border);">Días</th>
-          <th style="padding:12px 16px;text-align:right;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:2px solid var(--border);">Interés Bruto</th>
-          <th style="padding:12px 16px;text-align:right;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#C8282A;border-bottom:2px solid var(--border);">ISR (20%)</th>
-          <th style="padding:12px 16px;text-align:right;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#1CB87E;border-bottom:2px solid var(--border);">IVA (16%)</th>
-          <th style="padding:12px 16px;text-align:right;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:2px solid var(--border);">Pago Externo</th>
-          <th style="padding:12px 16px;text-align:right;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--brand-navy);border-bottom:2px solid var(--border);">Total a Pagar</th>
-          <th style="padding:12px 16px;text-align:center;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:2px solid var(--border);">Estado</th>
+          <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:2px solid var(--border);width:28px;"></th>
+          <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:2px solid var(--border);">Inversionista / Folio</th>
+          <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:2px solid var(--border);">Divisa</th>
+          <th style="padding:12px 16px;text-align:right;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:2px solid var(--border);">Saldo</th>
+          <th style="padding:12px 16px;text-align:right;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:2px solid var(--border);">Interés Bruto</th>
+          <th style="padding:12px 16px;text-align:right;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#C8282A;border-bottom:2px solid var(--border);">Retención</th>
+          <th style="padding:12px 16px;text-align:right;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#1CB87E;border-bottom:2px solid var(--border);">IVA</th>
+          <th style="padding:12px 16px;text-align:right;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:2px solid var(--border);">Interés Neto</th>
+          <th style="padding:12px 16px;text-align:right;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--brand-navy);border-bottom:2px solid var(--border);">Interés a Pagar</th>
         </tr>
       </thead>
       <tbody id="resumen-tbody"></tbody>
@@ -234,35 +208,62 @@
   </div>
 </div>
 
-<!-- Generar Modal -->
-<div id="gen-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3001;width:420px;max-width:95vw;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(26,35,64,.25);">
+<!-- Cierre de Mes Modal -->
+<div id="cierre-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3001;width:520px;max-width:96vw;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(26,35,64,.25);">
   <div style="background:var(--brand-navy);padding:20px 24px;display:flex;justify-content:space-between;align-items:center;">
-    <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:16px;color:#fff">Generar Estados del Período</div>
-    <button onclick="cerrarGenModal()" style="background:rgba(255,255,255,.1);border:none;color:#fff;width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:16px;">✕</button>
+    <div>
+      <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:16px;color:#fff;">
+        <i class="bi bi-calendar-check-fill me-2"></i>Cierre de Mes
+      </div>
+      <div style="font-size:12px;color:rgba(255,255,255,.45);margin-top:2px;">Genera estados de cuenta consolidados automáticamente</div>
+    </div>
+    <button onclick="cerrarCierreMes()" style="background:rgba(255,255,255,.1);border:none;color:#fff;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;">✕</button>
   </div>
-  <div style="padding:24px">
-    <div class="row g-3">
+  <div style="padding:24px;">
+
+    <!-- Date pickers -->
+    <div class="row g-3 mb-3">
       <div class="col-6">
         <label class="form-label">Fecha inicio *</label>
-        <input class="form-control" id="gen-inicio" type="date">
+        <input class="form-control" id="cierre-inicio" type="date" oninput="actualizarInfoCierre()">
       </div>
       <div class="col-6">
         <label class="form-label">Fecha fin *</label>
-        <input class="form-control" id="gen-fin" type="date">
+        <input class="form-control" id="cierre-fin" type="date" oninput="actualizarInfoCierre()">
       </div>
       <div class="col-12">
-        <label class="form-label">Días del período *</label>
-        <input class="form-control" id="gen-dias" type="number" value="28" min="1" max="31">
+        <div id="cierre-dias-info" style="font-size:12.5px;color:var(--text-muted);padding:8px 12px;background:#F8F9FB;border-radius:8px;display:none;">
+          <i class="bi bi-calendar3 me-1"></i><span id="cierre-dias-text"></span>
+        </div>
       </div>
     </div>
-    <div style="background:#E8EBF4;border-radius:8px;padding:10px 14px;font-size:12.5px;color:var(--text-muted);margin-top:14px">
-      <i class="bi bi-info-circle me-1"></i>
-      Se generarán estados para todas las inversiones activas que no tengan estado para este período.
+
+    <!-- Investor search (optional — for single investor) -->
+    <div style="border:1.5px solid var(--border);border-radius:10px;padding:14px;margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);margin-bottom:10px;">
+        <i class="bi bi-person-fill me-1"></i>Inversionista específico (opcional)
+      </div>
+      <input class="form-control form-control-sm" id="cierre-search" placeholder="Buscar por nombre o RFC…"
+             oninput="buscarInversionistaCierre(this.value)" style="margin-bottom:8px;">
+      <div id="cierre-search-results" style="max-height:160px;overflow-y:auto;"></div>
+      <div id="cierre-inv-selected" style="display:none;background:#E8F9F2;border:1.5px solid #1CB87E;border-radius:8px;padding:8px 12px;margin-top:8px;align-items:center;gap:10px;">
+        <div id="cierre-inv-avatar" style="width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:#fff;flex-shrink:0;"></div>
+        <div style="flex:1;font-size:13px;font-weight:600;color:var(--brand-navy)" id="cierre-inv-nombre"></div>
+        <button onclick="deseleccionarInvCierre()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:16px;padding:0;">✕</button>
+      </div>
     </div>
-    <div style="display:flex;gap:10px;margin-top:20px">
-      <button onclick="cerrarGenModal()" class="btn-outline-brand" style="flex:1">Cancelar</button>
-      <button onclick="ejecutarGenerar()" class="btn-brand" style="flex:2">
-        <i class="bi bi-lightning-fill me-1"></i>Generar ahora
+
+    <div id="cierre-error" style="display:none;background:#FDECEA;border:1px solid var(--brand-red);border-radius:8px;padding:9px 12px;font-size:12.5px;color:var(--brand-red);margin-bottom:14px;">
+      <i class="bi bi-exclamation-circle me-1"></i><span id="cierre-error-msg"></span>
+    </div>
+
+    <div style="display:flex;gap:10px;">
+      <button onclick="cerrarCierreMes()" class="btn-outline-brand" style="flex:1">Cancelar</button>
+      <button onclick="ejecutarCierreMes(false)" class="btn-outline-brand" style="flex:1;border-color:#1CB87E;color:#1CB87E;" id="btn-cierre-uno">
+        <i class="bi bi-person-fill me-1"></i>Solo este
+      </button>
+      <button onclick="ejecutarCierreMes(true)" class="btn-brand" style="flex:1;" id="btn-cierre-todos">
+        <i class="bi bi-people-fill me-1"></i>Todos
       </button>
     </div>
   </div>
@@ -318,42 +319,167 @@
       return;
     }
 
-    // Totals
-    const totCapital = filtered.reduce((s,e) => s + parseFloat(e.inversion?.capital || 0), 0);
-    const totBruto   = filtered.reduce((s,e) => s + parseFloat(e.interes_bruto  || 0), 0);
-    const totISR     = filtered.reduce((s,e) => s + parseFloat(e.isr            || 0), 0);
-    const totIVA     = filtered.reduce((s,e) => s + parseFloat(e.iva            || 0), 0);
-    const totExt     = filtered.reduce((s,e) => s + parseFloat(e.pago_externo   || 0), 0);
-    const totTotal   = filtered.reduce((s,e) => s + parseFloat(e.total_pagar    || 0), 0);
+    let totBruto = 0, totISR = 0, totIVA = 0, totNeto = 0, totPagar = 0, totSaldo = 0;
+    let html = '';
 
-    tbody.innerHTML = filtered.map((e, i) => {
-      const bg = i % 2 === 0 ? '#fff' : '#FAFBFD';
-      const badgeClass = e.estado==='generado'?'badge-activo':e.estado==='enviado'?'badge-pagado':'badge-pendiente';
-      return `<tr style="background:${bg};">
-        <td style="padding:11px 16px;font-weight:600;border-bottom:1px solid var(--border);">${e.inversionista_nombre||'—'}</td>
-        <td style="padding:11px 16px;text-align:right;border-bottom:1px solid var(--border);color:var(--text-muted);">—</td>
-        <td style="padding:11px 16px;text-align:right;border-bottom:1px solid var(--border);">${e.dias_periodo}</td>
-        <td style="padding:11px 16px;text-align:right;border-bottom:1px solid var(--border);font-weight:600;">${fmtMoney(e.interes_bruto)}</td>
-        <td style="padding:11px 16px;text-align:right;border-bottom:1px solid var(--border);color:#C8282A;font-weight:600;">– ${fmtMoney(e.isr)}</td>
-        <td style="padding:11px 16px;text-align:right;border-bottom:1px solid var(--border);color:#1CB87E;font-weight:600;">+ ${fmtMoney(e.iva)}</td>
-        <td style="padding:11px 16px;text-align:right;border-bottom:1px solid var(--border);">${parseFloat(e.pago_externo)>0 ? fmtMoney(e.pago_externo) : '—'}</td>
-        <td style="padding:11px 16px;text-align:right;border-bottom:1px solid var(--border);font-weight:700;color:var(--brand-navy);">${fmtMoney(e.total_pagar)}</td>
-        <td style="padding:11px 16px;text-align:center;border-bottom:1px solid var(--border);"><span class="badge-status ${badgeClass}">${e.estado_display}</span></td>
+    filtered.forEach((e, i) => {
+      const nombre     = e.inversionista_nombre || '—';
+      const bruto      = parseFloat(e.interes_bruto  || 0);
+      const isr        = parseFloat(e.isr            || 0);
+      const iva        = parseFloat(e.iva            || 0);
+      const neto       = parseFloat(e.interes_neto   || 0);
+      const total      = parseFloat(e.total_pagar    || 0);
+      const externo    = parseFloat(e.pago_externo   || 0);
+
+      totBruto  += bruto;
+      totISR    += isr;
+      totIVA    += iva;
+      totNeto   += neto;
+      totPagar  += total;
+
+      const rowId   = `resumen-detail-${e.id}`;
+      const initials = nombre.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+      const colors   = ['#C8282A','#1A2340','#1CB87E','#F5A623','#6B7A99','#7C3AED','#0284C7'];
+      const color    = colors[i % colors.length];
+
+      // ── INVESTOR HEADER ROW ──
+      html += `<tr style="background:#F8FAFF;cursor:pointer;border-top:2px solid var(--border);"
+                   onclick="toggleResumenDetail('${rowId}', this)">
+        <td style="padding:12px 10px;width:28px;">
+          <i class="bi bi-chevron-right" id="icon-${rowId}" style="font-size:11px;color:var(--text-muted);transition:transform .2s;"></i>
+        </td>
+        <td style="padding:12px 16px;font-weight:700;color:var(--brand-navy);font-size:13.5px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:28px;height:28px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0;">${initials}</div>
+            ${nombre}
+          </div>
+        </td>
+        <td style="padding:12px 16px;color:var(--text-muted);font-size:12px;">MXN</td>
+        <td style="padding:12px 16px;text-align:right;font-weight:600;color:var(--brand-navy);">—</td>
+        <td style="padding:12px 16px;text-align:right;font-weight:700;">${fmtMoney(bruto)}</td>
+        <td style="padding:12px 16px;text-align:right;color:#C8282A;font-weight:600;">${fmtMoney(isr)}</td>
+        <td style="padding:12px 16px;text-align:right;color:#1CB87E;font-weight:600;">${fmtMoney(iva)}</td>
+        <td style="padding:12px 16px;text-align:right;font-weight:600;">${fmtMoney(neto)}</td>
+        <td style="padding:12px 16px;text-align:right;font-weight:800;color:var(--brand-navy);font-size:14px;">${fmtMoney(total)}</td>
       </tr>`;
-    }).join('');
 
+      // ── INVESTMENT DETAIL ROWS (hidden by default) ──
+      html += `<tr id="${rowId}" style="display:none;">
+        <td colspan="9" style="padding:0;background:#fff;">
+          <div id="${rowId}-content" style="padding:0 0 0 44px;">
+            <div style="text-align:center;padding:16px;color:var(--text-muted);font-size:12px;">
+              <i class="bi bi-arrow-repeat"></i> Cargando inversiones...
+            </div>
+          </div>
+        </td>
+      </tr>`;
+    });
+
+    tbody.innerHTML = html;
+
+    // totals footer
     tfoot.innerHTML = `
       <tr style="background:var(--brand-navy);">
-        <td style="padding:13px 16px;font-family:'Montserrat',sans-serif;font-weight:800;font-size:13px;color:#fff;">TOTALES (${filtered.length} inversionistas)</td>
-        <td style="padding:13px 16px;text-align:right;color:rgba(255,255,255,.6);">—</td>
-        <td style="padding:13px 16px;text-align:right;color:rgba(255,255,255,.6);">—</td>
+        <td style="padding:13px 16px;" colspan="2">
+          <span style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:13px;color:#fff;">
+            TOTALES (${filtered.length} inversionistas)
+          </span>
+        </td>
+        <td style="padding:13px 16px;text-align:left;color:rgba(255,255,255,.5);font-size:12px;">MXN</td>
+        <td style="padding:13px 16px;text-align:right;color:rgba(255,255,255,.5);">—</td>
         <td style="padding:13px 16px;text-align:right;font-weight:700;color:#fff;">${fmtMoney(totBruto)}</td>
-        <td style="padding:13px 16px;text-align:right;font-weight:700;color:#FCA5A5;">– ${fmtMoney(totISR)}</td>
-        <td style="padding:13px 16px;text-align:right;font-weight:700;color:#86EFAC;">+ ${fmtMoney(totIVA)}</td>
-        <td style="padding:13px 16px;text-align:right;font-weight:700;color:rgba(255,255,255,.8);">${totExt > 0 ? fmtMoney(totExt) : '—'}</td>
-        <td style="padding:13px 16px;text-align:right;font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:#fff;">${fmtMoney(totTotal)}</td>
-        <td></td>
+        <td style="padding:13px 16px;text-align:right;font-weight:700;color:#FCA5A5;">${fmtMoney(totISR)}</td>
+        <td style="padding:13px 16px;text-align:right;font-weight:700;color:#86EFAC;">${fmtMoney(totIVA)}</td>
+        <td style="padding:13px 16px;text-align:right;font-weight:700;color:rgba(255,255,255,.8);">${fmtMoney(totNeto)}</td>
+        <td style="padding:13px 16px;text-align:right;font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:#fff;">${fmtMoney(totPagar)}</td>
       </tr>`;
+  }
+
+  async function toggleResumenDetail(rowId, headerRow) {
+    const detailRow = document.getElementById(rowId);
+    const icon      = document.getElementById('icon-' + rowId);
+    const isOpen    = detailRow.style.display !== 'none';
+
+    if (isOpen) {
+      detailRow.style.display = 'none';
+      icon.style.transform = 'rotate(0deg)';
+      return;
+    }
+
+    detailRow.style.display = 'table-row';
+    icon.style.transform = 'rotate(90deg)';
+
+    // Get the estado id from the row — stored in the content div
+    const content = document.getElementById(rowId + '-content');
+
+    // Find the estado object from todosLosEstados using rowId
+    const edcId = rowId.replace('resumen-detail-', '');
+    const estado = todosLosEstados.find(e => String(e.id) === edcId);
+    if (!estado) return;
+
+    // Resolve investor id — works for both new (inversionista FK) and old (inversion FK) records
+    let invId = estado.inversionista || null;
+
+    // If no direct inversionista FK, resolve via the inversion's inversionista
+    if (!invId && estado.inversion) {
+      try {
+        const invRes  = await fetch(`/api/inversiones/${estado.inversion}/`);
+        const invData = await invRes.json();
+        invId = invData.inversionista;
+      } catch {
+        content.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--text-muted);">No se pudo resolver el inversionista.</div>';
+        return;
+      }
+    }
+
+    if (!invId) {
+      content.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--text-muted);">Sin datos de inversiones disponibles.</div>';
+      return;
+    }
+
+    try {
+      const res  = await fetch(`/api/inversionistas/${invId}/`);
+      const data = await res.json();
+      const inversiones = (data.inversiones || []).filter(inv => inv.estado === 'activo');
+
+      if (!inversiones.length) {
+        content.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--text-muted);">Sin inversiones activas.</div>';
+        return;
+      }
+
+      // Build investment detail rows matching the screenshot style
+      const rows = inversiones.map(inv => {
+        const cap   = parseFloat(inv.capital);
+        const tasa  = parseFloat(inv.tasa_anual) / 100;
+        const base  = parseInt(inv.base_calculo);
+        const dias  = estado.dias_periodo;
+        const pctF  = parseFloat(inv.porcentaje_factura) / 100;
+
+        const bruto = cap * (tasa / base) * dias;
+        const fact  = bruto * pctF;
+        const isr   = fact * 0.20;
+        const iva   = fact * 0.16;
+        const neto  = fact - isr + iva + (bruto * (1 - pctF));
+
+        return `<tr style="background:#fff;border-bottom:1px solid var(--border);">
+          <td style="padding:9px 16px;font-size:12px;color:var(--text-muted);">MXN</td>
+          <td style="padding:9px 16px;font-size:12.5px;font-weight:600;color:var(--brand-navy);">INV-${inv.id}</td>
+          <td style="padding:9px 16px;text-align:right;font-size:12.5px;">${fmtMoney(cap)}</td>
+          <td style="padding:9px 16px;text-align:right;font-size:12.5px;">${fmtMoney(bruto)}</td>
+          <td style="padding:9px 16px;text-align:right;font-size:12.5px;color:#C8282A;">${fmtMoney(isr)}</td>
+          <td style="padding:9px 16px;text-align:right;font-size:12.5px;color:#1CB87E;">${fmtMoney(iva)}</td>
+          <td style="padding:9px 16px;text-align:right;font-size:12.5px;">${fmtMoney(neto)}</td>
+          <td style="padding:9px 16px;text-align:right;font-size:12.5px;font-weight:700;color:var(--brand-navy);">${fmtMoney(neto)}</td>
+        </tr>`;
+      }).join('');
+
+      content.innerHTML = `
+        <table style="width:100%;border-collapse:collapse;border-left:3px solid var(--brand-navy);">
+          ${rows}
+        </table>`;
+    } catch {
+      content.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--brand-red);">Error al cargar inversiones.</div>';
+    }
   }
 
   function imprimirResumen(){
@@ -430,19 +556,6 @@
     });
   }
 
-  function getTipoComprobante(){
-    return document.querySelector('input[name="tipo-comprobante"]:checked')?.value || 'ambos';
-  }
-
-  document.addEventListener('change', function(e){
-    if(e.target.name === 'tipo-comprobante'){
-      ['opt-ambos-wrap','opt-factura-wrap','opt-externo-wrap'].forEach(id=>{
-        document.getElementById(id).style.borderColor = 'var(--border)';
-      });
-      e.target.closest('label').style.borderColor = 'var(--brand-red)';
-    }
-  });
-
   function getCookie(n){ let v=null; document.cookie.split(';').forEach(c=>{ const[k,val]=c.trim().split('='); if(k===n) v=decodeURIComponent(val); }); return v; }
   function fmtMoney(v){ return '$'+parseFloat(v).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 
@@ -502,25 +615,42 @@
     tbody.innerHTML = data.map(e=>{
       const badgeClass = e.estado==='generado'?'badge-activo':e.estado==='enviado'?'badge-pagado':'badge-pendiente';
       const canSend    = e.estado==='generado';
-      const accionBtn  = canSend
+      const accionBtn  = e.estado === 'enviado'
+        ? `<span style="font-size:12px;color:var(--success);font-weight:600;"><i class="bi bi-check-circle-fill me-1"></i>Enviado</span>`
+        : e.estado === 'generado'
         ? `<button class="btn-brand" style="font-size:11.5px;padding:5px 10px" onclick="abrirEmailModal(${e.id})">
              <i class="bi bi-envelope me-1"></i>Enviar
            </button>`
-        : `<span style="font-size:12px;color:var(--text-muted)">${e.estado==='enviado'?'✓ Enviado':'—'}</span>`;
-      return `<tr>
-        <td><input type="checkbox" class="edc-check" value="${e.id}"></td>
-        <td><strong>${e.inversionista_nombre||'—'}</strong></td>
+        : `<span style="font-size:12px;color:var(--text-muted)">—</span>`;
+      const detailRowId = `edc-detail-${e.id}`;
+      return `<tr style="cursor:pointer;" onclick="toggleEdcDetail(${e.id}, '${detailRowId}', ${e.inversionista || 'null'}, ${e.inversion || 'null'}, ${e.dias_periodo})">
+        <td onclick="event.stopPropagation()"><input type="checkbox" class="edc-check" value="${e.id}"></td>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <i class="bi bi-chevron-right" id="icon-${detailRowId}" style="font-size:10px;color:var(--text-muted);transition:transform .2s;flex-shrink:0;"></i>
+            <strong>${e.inversionista_nombre||'—'}</strong>
+          </div>
+        </td>
         <td style="font-size:12.5px">${e.periodo_inicio} → ${e.periodo_fin}</td>
         <td>${e.dias_periodo}</td>
         <td>${fmtMoney(e.interes_bruto)}</td>
         <td style="color:var(--brand-red)">– ${fmtMoney(e.isr)}</td>
         <td style="color:var(--success)">+ ${fmtMoney(e.iva)}</td>
         <td><strong>${fmtMoney(e.total_pagar)}</strong></td>
-        <td><span class="badge-status ${badgeClass}">${e.estado_display}</span></td>
-        <td><div class="d-flex gap-1 align-items-center">
+        <td id="badge-edc-${e.id}"><span class="badge-status ${badgeClass}">${e.estado_display}</span></td>
+        <td id="accion-edc-${e.id}"><div class="d-flex gap-1 align-items-center">
           ${accionBtn}
           <a class="btn-icon" onclick="eliminarEstado(${e.id})" title="Eliminar" style="color:var(--brand-red)"><i class="bi bi-trash"></i></a>
         </div></td>
+      </tr>
+      <tr id="${detailRowId}" style="display:none;background:#F8FAFF;">
+        <td colspan="10" style="padding:0;">
+          <div id="${detailRowId}-content" style="padding:12px 16px 12px 48px;">
+            <div style="text-align:center;padding:12px;color:var(--text-muted);font-size:12px;">
+              <i class="bi bi-arrow-repeat"></i> Cargando...
+            </div>
+          </div>
+        </td>
       </tr>`;
     }).join('');
   }
@@ -546,7 +676,7 @@
       // Build preview HTML — matches actual notification email design
       const previewDate = new Date(data.periodo_fin).toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'});
       document.getElementById('email-preview').innerHTML = `
-        <table width="100%" cellpadding="0" cellspacing="0" style="background:#F5E6E6;padding:16px 0;font-family:Arial,sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#393f52;padding:16px 0;font-family:Arial,sans-serif;">
           <tr><td align="center">
           <table width="400" cellpadding="0" cellspacing="0" style="max-width:400px;width:100%;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.1);">
             <!-- TOP BAR -->
@@ -563,7 +693,7 @@
             </tr>
             <!-- HERO -->
             <tr>
-              <td style="background:#C8282A;padding:28px 24px;text-align:center;">
+              <td style="background:#1a2340;padding:28px 24px;text-align:center;">
                 <div style="font-size:28px;line-height:48px;">&#128196;</div>
                 <div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:6px;">Estado de Cuenta</div>
                 <div style="font-size:12px;color:rgba(255,255,255,.65);">${previewDate}</div>
@@ -582,7 +712,7 @@
             <!-- PDF NOTICE -->
             <tr>
               <td style="padding:12px 24px 16px;">
-                <div style="background:#FFF0F0;border-radius:8px;padding:10px 12px;font-size:11px;color:#C8282A;border:1px solid #F5C6C6;">
+                <div style="background:#1a2340CC;border-radius:8px;padding:10px 12px;font-size:11px;color:white;border:1px solid #F5C6C6;">
                   &#128206; <b>Adjunto:</b> Estado de cuenta con desglose completo en formato PDF.
                 </div>
               </td>
@@ -644,13 +774,27 @@
       const res  = await fetch(`/api/estados/${id}/enviar/`,{
         method:'POST',
         headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},
-        body:JSON.stringify({correo, asunto, notas_extra:notas, tipo_comprobante: getTipoComprobante()})
+        body:JSON.stringify({correo, asunto, notas_extra:notas})
       });
       const data = await res.json();
       if(res.ok){
         cerrarEmailModal();
         showToast('Correo enviado exitosamente ✓','envelope-check-fill','#1CB87E');
-        cargarEstados();
+        const edcId = document.getElementById('email-estado-id').value;
+        // Ask the backend for the updated estado, then update only that row
+        try {
+          const check   = await fetch(`/api/estados/${edcId}/`);
+          const updated = await check.json();
+          const badgeCell  = document.getElementById(`badge-edc-${edcId}`);
+          const accionCell = document.getElementById(`accion-edc-${edcId}`);
+          if(badgeCell)  badgeCell.innerHTML  = `<span class="badge-status badge-pagado">${updated.estado_display}</span>`;
+          if(accionCell) accionCell.innerHTML = `<div class="d-flex gap-1 align-items-center">
+            <span style="font-size:12px;color:var(--success);font-weight:600;">
+              <i class="bi bi-check-circle-fill me-1"></i>${updated.estado_display}
+            </span>
+            <a class="btn-icon" onclick="eliminarEstado(${edcId})" title="Eliminar" style="color:var(--brand-red)"><i class="bi bi-trash"></i></a>
+          </div>`;
+        } catch { cargarEstados(); }
       } else {
         errMsg.textContent = data.error || 'Error al enviar';
         errEl.style.display='block';
@@ -690,34 +834,273 @@
     }catch{ showToast('Error al enviar','x-circle-fill','#FCA5A5'); }
   }
 
-  // ── Generar todos ──
-  function abrirGenerarTodos(){
-    const today=new Date().toISOString().split('T')[0];
-    document.getElementById('gen-inicio').value=today;
-    document.getElementById('gen-fin').value=today;
-    document.getElementById('modal-overlay').style.display='block';
-    document.getElementById('gen-modal').style.display='block';
+  // ── Cierre de Mes ──
+  const COLORS_EDC = ['#C8282A','#1A2340','#1CB87E','#F5A623','#6B7A99','#7C3AED','#0284C7'];
+  let _cierreInvId   = null;
+  let _cierreInvNombre = null;
+
+  function abrirCierreMes() {
+    // Auto-fill current month
+    const now   = new Date();
+    const y     = now.getFullYear();
+    const m     = now.getMonth();
+    const start = new Date(y, m, 1).toISOString().split('T')[0];
+    const end   = new Date(y, m + 1, 0).toISOString().split('T')[0];
+    document.getElementById('cierre-inicio').value = start;
+    document.getElementById('cierre-fin').value    = end;
+    document.getElementById('cierre-search').value = '';
+    document.getElementById('cierre-search-results').innerHTML = '';
+    document.getElementById('cierre-error').style.display = 'none';
+    document.getElementById('cierre-inv-selected').style.display = 'none';
+    _cierreInvId = null;
+    _cierreInvNombre = null;
+    actualizarInfoCierre();
+    document.getElementById('modal-overlay').style.display = 'block';
+    document.getElementById('cierre-modal').style.display  = 'block';
   }
-  function cerrarGenModal(){
-    document.getElementById('modal-overlay').style.display='none';
-    document.getElementById('gen-modal').style.display='none';
+
+  function cerrarCierreMes() {
+    document.getElementById('modal-overlay').style.display = 'none';
+    document.getElementById('cierre-modal').style.display  = 'none';
   }
-  async function ejecutarGenerar(){
-    const inicio=document.getElementById('gen-inicio').value;
-    const fin=document.getElementById('gen-fin').value;
-    const dias=document.getElementById('gen-dias').value;
-    if(!inicio||!fin||!dias){ showToast('Completa todos los campos','exclamation-circle','#F5A623'); return; }
-    try{
-      const res=await fetch('/api/estados/generar-todos/',{
-        method:'POST',
-        headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},
-        body:JSON.stringify({periodo_inicio:inicio,periodo_fin:fin,dias_periodo:parseInt(dias)})
-      });
-      const d=await res.json();
-      cerrarGenModal();
-      showToast(`${d.generados} estados generados, ${d.omitidos} omitidos`,'lightning-fill','#1CB87E');
-      cargarEstados();
-    }catch{ showToast('Error al generar','x-circle-fill','#FCA5A5'); }
+
+  function actualizarInfoCierre() {
+    const ini = document.getElementById('cierre-inicio').value;
+    const fin = document.getElementById('cierre-fin').value;
+    const infoDiv = document.getElementById('cierre-dias-info');
+    if (!ini || !fin) { infoDiv.style.display = 'none'; return; }
+    const dias = Math.round((new Date(fin) - new Date(ini)) / 86400000) + 1;
+    document.getElementById('cierre-dias-text').textContent = `Período de ${dias} días: ${ini} al ${fin}`;
+    infoDiv.style.display = 'block';
+
+    // Update button labels
+    const btnUno  = document.getElementById('btn-cierre-uno');
+    const btnTodos = document.getElementById('btn-cierre-todos');
+    if (_cierreInvId) {
+      btnUno.innerHTML  = `<i class="bi bi-person-fill me-1"></i>Cerrar — ${_cierreInvNombre.split(' ')[0]}`;
+      btnTodos.innerHTML = '<i class="bi bi-people-fill me-1"></i>Cerrar — Todos';
+    } else {
+      btnUno.innerHTML  = '<i class="bi bi-person-fill me-1"></i>Solo este';
+      btnTodos.innerHTML = '<i class="bi bi-people-fill me-1"></i>Todos';
+    }
+  }
+
+  let _cierreSearchTimer = null;
+  function buscarInversionistaCierre(q) {
+    clearTimeout(_cierreSearchTimer);
+    const results = document.getElementById('cierre-search-results');
+    if (!q.trim()) { results.innerHTML = ''; return; }
+    results.innerHTML = '<div style="padding:8px;font-size:12px;color:var(--text-muted);">Buscando...</div>';
+    _cierreSearchTimer = setTimeout(async () => {
+      try {
+        const res  = await fetch(`/api/inversionistas/?search=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        if (!data.length) {
+          results.innerHTML = '<div style="padding:8px;font-size:12px;color:var(--text-muted);">Sin resultados</div>';
+          return;
+        }
+        results.innerHTML = data.slice(0, 6).map(inv => {
+          const color = COLORS_EDC[inv.id % COLORS_EDC.length];
+          const initials = inv.nombre_completo.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+          return `<div onclick="seleccionarInvCierre(${inv.id},'${inv.nombre_completo.replace(/'/g,"\\'")}','${color}')"
+            style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;transition:background .15s"
+            onmouseover="this.style.background='#F0F4FF'" onmouseout="this.style.background='transparent'">
+            <div style="width:28px;height:28px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0">${initials}</div>
+            <div style="flex:1">
+              <div style="font-weight:600;color:var(--brand-navy)">${inv.nombre_completo}</div>
+              <div style="font-size:11px;color:var(--text-muted)">${inv.rfc||'Sin RFC'}</div>
+            </div>
+          </div>`;
+        }).join('');
+      } catch { results.innerHTML = '<div style="padding:8px;font-size:12px;color:var(--brand-red);">Error al buscar</div>'; }
+    }, 350);
+  }
+
+  function seleccionarInvCierre(id, nombre, color) {
+    _cierreInvId     = id;
+    _cierreInvNombre = nombre;
+    document.getElementById('cierre-search').value = '';
+    document.getElementById('cierre-search-results').innerHTML = '';
+    const sel = document.getElementById('cierre-inv-selected');
+    const av  = document.getElementById('cierre-inv-avatar');
+    av.textContent   = nombre.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+    av.style.background = color;
+    document.getElementById('cierre-inv-nombre').textContent = nombre;
+    sel.style.display = 'flex';
+    actualizarInfoCierre();
+  }
+
+  function deseleccionarInvCierre() {
+    _cierreInvId = null;
+    _cierreInvNombre = null;
+    document.getElementById('cierre-inv-selected').style.display = 'none';
+    actualizarInfoCierre();
+  }
+
+  async function ejecutarCierreMes(todos) {
+    const inicio = document.getElementById('cierre-inicio').value;
+    const fin    = document.getElementById('cierre-fin').value;
+    const errEl  = document.getElementById('cierre-error');
+    const errMsg = document.getElementById('cierre-error-msg');
+    errEl.style.display = 'none';
+
+    if (!inicio || !fin) {
+      errMsg.textContent = 'Las fechas del período son obligatorias.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    if (!todos && !_cierreInvId) {
+      errMsg.textContent = 'Selecciona un inversionista o usa "Todos".';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    const dias = Math.round((new Date(fin) - new Date(inicio)) / 86400000) + 1;
+    const btn  = todos ? document.getElementById('btn-cierre-todos') : document.getElementById('btn-cierre-uno');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<i class="bi bi-arrow-repeat me-1"></i>Calculando...';
+    btn.disabled  = true;
+
+    try {
+      let res, data;
+      if (todos) {
+        res  = await fetch('/api/estados/generar-todos/', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+          body:    JSON.stringify({ periodo_inicio: inicio, periodo_fin: fin, dias_periodo: dias })
+        });
+        data = await res.json();
+        if (res.ok) {
+          cerrarCierreMes();
+          showToast(
+            `${data.generados} estados generados · ${data.omitidos} omitidos`,
+            'lightning-fill', '#1CB87E'
+          );
+          cargarEstados();
+        } else {
+          errMsg.textContent = data.error || 'Error al generar';
+          errEl.style.display = 'block';
+        }
+      } else {
+        res  = await fetch('/api/estados/generar-inversionista/', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+          body:    JSON.stringify({
+            inversionista_id: _cierreInvId,
+            periodo_inicio:   inicio,
+            periodo_fin:      fin,
+          })
+        });
+        data = await res.json();
+        if (res.ok) {
+          cerrarCierreMes();
+          showToast(
+            `Estado generado para ${data.inversionista} · ${data.inversiones_calculadas} inversión(es) · $${parseFloat(data.total_pagar).toLocaleString('es-MX',{minimumFractionDigits:2})}`,
+            'file-earmark-check-fill', '#1CB87E'
+          );
+          cargarEstados();
+        } else {
+          errMsg.textContent = data.error || 'Error al generar';
+          errEl.style.display = 'block';
+        }
+      }
+    } catch {
+      errMsg.textContent = 'Sin conexión al servidor';
+      errEl.style.display = 'block';
+    } finally {
+      btn.innerHTML = orig;
+      btn.disabled  = false;
+    }
+  }
+
+  async function toggleEdcDetail(edcId, rowId, inversionistaId, inversionId, diasPeriodo) {
+    const detailRow = document.getElementById(rowId);
+    const icon      = document.getElementById('icon-' + rowId);
+    const isOpen    = detailRow.style.display !== 'none';
+
+    if (isOpen) {
+      detailRow.style.display = 'none';
+      icon.style.transform = 'rotate(0deg)';
+      return;
+    }
+
+    detailRow.style.display = 'table-row';
+    icon.style.transform = 'rotate(90deg)';
+
+    const content = document.getElementById(rowId + '-content');
+
+    // Resolve inversionista id
+    let invId = inversionistaId;
+    if (!invId && inversionId) {
+      try {
+        const r = await fetch(`/api/inversiones/${inversionId}/`);
+        const d = await r.json();
+        invId = d.inversionista;
+      } catch {
+        content.innerHTML = '<div style="font-size:12px;color:var(--brand-red);">Error al resolver inversionista.</div>';
+        return;
+      }
+    }
+
+    if (!invId) {
+      content.innerHTML = '<div style="font-size:12px;color:var(--text-muted);">Sin datos disponibles.</div>';
+      return;
+    }
+
+    try {
+      const res  = await fetch(`/api/inversionistas/${invId}/`);
+      const data = await res.json();
+      const inversiones = (data.inversiones || []).filter(inv => inv.estado === 'activo');
+
+      if (!inversiones.length) {
+        content.innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:8px 0;">Sin inversiones activas.</div>';
+        return;
+      }
+
+      const rows = inversiones.map(inv => {
+        const cap  = parseFloat(inv.capital);
+        const tasa = parseFloat(inv.tasa_anual) / 100;
+        const base = parseInt(inv.base_calculo);
+        const pctF = parseFloat(inv.porcentaje_factura) / 100;
+
+        const bruto = cap * (tasa / base) * diasPeriodo;
+        const fact  = bruto * pctF;
+        const isr   = fact * 0.20;
+        const iva   = fact * 0.16;
+        const neto  = fact - isr + iva + (bruto * (1 - pctF));
+
+        return `<tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:8px 14px;font-size:12px;color:var(--text-muted);width:60px;">MXN</td>
+          <td style="padding:8px 14px;font-size:12.5px;font-weight:700;color:var(--brand-navy);width:100px;">INV-${inv.id}</td>
+          <td style="padding:8px 14px;text-align:right;font-size:12.5px;">${fmtMoney(cap)}</td>
+          <td style="padding:8px 14px;text-align:right;font-size:12.5px;">${fmtMoney(bruto)}</td>
+          <td style="padding:8px 14px;text-align:right;font-size:12.5px;color:#C8282A;">${fmtMoney(isr)}</td>
+          <td style="padding:8px 14px;text-align:right;font-size:12.5px;color:#1CB87E;">${fmtMoney(iva)}</td>
+          <td style="padding:8px 14px;text-align:right;font-size:12.5px;">${fmtMoney(neto)}</td>
+          <td style="padding:8px 14px;text-align:right;font-size:12.5px;font-weight:700;color:var(--brand-navy);">${fmtMoney(neto)}</td>
+        </tr>`;
+      }).join('');
+
+      content.innerHTML = `
+        <table style="width:100%;border-collapse:collapse;border-left:3px solid var(--brand-navy);font-size:12px;">
+          <thead>
+            <tr style="background:#EEF2FF;">
+              <th style="padding:7px 14px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);">Divisa</th>
+              <th style="padding:7px 14px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);">Folio</th>
+              <th style="padding:7px 14px;text-align:right;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);">Saldo</th>
+              <th style="padding:7px 14px;text-align:right;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);">Interés Bruto</th>
+              <th style="padding:7px 14px;text-align:right;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#C8282A;">Retención</th>
+              <th style="padding:7px 14px;text-align:right;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#1CB87E;">IVA</th>
+              <th style="padding:7px 14px;text-align:right;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);">Interés Neto</th>
+              <th style="padding:7px 14px;text-align:right;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--brand-navy);">Interés a Pagar</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>`;
+    } catch {
+      content.innerHTML = '<div style="font-size:12px;color:var(--brand-red);padding:8px 0;">Error al cargar inversiones.</div>';
+    }
   }
 
   cargarEstados();

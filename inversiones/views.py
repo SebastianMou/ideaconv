@@ -14,6 +14,7 @@ from urllib.request import urlopen
 from io import BytesIO as BIO
 from datetime import datetime
 from reportlab.lib.pagesizes import letter
+from django.db.models import Q
 from reportlab.platypus import (
 SimpleDocTemplate, Paragraph, Spacer,
 Table, TableStyle, HRFlowable,
@@ -524,6 +525,105 @@ def generar_estados_todos(request):
         'detalle_omitidos':  omitidos,
     })
 
+@api_view(['POST'])
+@login_required(login_url='login')
+def generar_estado_inversionista(request):
+    """
+    POST /api/estados/generar-inversionista/
+    Generates one consolidated EstadoDeCuenta for a SINGLE investor
+    for the given month, using tranche calculation automatically.
+    Body: { inversionista_id, periodo_inicio, periodo_fin }
+    No need to pass dias — calculated from dates automatically.
+    """
+    inv_id         = request.data.get('inversionista_id')
+    periodo_inicio = request.data.get('periodo_inicio')
+    periodo_fin    = request.data.get('periodo_fin')
+
+    if not inv_id or not periodo_inicio or not periodo_fin:
+        return Response(
+            {'error': 'Se requiere inversionista_id, periodo_inicio y periodo_fin'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    from datetime import date
+    p_inicio = date.fromisoformat(str(periodo_inicio))
+    p_fin    = date.fromisoformat(str(periodo_fin))
+    dias_periodo = (p_fin - p_inicio).days + 1
+
+    inversionista = get_object_or_404(Inversionista, pk=inv_id)
+
+    # Check if already exists
+    if EstadoDeCuenta.objects.filter(
+        inversionista=inversionista,
+        periodo_inicio=periodo_inicio
+    ).exists():
+        return Response(
+            {'error': f'Ya existe un estado de cuenta para {inversionista.nombre_completo} en este período'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    inversiones_activas = inversionista.inversiones.filter(estado='activo')
+    if not inversiones_activas.exists():
+        return Response(
+            {'error': f'{inversionista.nombre_completo} no tiene inversiones activas'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    total_bruto   = Decimal('0')
+    total_isr     = Decimal('0')
+    total_iva     = Decimal('0')
+    total_externo = Decimal('0')
+
+    for inv in inversiones_activas:
+        pct_factura = inv.porcentaje_factura / Decimal('100')
+        pct_externo = Decimal('1') - pct_factura
+
+        bruto_inv   = _calcular_interes_con_movimientos(inv, periodo_inicio, periodo_fin)
+        fact_inv    = bruto_inv * pct_factura
+        isr_inv     = fact_inv * Decimal('0.20')
+        iva_inv     = fact_inv * Decimal('0.16')
+        externo_inv = bruto_inv * pct_externo
+
+        total_bruto   += bruto_inv
+        total_isr     += isr_inv
+        total_iva     += iva_inv
+        total_externo += externo_inv
+
+    subtotal_fact = (total_bruto - total_externo) - total_isr
+    total_fact    = subtotal_fact + total_iva
+    interes_neto  = subtotal_fact + total_iva
+    total_pagar   = total_fact + total_externo
+
+    estado = EstadoDeCuenta.objects.create(
+        inversionista=inversionista,
+        inversion=None,
+        periodo_inicio=periodo_inicio,
+        periodo_fin=periodo_fin,
+        dias_periodo=dias_periodo,
+        interes_bruto=total_bruto.quantize(Decimal('0.01')),
+        isr=total_isr.quantize(Decimal('0.01')),
+        iva=total_iva.quantize(Decimal('0.01')),
+        interes_neto=interes_neto.quantize(Decimal('0.01')),
+        pago_externo=total_externo.quantize(Decimal('0.01')),
+        total_pagar=total_pagar.quantize(Decimal('0.01')),
+        estado='generado'
+    )
+
+    Pago.objects.get_or_create(
+        estado_de_cuenta=estado,
+        defaults={'metodo': 'transferencia', 'estado': 'pendiente'}
+    )
+
+    return Response({
+        'message':      f'Estado generado para {inversionista.nombre_completo}',
+        'estado_id':    estado.id,
+        'inversionista': inversionista.nombre_completo,
+        'periodo':      f'{periodo_inicio} al {periodo_fin}',
+        'dias_periodo': dias_periodo,
+        'total_pagar':  str(total_pagar.quantize(Decimal('0.01'))),
+        'interes_bruto': str(total_bruto.quantize(Decimal('0.01'))),
+        'inversiones_calculadas': inversiones_activas.count(),
+    })
 
 def _calcular_interes_con_movimientos(inversion, periodo_inicio, periodo_fin):
     """
@@ -845,7 +945,13 @@ def dashboard_summary(request):
     for p in pagos_pend_list:
         advertencias.append({
             'tipo': 'pago_pendiente',
-            'nombre': p.estado_de_cuenta.inversion.inversionista.nombre_completo,
+            'nombre': (
+                p.estado_de_cuenta.inversionista.nombre_completo
+                if p.estado_de_cuenta.inversionista
+                else p.estado_de_cuenta.inversion.inversionista.nombre_completo
+                if p.estado_de_cuenta.inversion
+                else '—'
+            ),
             'detalle': 'Pago pendiente de confirmación',
             'icono': 'credit-card-fill',
             'color': 'warning',
@@ -892,19 +998,25 @@ def dashboard_summary(request):
 @api_view(['GET'])
 @login_required(login_url='login')
 def estado_preview(request, pk):
-    """
-    GET /api/estados/<pk>/preview/
-    Returns full estado de cuenta data for email preview/edit.
-    """
     estado = get_object_or_404(EstadoDeCuenta, pk=pk)
-    inv    = estado.inversion.inversionista
+
+    # Resolve investor — works for both new (inversionista FK) and old (inversion FK)
+    if estado.inversionista:
+        inv = estado.inversionista
+        capital = str(sum(i.capital for i in inv.inversiones.filter(estado='activo')) or 0)
+        tasa    = '—'
+    else:
+        inv     = estado.inversion.inversionista
+        capital = str(estado.inversion.capital)
+        tasa    = str(estado.inversion.tasa_anual)
+
     return Response({
         'id':               estado.id,
         'inversionista':    inv.nombre_completo,
         'rfc':              inv.rfc or '',
         'correo':           inv.correo or '',
-        'capital':          str(estado.inversion.capital),
-        'tasa':             str(estado.inversion.tasa_anual),
+        'capital':          capital,
+        'tasa':             tasa,
         'periodo_inicio':   str(estado.periodo_inicio),
         'periodo_fin':      str(estado.periodo_fin),
         'dias_periodo':     estado.dias_periodo,
@@ -917,7 +1029,6 @@ def estado_preview(request, pk):
         'estado':           estado.estado,
         'notas':            estado.notas or '',
     })
-
 
 
 # ══════════════════════════════════════════════════════════════
@@ -1553,18 +1664,17 @@ def estado_enviar(request, pk):
                 for m in inversion.movimientos.order_by('fecha')
             ],
             'estados_historicos': [
-                {
-                    'periodo_inicio': str(e.periodo_inicio),
+                {'periodo_inicio': str(e.periodo_inicio),
                     'periodo_fin':    str(e.periodo_fin),
                     'dias_periodo':   e.dias_periodo,
                     'interes_bruto':  str(e.interes_bruto),
                     'isr':            str(e.isr),
                     'iva':            str(e.iva),
-                    'interes_neto':   str(e.interes_neto),
-                }
+                    'interes_neto':   str(e.interes_neto)}
                 for e in EstadoDeCuenta.objects.filter(
-                    inversionista=inv_obj
-                ).order_by('periodo_inicio')
+                    Q(inversionista=inv_obj) |
+                    Q(inversion__inversionista=inv_obj)
+                ).distinct().order_by('periodo_inicio')
             ],
         })
 
