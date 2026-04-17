@@ -628,7 +628,14 @@ def generar_estado_inversionista(request):
 def _calcular_interes_con_movimientos(inversion, periodo_inicio, periodo_fin):
     """
     Calculates interest for a period using pro-rated tranches.
-    Each deposit (abono) or withdrawal (retiro) splits the period.
+    Each deposit (abono) or withdrawal (retiro) within the period splits it.
+
+    Strategy:
+    - Reconstruct the capital at the START of the period by reversing all
+      movements that occurred WITHIN the period (since inversion.capital
+      already reflects those movements).
+    - Then walk forward through those movements to build tranches.
+
     Returns interes_bruto as Decimal.
     """
     from datetime import date, timedelta
@@ -639,39 +646,53 @@ def _calcular_interes_con_movimientos(inversion, periodo_inicio, periodo_fin):
     tasa = inversion.tasa_anual / Decimal('100')
     base = Decimal(str(inversion.base_calculo))
 
-    # Get all movements within the period, sorted by date
-    movimientos = inversion.movimientos.filter(
-        fecha__gte=p_inicio,
-        fecha__lte=p_fin
-    ).order_by('fecha')
+    # Get all movements within the period, sorted chronologically
+    movimientos = list(
+        inversion.movimientos.filter(
+            fecha__gte=p_inicio,
+            fecha__lte=p_fin
+        ).order_by('fecha')
+    )
 
-    # Build tranches: list of (capital, start_date, end_date)
-    tranches = []
-    capital_actual = inversion.capital
-    tranche_start  = p_inicio
+    # Reconstruct capital at the START of the period:
+    # inversion.capital is the balance AFTER all these movements,
+    # so we reverse them to get the opening balance.
+    capital_inicio = inversion.capital
+    for mov in movimientos:
+        if mov.tipo == 'abono':
+            capital_inicio -= mov.monto   # undo the abono
+        else:
+            capital_inicio += mov.monto   # undo the retiro
+
+    # Build tranches walking forward from period start
+    tranches        = []
+    capital_actual  = capital_inicio
+    tranche_start   = p_inicio
 
     for mov in movimientos:
-        # Close current tranche on movement date
+        # Close tranche up to the day before this movement
         if mov.fecha > tranche_start:
-            tranches.append((capital_actual, tranche_start, mov.fecha))
-        # Apply movement
+            dias_t = Decimal(str((mov.fecha - tranche_start).days))
+            if dias_t > 0 and capital_actual > 0:
+                tranches.append((capital_actual, dias_t))
+
+        # Apply movement to get new capital
         if mov.tipo == 'abono':
             capital_actual += mov.monto
-        else:  # retiro
+        else:
             capital_actual -= mov.monto
+
         tranche_start = mov.fecha
 
-    # Final tranche from last movement to period end
-    end_exclusive = p_fin + timedelta(days=1)
-    if tranche_start < end_exclusive:
-        tranches.append((capital_actual, tranche_start, end_exclusive))
+    # Final tranche: from last movement date to period end (inclusive)
+    dias_finales = Decimal(str((p_fin - tranche_start).days + 1))
+    if dias_finales > 0 and capital_actual > 0:
+        tranches.append((capital_actual, dias_finales))
 
     # Sum interest across all tranches
     interes_bruto = Decimal('0')
-    for capital_t, start_t, end_t in tranches:
-        dias_t = Decimal(str((end_t - start_t).days))
-        if dias_t > 0 and capital_t > 0:
-            interes_bruto += capital_t * (tasa / base) * dias_t
+    for capital_t, dias_t in tranches:
+        interes_bruto += capital_t * (tasa / base) * dias_t
 
     return interes_bruto.quantize(Decimal('0.01'))
 
