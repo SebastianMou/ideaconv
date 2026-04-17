@@ -449,13 +449,41 @@
 
       // Build investment detail rows matching the screenshot style
       const rows = inversiones.map(inv => {
-        const cap   = parseFloat(inv.capital);
         const tasa  = parseFloat(inv.tasa_anual) / 100;
         const base  = parseInt(inv.base_calculo);
-        const dias  = estado.dias_periodo;
         const pctF  = parseFloat(inv.porcentaje_factura) / 100;
 
-        const bruto = cap * (tasa / base) * dias;
+        // Tranche-aware interest calculation using movimientos within the period
+        const pInicio = new Date(estado.periodo_inicio);
+        const pFin    = new Date(estado.periodo_fin);
+        const movs    = (inv.movimientos || [])
+          .map(m => ({ ...m, fecha: new Date(m.fecha) }))
+          .filter(m => m.fecha >= pInicio && m.fecha <= pFin)
+          .sort((a, b) => a.fecha - b.fecha);
+
+        // Reconstruct opening capital by reversing in-period movements
+        let capInicio = parseFloat(inv.capital);
+        movs.forEach(m => {
+          if (m.tipo === 'abono') capInicio -= parseFloat(m.monto);
+          else                    capInicio += parseFloat(m.monto);
+        });
+
+        // Walk forward through tranches
+        let bruto = 0;
+        let capActual    = capInicio;
+        let trancheStart = new Date(pInicio);
+        movs.forEach(m => {
+          if (m.fecha > trancheStart) {
+            const dias = (m.fecha - trancheStart) / 86400000;
+            if (dias > 0 && capActual > 0) bruto += capActual * (tasa / base) * dias;
+          }
+          capActual += m.tipo === 'abono' ? parseFloat(m.monto) : -parseFloat(m.monto);
+          trancheStart = new Date(m.fecha);
+        });
+        const diasFinales = (pFin - trancheStart) / 86400000 + 1;
+        if (diasFinales > 0 && capActual > 0) bruto += capActual * (tasa / base) * diasFinales;
+
+        const cap  = parseFloat(inv.capital);
         const fact  = bruto * pctF;
         const isr   = fact * 0.20;
         const iva   = fact * 0.16;
@@ -1030,6 +1058,13 @@
 
     const content = document.getElementById(rowId + '-content');
 
+    // Look up the estado so we have period dates for tranche calculation
+    const estado = todosLosEstados.find(e => String(e.id) === String(edcId));
+    if (!estado) {
+      content.innerHTML = '<div style="font-size:12px;color:var(--text-muted);">Estado no encontrado.</div>';
+      return;
+    }
+
     // Resolve inversionista id
     let invId = inversionistaId;
     if (!invId && inversionId) {
@@ -1059,12 +1094,41 @@
       }
 
       const rows = inversiones.map(inv => {
-        const cap  = parseFloat(inv.capital);
         const tasa = parseFloat(inv.tasa_anual) / 100;
         const base = parseInt(inv.base_calculo);
         const pctF = parseFloat(inv.porcentaje_factura) / 100;
 
-        const bruto = cap * (tasa / base) * diasPeriodo;
+        // Tranche-aware interest calculation using movimientos within the period
+        const pInicio = new Date(estado.periodo_inicio);
+        const pFin    = new Date(estado.periodo_fin);
+        const movs    = (inv.movimientos || [])
+          .map(m => ({ ...m, fecha: new Date(m.fecha) }))
+          .filter(m => m.fecha >= pInicio && m.fecha <= pFin)
+          .sort((a, b) => a.fecha - b.fecha);
+
+        // Reconstruct opening capital by reversing in-period movements
+        let capInicio = parseFloat(inv.capital);
+        movs.forEach(m => {
+          if (m.tipo === 'abono') capInicio -= parseFloat(m.monto);
+          else                    capInicio += parseFloat(m.monto);
+        });
+
+        // Walk forward through tranches
+        let bruto = 0;
+        let capActual    = capInicio;
+        let trancheStart = new Date(pInicio);
+        movs.forEach(m => {
+          if (m.fecha > trancheStart) {
+            const dias = (m.fecha - trancheStart) / 86400000;
+            if (dias > 0 && capActual > 0) bruto += capActual * (tasa / base) * dias;
+          }
+          capActual += m.tipo === 'abono' ? parseFloat(m.monto) : -parseFloat(m.monto);
+          trancheStart = new Date(m.fecha);
+        });
+        const diasFinales = (pFin - trancheStart) / 86400000 + 1;
+        if (diasFinales > 0 && capActual > 0) bruto += capActual * (tasa / base) * diasFinales;
+
+        const cap  = parseFloat(inv.capital);
         const fact  = bruto * pctF;
         const isr   = fact * 0.20;
         const iva   = fact * 0.16;
