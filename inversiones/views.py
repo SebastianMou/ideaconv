@@ -1311,12 +1311,15 @@ def _build_estado_pdf(data):
              Paragraph('', S('x'))],
         ]
 
+        # Use opening capital if available, else fall back to current capital
+        capital_display = inv.get('capital_inicio', inv['capital'])
+
         left_lines = [
             Paragraph('<b>FOLIO: ' + inv['folio'] + '</b>',
                 S('fl', fontName='Helvetica-Bold', fontSize=9, textColor=NAVY)),
             Paragraph('Divisa: MXN',
                 S('fd', fontName='Helvetica', fontSize=8, textColor=GRAY)),
-            Paragraph('Inversion inicial: $' + '{:,.2f}'.format(float(inv['capital'])) + ' MXN',
+            Paragraph('Inversion inicial: $' + '{:,.2f}'.format(float(capital_display)) + ' MXN',
                 S('fi', fontName='Helvetica', fontSize=8, textColor=GRAY)),
             Paragraph('Fecha de Inicio: ' + inv['fecha_inicio'],
                 S('fs', fontName='Helvetica', fontSize=8, textColor=GRAY)),
@@ -1377,11 +1380,12 @@ def _build_estado_pdf(data):
 
         drows = [[Paragraph(h, dhdr_s) for h in dhdrs]]
 
-        # Capital inicial row
+        # Capital inicial row — use opening capital if available
+        capital_display = inv.get('capital_inicio', inv['capital'])
         drows.append([
             Paragraph(inv['fecha_inicio'], dval_s),
             Paragraph('', dval_s),
-            Paragraph('$' + '{:,.2f}'.format(float(inv['capital'])), dvbl_s),
+            Paragraph('$' + '{:,.2f}'.format(float(capital_display)), dvbl_s),
             Paragraph('Capital Inicial', dlbl_s),
             Paragraph('-', dval_s),
             Paragraph('-', dval_s),
@@ -1389,45 +1393,66 @@ def _build_estado_pdf(data):
             Paragraph('-', dval_s),
         ])
 
-        # Historical payment rows
         d_bruto_total = 0.0
         d_ret_total   = 0.0
         d_iva_total   = 0.0
         d_neto_total  = 0.0
 
-        for hist in inv.get('estados_historicos', []):
-            b = float(hist['interes_bruto'])
-            r = float(hist['isr'])
-            v = float(hist['iva'])
-            n = float(hist['interes_neto'])
-            d_bruto_total += b
-            d_ret_total   += r
-            d_iva_total   += v
-            d_neto_total  += n
-            drows.append([
-                Paragraph(hist['periodo_fin'], dval_s),
-                Paragraph(str(hist['dias_periodo']), dval_s),
-                Paragraph('-', dval_s),
-                Paragraph('Pago de Intereses', dlft_s),
-                Paragraph('$' + '{:,.2f}'.format(b), dval_s),
-                Paragraph('$' + '{:,.2f}'.format(r) if r > 0 else '-', dval_s),
-                Paragraph('$' + '{:,.2f}'.format(v) if v > 0 else '-', dval_s),
-                Paragraph('$' + '{:,.2f}'.format(n), dvbl_s),
-            ])
-
-            # Insert movements on their date if any match this period
-            for mov in inv.get('movimientos', []):
-                if hist['periodo_inicio'] <= mov['fecha'] <= hist['periodo_fin']:
+        # If we have tranche data, render each tranche + movement in order
+        if inv.get('tramos'):
+            for tramo in inv['tramos']:
+                if tramo['tipo'] == 'interes':
+                    b = float(tramo['interes_bruto'])
+                    r = float(tramo['retencion'])
+                    v = float(tramo['iva'])
+                    n = float(tramo['interes_neto'])
+                    d_bruto_total += b
+                    d_ret_total   += r
+                    d_iva_total   += v
+                    d_neto_total  += n
+                    label = f"Intereses {tramo['fecha_inicio']} al {tramo['fecha_fin']}"
                     drows.append([
-                        Paragraph(mov['fecha'], dval_s),
+                        Paragraph(tramo['fecha_fin'], dval_s),
+                        Paragraph(str(tramo['dias']), dval_s),
+                        Paragraph('-', dval_s),
+                        Paragraph(label, dlft_s),
+                        Paragraph('$' + '{:,.2f}'.format(b), dval_s),
+                        Paragraph('$' + '{:,.2f}'.format(r) if r > 0 else '-', dval_s),
+                        Paragraph('$' + '{:,.2f}'.format(v) if v > 0 else '-', dval_s),
+                        Paragraph('$' + '{:,.2f}'.format(n), dvbl_s),
+                    ])
+                else:  # movimiento
+                    drows.append([
+                        Paragraph(tramo['fecha'], dval_s),
                         Paragraph('', dval_s),
-                        Paragraph('$' + '{:,.2f}'.format(float(mov['monto'])), dvbl_s),
-                        Paragraph(mov['tipo_display'] + ' a Capital', dlft_s),
+                        Paragraph('$' + '{:,.2f}'.format(float(tramo['monto'])), dvbl_s),
+                        Paragraph(tramo['concepto'], dlft_s),
                         Paragraph('-', dval_s),
                         Paragraph('-', dval_s),
                         Paragraph('-', dval_s),
                         Paragraph('-', dval_s),
                     ])
+        else:
+            # Fallback: single row per historical estado (no tranche data)
+            for hist in inv.get('estados_historicos', []):
+                b = float(hist['interes_bruto'])
+                r = float(hist['isr'])
+                v = float(hist['iva'])
+                n = float(hist['interes_neto'])
+                d_bruto_total += b
+                d_ret_total   += r
+                d_iva_total   += v
+                d_neto_total  += n
+                drows.append([
+                    Paragraph(hist['periodo_fin'], dval_s),
+                    Paragraph(str(hist['dias_periodo']), dval_s),
+                    Paragraph('-', dval_s),
+                    Paragraph('Pago de Intereses', dlft_s),
+                    Paragraph('$' + '{:,.2f}'.format(b), dval_s),
+                    Paragraph('$' + '{:,.2f}'.format(r) if r > 0 else '-', dval_s),
+                    Paragraph('$' + '{:,.2f}'.format(v) if v > 0 else '-', dval_s),
+                    Paragraph('$' + '{:,.2f}'.format(n), dvbl_s),
+                ])
 
         # Total row
         drows.append([
@@ -1498,7 +1523,7 @@ def _build_email_html(data, notas_extra='', tipo_comprobante='ambos'):
     return f"""<!DOCTYPE html>
         <html lang="es">
         <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-        <body style="margin:0;padding:0;background:#F5E6E6;font-family:Arial,sans-serif;">
+        <body style="margin:0;padding:0;background:#393f52;font-family:Arial,sans-serif;">
         <table width="100%" cellpadding="0" cellspacing="0" style="background:#F5E6E6;padding:24px 0;">
         <tr><td align="center">
         <table width="480" cellpadding="0" cellspacing="0"
@@ -1507,79 +1532,78 @@ def _build_email_html(data, notas_extra='', tipo_comprobante='ambos'):
         
             <!-- TOP BAR -->
             <tr>
-            <td style="background:#fff;padding:12px 20px;border-bottom:1px solid #e8e8e8;">
-                <table width="100%" cellpadding="0" cellspacing="0"><tr>
-                <td style="font-size:13px;font-weight:700;color:#1A2340;">Notificacion</td>
-                <td align="right">
-                    <img src="https://res.cloudinary.com/dgzhlipft/image/upload/q_auto/f_auto/v1775856062/logo_ideacon_1000x431_nretqf.png"
-                        alt="IDEACONV" height="32" style="display:block;height:32px;width:auto;">
+                <td style="background:#fff;padding:12px 20px;border-bottom:1px solid #e8e8e8;">
+                    <table width="100%" cellpadding="0" cellspacing="0"><tr>
+                    <td style="font-size:13px;font-weight:700;color:#1A2340;">Notificacion</td>
+                    <td align="right">
+                        <img src="https://res.cloudinary.com/dgzhlipft/image/upload/q_auto/f_auto/v1775856062/logo_ideacon_1000x431_nretqf.png"
+                            alt="IDEACONV" height="32" style="display:block;height:32px;width:auto;">
+                    </td>
+                    </tr></table>
                 </td>
-                </tr></table>
-            </td>
             </tr>
 
             <!-- HERO BANNER -->
             <tr>
-            <td style="background:#C8282A;padding:40px 32px 36px;text-align:center;">
-                <div style="width:64px;height:64px;background:rgba(255,255,255,.15);border-radius:14px;
-                            margin:0 auto 20px;font-size:30px;line-height:64px;text-align:center;">&#128196;</div>
-                <div style="font-size:22px;font-weight:800;color:#fff;margin-bottom:8px;">
-                Estado de Cuenta</div>
-                <div style="font-size:13px;color:rgba(255,255,255,.65);">{fecha_display}</div>
-            </td>
+                <td style="background:#1a2340;padding:28px 24px;text-align:center;">
+                    <div style="font-size:28px;line-height:48px;">&#128196;</div>
+                    <div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:6px;">
+                    Estado de Cuenta</div>
+                    <div style="font-size:12px;color:rgba(255,255,255,.65);">{fecha_display}</div>
+                </td>
             </tr>
-        
+
             <!-- GREETING -->
             <tr>
-            <td style="padding:28px 32px 8px;">
-                <p style="margin:0 0 10px;font-size:14px;font-weight:700;color:#1A2340;">
-                Estimado {data['inversionista']},</p>
-                <p style="margin:0;font-size:13px;color:#555;line-height:1.6;">
-                Gracias por su confianza. Adjunto encontrara su estado de cuenta
-                correspondiente al periodo
-                <b>{data['periodo_inicio']} al {data['periodo_fin']}</b>.</p>
-            </td>
+                <td style="padding:28px 32px 8px;">
+                    <p style="margin:0 0 10px;font-size:14px;font-weight:700;color:#1A2340;">
+                    Estimado {data['inversionista']},</p>
+                    <p style="margin:0;font-size:13px;color:#555;line-height:1.6;">
+                    Gracias por su confianza. Adjunto encontrara su estado de cuenta
+                    correspondiente al periodo
+                    <b>{data['periodo_inicio']} al {data['periodo_fin']}</b>.</p>
+                </td>
             </tr>
         
             {notas_row}
         
             <!-- PDF NOTICE -->
             <tr>
-            <td style="padding:0 32px 24px;">
-                <div style="background:#FFF0F0;border-radius:8px;padding:11px 14px;
-                    font-size:12px;color:#C8282A;border:1px solid #F5C6C6;">
-                    &#128206; <b>Adjunto:</b> Estado de cuenta con desglose completo en formato PDF.
-                    </div>
-            </td>
+                <td style="padding:0 32px 24px;">
+                    <div style="background:#1a2340CC;border-radius:8px;padding:10px 12px;
+                        font-size:11px;color:#fff;border:1px solid #F5C6C6;">
+                        &#128206; <b>Adjunto:</b> Estado de cuenta con desglose completo en formato PDF.
+                        </div>
+                </td>
             </tr>
         
             <!-- FOOTER -->
             <tr>
-            <td style="background:#f7f8fa;border-top:1px solid #e8e8e8;padding:20px 32px;">
-                <table width="100%" cellpadding="0" cellspacing="0"><tr>
-                <td valign="top">
-                    <p style="margin:0 0 4px;font-size:11.5px;color:#888;">
-                    Para dudas, no responder a este correo.</p>
-                    <p style="margin:0 0 4px;font-size:11.5px;color:#888;">
-                    Favor de oprimir el boton de AYUDA.</p>
-                    <p style="margin:0 0 10px;font-size:11.5px;color:#888;">
-                    Agreganos a tu lista de correos seguros:</p>
-                    <p style="margin:0 0 10px;">
-                    <a href="mailto:ideacon@ideaconv.com.mx"
-                        style="font-size:11.5px;color:#1A5276;text-decoration:none;">
-                        ideacon@ideaconv.com.mx</a></p>
-                    <p style="margin:0 0 2px;">
-                    <a href="#" style="font-size:11px;color:#888;text-decoration:underline;">
-                        Consulta Nuestro Aviso de Privacidad</a></p>
-                    <p style="margin:0;">
-                    <a href="#" style="font-size:11px;color:#888;text-decoration:underline;">
-                        Consulta Terminos y Condiciones</a></p>
+                <td style="background:#f7f8fa;border-top:1px solid #e8e8e8;padding:20px 32px;">
+                    <table width="100%" cellpadding="0" cellspacing="0"><tr>
+                    <td valign="top">
+                        <p style="margin:0 0 4px;font-size:11.5px;color:#888;">
+                        Para dudas, no responder a este correo.</p>
+                        <p style="margin:0 0 4px;font-size:11.5px;color:#888;">
+                        Favor de oprimir el boton de AYUDA.</p>
+                        <p style="margin:0 0 10px;font-size:11.5px;color:#888;">
+                        Agreganos a tu lista de correos seguros:</p>
+                        <p style="margin:0 0 10px;">
+                        <a href="mailto:ideacon@ideaconv.com.mx"
+                            style="font-size:11.5px;color:#1A5276;text-decoration:none;">
+                            ideacon@ideaconv.com.mx</a></p>
+                        <p style="margin:0 0 2px;">
+                        <a href="#" style="font-size:11px;color:#888;text-decoration:underline;">
+                            Consulta Nuestro Aviso de Privacidad</a></p>
+                        <p style="margin:0;">
+                        <a href="#" style="font-size:11px;color:#888;text-decoration:underline;">
+                            Consulta Terminos y Condiciones</a></p>
+                    </td>
+                    <td align="right" valign="top" width="90">
+                    <img src="https://res.cloudinary.com/dgzhlipft/image/upload/q_auto/f_auto/v1775856062/logo_ideacon_1000x431_nretqf.png" alt="IDEACONV" height="24" style="display:block;height:24px;width:auto;">
+                    </td>
+                    </tr></table>
                 </td>
-                <td align="right" valign="top" width="90">
-                   <img src="https://res.cloudinary.com/dgzhlipft/image/upload/q_auto/f_auto/v1775856062/logo_ideacon_1000x431_nretqf.png" alt="IDEACONV" height="24" style="display:block;height:24px;width:auto;">
-                </td>
-                </tr></table>
-            </td>
             </tr>
         
         </table>
@@ -1651,6 +1675,7 @@ def estado_enviar(request, pk):
     data['capital'] = str(total_capital)
 
     inversiones_pdf = []
+    from datetime import date as _date, timedelta as _td
     for inversion in inversiones_activas:
         dias     = estado.dias_periodo
         pct_fact = float(inversion.porcentaje_factura) / 100
@@ -1662,9 +1687,61 @@ def estado_enviar(request, pk):
         iva_i    = fact_i * 0.16
         neto_i   = fact_i - isr_i + iva_i + (bruto_i * (1 - pct_fact))
 
+        # Reconstruct opening capital for PDF detail page
+        p_ini   = estado.periodo_inicio if isinstance(estado.periodo_inicio, _date) else _date.fromisoformat(str(estado.periodo_inicio))
+        p_fin_d = estado.periodo_fin    if isinstance(estado.periodo_fin,    _date) else _date.fromisoformat(str(estado.periodo_fin))
+        movs_periodo = list(inversion.movimientos.filter(
+            fecha__gte=p_ini, fecha__lte=p_fin_d
+        ).order_by('fecha'))
+
+        capital_inicio_inv = inversion.capital
+        for _m in movs_periodo:
+            if _m.tipo == 'abono': capital_inicio_inv -= _m.monto
+            else:                  capital_inicio_inv += _m.monto
+
+        # Build ordered tranche + movement rows for PDF detail page
+        tramos_inv = []
+        cap_t   = capital_inicio_inv
+        t_start = p_ini
+        tasa_d  = inversion.tasa_anual / Decimal('100')
+        base_d  = Decimal(str(inversion.base_calculo))
+
+        for _m in movs_periodo:
+            if _m.fecha > t_start:
+                dias_t = (_m.fecha - t_start).days
+                b_t   = float(cap_t * (tasa_d / base_d) * Decimal(str(dias_t)))
+                f_t   = b_t * pct_fact; isr_t = f_t * 0.20; iva_t = f_t * 0.16
+                tramos_inv.append({
+                    'tipo': 'interes',
+                    'fecha_inicio': str(t_start), 'fecha_fin': str(_m.fecha - _td(days=1)),
+                    'dias': dias_t, 'capital': str(cap_t),
+                    'interes_bruto': f'{b_t:.2f}', 'retencion': f'{isr_t:.2f}',
+                    'iva': f'{iva_t:.2f}',
+                    'interes_neto': f'{f_t - isr_t + iva_t + b_t*(1-pct_fact):.2f}',
+                })
+            tramos_inv.append({
+                'tipo': 'movimiento', 'fecha': str(_m.fecha),
+                'monto': str(_m.monto), 'concepto': _m.get_tipo_display() + ' a Capital',
+            })
+            cap_t   = cap_t + _m.monto if _m.tipo == 'abono' else cap_t - _m.monto
+            t_start = _m.fecha
+
+        dias_f = (p_fin_d - t_start).days + 1
+        b_f = float(cap_t * (tasa_d / base_d) * Decimal(str(dias_f)))
+        f_f = b_f * pct_fact; isr_f = f_f * 0.20; iva_f = f_f * 0.16
+        tramos_inv.append({
+            'tipo': 'interes',
+            'fecha_inicio': str(t_start), 'fecha_fin': str(p_fin_d),
+            'dias': dias_f, 'capital': str(cap_t),
+            'interes_bruto': f'{b_f:.2f}', 'retencion': f'{isr_f:.2f}',
+            'iva': f'{iva_f:.2f}',
+            'interes_neto': f'{f_f - isr_f + iva_f + b_f*(1-pct_fact):.2f}',
+        })
+
         inversiones_pdf.append({
             'folio':             f'INV-{inversion.id}',
             'capital':           str(inversion.capital),
+            'capital_inicio':    str(capital_inicio_inv),
             'tasa_anual':        str(inversion.tasa_anual),
             'base_calculo':      inversion.base_calculo,
             'fecha_inicio':      str(inversion.fecha_inicio),
@@ -1674,16 +1751,7 @@ def estado_enviar(request, pk):
             'retencion':         f'{isr_i:.2f}',
             'iva_inv':           f'{iva_i:.2f}',
             'interes_neto':      f'{neto_i:.2f}',
-            # Full history for detail pages
-            'movimientos': [
-                {
-                    'fecha': str(m.fecha),
-                    'monto': str(m.monto),
-                    'tipo':  m.tipo,
-                    'tipo_display': m.get_tipo_display(),
-                }
-                for m in inversion.movimientos.order_by('fecha')
-            ],
+            'tramos':            tramos_inv,
             'estados_historicos': [
                 {'periodo_inicio': str(e.periodo_inicio),
                     'periodo_fin':    str(e.periodo_fin),
