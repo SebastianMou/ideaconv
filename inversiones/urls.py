@@ -67,4 +67,6 @@ urlpatterns = [
     path('api/papelera/<int:pk>/restaurar/', views.restaurar_inversionista),
     path('api/inversionistas/<int:pk>/eliminar-permanente/', views.eliminar_permanente),
 
+    # ── Exportar Excel ──
+    path('api/estados/exportar-excel/', views.exportar_excel_estados),
 ]

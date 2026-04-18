@@ -2127,3 +2127,156 @@ def eliminar_permanente(request, pk):
     if request.method == 'DELETE':
         inversionista.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+@api_view(['GET'])
+@login_required(login_url='login')
+def exportar_excel_estados(request):
+    """
+    GET /api/estados/exportar-excel/?periodo_inicio=2026-04-01&periodo_fin=2026-04-30
+    Returns an Excel file matching the INTEGRACION format.
+    """
+    import openpyxl
+    from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+    from openpyxl.utils import get_column_letter
+    from django.http import HttpResponse
+
+    periodo_inicio = request.GET.get('periodo_inicio')
+    periodo_fin    = request.GET.get('periodo_fin')
+
+    # Filter estados
+    estados_qs = EstadoDeCuenta.objects.select_related(
+        'inversionista', 'inversion__inversionista'
+    ).filter(
+        Q(inversionista__eliminado=False) |
+        Q(inversionista__isnull=True, inversion__inversionista__eliminado=False)
+    )
+    if periodo_inicio:
+        estados_qs = estados_qs.filter(periodo_inicio=periodo_inicio)
+    if periodo_fin:
+        estados_qs = estados_qs.filter(periodo_fin=periodo_fin)
+    estados_qs = estados_qs.order_by('inversionista__nombre_completo')
+
+    # Build workbook
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = 'INTEGRACION'
+
+    # Colors
+    NAVY   = '1A2340'
+    RED    = 'C8282A'
+    GRAY   = 'F4F6FA'
+    WHITE  = 'FFFFFF'
+    GREEN  = 'E8F9F2'
+
+    # Styles
+    hdr_font  = Font(name='Arial', bold=True, color=WHITE, size=10)
+    hdr_fill  = PatternFill('solid', fgColor=NAVY)
+    tot_font  = Font(name='Arial', bold=True, color=WHITE, size=10)
+    tot_fill  = PatternFill('solid', fgColor=RED)
+    cell_font = Font(name='Arial', size=10)
+    bold_font = Font(name='Arial', bold=True, size=10)
+    center    = Alignment(horizontal='center', vertical='center')
+    right     = Alignment(horizontal='right',  vertical='center')
+    left      = Alignment(horizontal='left',   vertical='center')
+    money_fmt = '#,##0.00'
+    thin      = Side(style='thin', color='E2E8F0')
+    border    = Border(left=thin, right=thin, top=thin, bottom=thin)
+
+    # Determine month label
+    try:
+        from datetime import datetime
+        MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                 'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
+        d = datetime.strptime(str(periodo_fin), '%Y-%m-%d') if periodo_fin else datetime.today()
+        mes_label = f'{MESES[d.month-1].upper()} {d.year}'
+    except Exception:
+        mes_label = str(periodo_fin or 'PERÍODO')
+
+    # Row 1 — month title
+    ws.merge_cells('A1:F1')
+    c = ws['A1']
+    c.value     = mes_label
+    c.font      = Font(name='Arial', bold=True, size=12, color=WHITE)
+    c.fill      = PatternFill('solid', fgColor=NAVY)
+    c.alignment = center
+
+    # Row 2 — column headers
+    headers = ['Inversionista', 'Interés Neto', 'Factura', 'Pago Externo', 'ISR', 'IVA']
+    for col, h in enumerate(headers, 1):
+        c = ws.cell(row=2, column=col, value=h)
+        c.font      = hdr_font
+        c.fill      = hdr_fill
+        c.alignment = center
+        c.border    = border
+
+    # Data rows
+    data_rows = []
+    for estado in estados_qs:
+        nombre = (
+            estado.inversionista.nombre_completo
+            if estado.inversionista
+            else estado.inversion.inversionista.nombre_completo
+            if estado.inversion
+            else '—'
+        )
+        data_rows.append({
+            'nombre':       nombre,
+            'interes_neto': float(estado.interes_neto),
+            'factura':      float(estado.interes_neto - estado.pago_externo),
+            'externo':      float(estado.pago_externo),
+            'isr':          float(estado.isr),
+            'iva':          float(estado.iva),
+        })
+
+    # Write data
+    for i, row in enumerate(data_rows, 3):
+        fill = PatternFill('solid', fgColor=GRAY) if i % 2 == 0 else PatternFill('solid', fgColor=WHITE)
+        ws.cell(row=i, column=1, value=row['nombre']).font      = bold_font
+        ws.cell(row=i, column=1).alignment  = left
+        ws.cell(row=i, column=1).fill       = fill
+        ws.cell(row=i, column=1).border     = border
+        for col, key in enumerate(['interes_neto','factura','externo','isr','iva'], 2):
+            c = ws.cell(row=i, column=col, value=row[key])
+            c.font           = cell_font
+            c.number_format  = money_fmt
+            c.alignment      = right
+            c.fill           = fill
+            c.border         = border
+
+    # Totals row
+    last_data = len(data_rows) + 2
+    total_row  = last_data + 1
+    ws.cell(row=total_row, column=1, value='TOTAL').font      = tot_font
+    ws.cell(row=total_row, column=1).fill      = tot_fill
+    ws.cell(row=total_row, column=1).alignment = center
+    ws.cell(row=total_row, column=1).border    = border
+    for col in range(2, 7):
+        col_letter = get_column_letter(col)
+        c = ws.cell(row=total_row, column=col,
+                    value=f'=SUM({col_letter}3:{col_letter}{last_data})')
+        c.font          = tot_font
+        c.fill          = tot_fill
+        c.number_format = money_fmt
+        c.alignment     = right
+        c.border        = border
+
+    # Column widths
+    ws.column_dimensions['A'].width = 35
+    for col in ['B','C','D','E','F']:
+        ws.column_dimensions[col].width = 18
+
+    # Row heights
+    ws.row_dimensions[1].height = 28
+    ws.row_dimensions[2].height = 20
+
+    # Freeze panes
+    ws.freeze_panes = 'A3'
+
+    # Return as download
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    filename = f'estados-{periodo_inicio or "todos"}.xlsx'
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    wb.save(response)
+    return response
