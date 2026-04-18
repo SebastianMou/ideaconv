@@ -833,14 +833,14 @@
 
     function eliminarInversionista(id, nombre) {
         document.getElementById('cv-title').textContent = '¿Eliminar inversionista?';
-        document.getElementById('cv-body').innerHTML = `¿Estás seguro que deseas eliminar a <strong>${nombre}</strong>? Esta acción no se puede deshacer y eliminará también sus inversiones y estados de cuenta.`;
+        document.getElementById('cv-body').innerHTML = `¿Mover a <strong>${nombre}</strong> a la papelera? Podrás restaurarlo desde la página de Papelera.`;
         document.getElementById('cv-confirm-btn').style.background = 'var(--brand-red)';
-        document.getElementById('cv-confirm-btn').innerHTML = '<i class="bi bi-trash me-1"></i>Eliminar';
+        document.getElementById('cv-confirm-btn').innerHTML = '<i class="bi bi-trash me-1"></i>Mover a Papelera';
         document.getElementById('cv-confirm-btn').onclick = async () => {
             closeModal();
             try {
                 await fetch(`/api/inversionistas/${id}/`, { method: 'DELETE', headers: { 'X-CSRFToken': getCookie('csrftoken') } });
-                showToast(`${nombre} eliminado`, 'trash', '#F5A623');
+                showToast(`${nombre} movido a papelera`, 'trash', '#F5A623');
                 cargarInversionistas();
             } catch { showToast('Error al eliminar', 'x-circle-fill', '#FCA5A5'); }
         };

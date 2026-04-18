@@ -1226,6 +1226,11 @@
       <i class="bi bi-person-plus-fill"></i> Prospectos
     </a>
 
+    <div class="sidebar-section-label">Sistema</div>
+    <a href="{% url 'papelera' %}" class="nav-item-custom {% block nav_papelera %}{% endblock %}">
+      <i class="bi bi-trash-fill"></i> Papelera
+    </a>
+
     <div class="sidebar-bottom">
       <div class="user-pill">
         <div class="user-avatar">{{ request.user.username|slice:":2"|upper }}</div>

@@ -89,6 +89,9 @@ class Inversionista(models.Model):
     banco = models.CharField(max_length=20, choices=BANCO_CHOICES, blank=True)
     clabe = models.CharField(max_length=18, blank=True)
 
+    eliminado = models.BooleanField(default=False)
+    fecha_eliminado = models.DateTimeField(null=True, blank=True)
+
     # Red
     promotor = models.ForeignKey(
         Promotor, null=True, blank=True,

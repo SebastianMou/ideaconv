@@ -66,7 +66,7 @@ class InversionistaListSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'nombre_completo', 'rfc', 'tipo_contribuyente',
             'tipo_display', 'correo', 'telefono', 'promotor_nombre',
-            'fecha_ingreso', 'inversion_activa'
+            'fecha_ingreso', 'inversion_activa', 'fecha_eliminado'
         ]
 
     def get_inversion_activa(self, obj):

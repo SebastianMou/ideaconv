@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% block title %}Papelera{% endblock %}
+{% block topbar_title %}🗑️ <span>Papelera</span>{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div class="section-header mb-0">
+        <h2>Papelera</h2>
+        <p id="papelera-subtitle">Cargando...</p>
+    </div>
+    <a href="/inversionistas/" class="btn-outline-brand">
+        <i class="bi bi-arrow-left me-1"></i>Volver a Inversionistas
+    </a>
+</div>
+
+<div class="table-card">
+    <div class="table-card-header">
+        <h5>Inversionistas eliminados</h5>
+        <div style="font-size:12px;color:var(--text-muted);margin-left:auto;">
+            Estos registros no aparecen en el sistema pero no han sido borrados permanentemente
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Inversionista</th>
+                <th>RFC</th>
+                <th>Tipo</th>
+                <th>Fecha eliminado</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody id="papelera-tbody">
+            <tr>
+                <td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted)">
+                    <i class="bi bi-arrow-repeat" style="font-size:22px;display:block;margin-bottom:8px"></i>Cargando...
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="papelera-empty" style="display:none;text-align:center;padding:60px;color:var(--text-muted)">
+    <i class="bi bi-trash" style="font-size:40px;display:block;margin-bottom:12px;opacity:.4"></i>
+    <div style="font-weight:600;font-size:15px;margin-bottom:6px">La papelera está vacía</div>
+    <div style="font-size:13px">Los inversionistas eliminados aparecerán aquí</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function getCookie(name) { let v = null; document.cookie.split(';').forEach(c => { const [k, val] = c.trim().split('='); if (k === name) v = decodeURIComponent(val); }); return v; }
+
+    async function cargarPapelera() {
+        const res = await fetch('/api/papelera/');
+        const data = await res.json();
+        const tbody = document.getElementById('papelera-tbody');
+        const empty = document.getElementById('papelera-empty');
+        document.getElementById('papelera-subtitle').textContent = `${data.length} registros en papelera`;
+
+        if (!data.length) {
+            tbody.innerHTML = '';
+            empty.style.display = 'block';
+            return;
+        }
+        empty.style.display = 'none';
+        tbody.innerHTML = data.map(inv => `
+      <tr>
+        <td><strong>${inv.nombre_completo}</strong></td>
+        <td style="color:var(--text-muted)">${inv.rfc || '—'}</td>
+        <td>${inv.tipo_display || inv.tipo_contribuyente}</td>
+        <td style="color:var(--text-muted);font-size:13px">${inv.fecha_eliminado ? new Date(inv.fecha_eliminado).toLocaleDateString('es-MX') : '—'}</td>
+        <td>
+            <div class="d-flex gap-2">
+                <button class="btn-outline-brand" style="font-size:12px;padding:5px 12px" onclick="restaurar(${inv.id}, '${inv.nombre_completo}')">
+                <i class="bi bi-arrow-counterclockwise me-1"></i>Restaurar
+                </button>
+                <button class="btn-brand" style="font-size:12px;padding:5px 12px;background:var(--brand-red)" onclick="eliminarPermanente(${inv.id}, '${inv.nombre_completo}')">
+                <i class="bi bi-trash-fill me-1"></i>Eliminar
+                </button>
+            </div>
+        </td>
+      </tr>
+    `).join('');
+    }
+
+    async function restaurar(id, nombre) {
+        if (!confirm(`¿Restaurar a ${nombre}?`)) return;
+        const res = await fetch(`/api/papelera/${id}/restaurar/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCookie('csrftoken') }
+        });
+        if (res.ok) {
+            showToast(`${nombre} restaurado ✓`, 'check-circle-fill', '#1CB87E');
+            cargarPapelera();
+        } else {
+            showToast('Error al restaurar', 'x-circle-fill', '#FCA5A5');
+        }
+    }
+
+    cargarPapelera();
+
+    async function eliminarPermanente(id, nombre){
+        // First fetch the summary
+        const res = await fetch(`/api/inversionistas/${id}/eliminar-permanente/`);
+        const info = await res.json();
+
+        document.getElementById('cv-title').innerHTML = `<i class="bi bi-trash-fill me-2" style="color:var(--brand-red)"></i>Eliminar permanentemente`;
+        const invRows = info.inversiones.map(i => `
+        <tr>
+            <td style="padding:6px 10px;font-size:12px;font-weight:700;">${i.folio}</td>
+            <td style="padding:6px 10px;font-size:12px;">$${parseFloat(i.capital).toLocaleString('es-MX',{minimumFractionDigits:2})}</td>
+            <td style="padding:6px 10px;font-size:12px;">${i.tasa}%</td>
+            <td style="padding:6px 10px;font-size:12px;">${i.inicio}</td>
+            <td style="padding:6px 10px;font-size:12px;"><span style="background:${i.estado==='activo'?'#E8F9F2':'#FFF4E5'};color:${i.estado==='activo'?'#0E7A54':'#996200'};padding:2px 8px;border-radius:20px;">${i.estado}</span></td>
+        </tr>`).join('');
+
+    const edcRows = info.estados.map(e => `
+        <tr>
+            <td style="padding:6px 10px;font-size:12px;">${e.periodo}</td>
+            <td style="padding:6px 10px;font-size:12px;font-weight:700;">$${parseFloat(e.total_pagar).toLocaleString('es-MX',{minimumFractionDigits:2})}</td>
+            <td style="padding:6px 10px;font-size:12px;"><span style="background:#E8EBF4;color:var(--brand-navy);padding:2px 8px;border-radius:20px;">${e.estado}</span></td>
+        </tr>`).join('');
+
+    const pagoRows = info.pagos.map(p => `
+        <tr>
+            <td style="padding:6px 10px;font-size:12px;">${p.folio}</td>
+            <td style="padding:6px 10px;font-size:12px;font-weight:700;">$${parseFloat(p.total).toLocaleString('es-MX',{minimumFractionDigits:2})}</td>
+            <td style="padding:6px 10px;font-size:12px;">${p.fecha}</td>
+            <td style="padding:6px 10px;font-size:12px;"><span style="background:${p.estado==='pagado'?'#E8F9F2':'#FFF4E5'};color:${p.estado==='pagado'?'#0E7A54':'#996200'};padding:2px 8px;border-radius:20px;">${p.estado}</span></td>
+        </tr>`).join('');
+
+    document.getElementById('cv-body').innerHTML = `
+        <div style="max-height:55vh;overflow-y:auto;padding-right:4px;">
+            <div style="background:#FDECEA;border:1px solid var(--brand-red);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12.5px;color:var(--brand-red);">
+                <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                <strong>Esta acción no se puede deshacer.</strong> Se eliminarán todos los datos de <strong>${nombre}</strong>.
+            </div>
+
+            ${info.inversiones.length ? `
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);margin-bottom:6px;">
+                <i class="bi bi-graph-up me-1"></i>Inversiones (${info.inversiones.length})
+            </div>
+            <table style="width:100%;border-collapse:collapse;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:14px;">
+                <thead><tr style="background:#F8F9FB;">
+                    <th style="padding:6px 10px;font-size:10px;text-align:left;color:var(--text-muted);">Folio</th>
+                    <th style="padding:6px 10px;font-size:10px;text-align:left;color:var(--text-muted);">Capital</th>
+                    <th style="padding:6px 10px;font-size:10px;text-align:left;color:var(--text-muted);">Tasa</th>
+                    <th style="padding:6px 10px;font-size:10px;text-align:left;color:var(--text-muted);">Inicio</th>
+                    <th style="padding:6px 10px;font-size:10px;text-align:left;color:var(--text-muted);">Estado</th>
+                </tr></thead>
+                <tbody>${invRows}</tbody>
+            </table>` : ''}
+
+            ${info.estados.length ? `
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);margin-bottom:6px;">
+                <i class="bi bi-file-earmark-text me-1"></i>Estados de Cuenta (${info.estados.length})
+            </div>
+            <table style="width:100%;border-collapse:collapse;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:14px;">
+                <thead><tr style="background:#F8F9FB;">
+                    <th style="padding:6px 10px;font-size:10px;text-align:left;color:var(--text-muted);">Período</th>
+                    <th style="padding:6px 10px;font-size:10px;text-align:left;color:var(--text-muted);">Total</th>
+                    <th style="padding:6px 10px;font-size:10px;text-align:left;color:var(--text-muted);">Estado</th>
+                </tr></thead>
+                <tbody>${edcRows}</tbody>
+            </table>` : ''}
+
+            ${info.pagos.length ? `
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);margin-bottom:6px;">
+                <i class="bi bi-credit-card me-1"></i>Pagos (${info.pagos.length})
+            </div>
+            <table style="width:100%;border-collapse:collapse;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:14px;">
+                <thead><tr style="background:#F8F9FB;">
+                    <th style="padding:6px 10px;font-size:10px;text-align:left;color:var(--text-muted);">Folio</th>
+                    <th style="padding:6px 10px;font-size:10px;text-align:left;color:var(--text-muted);">Total</th>
+                    <th style="padding:6px 10px;font-size:10px;text-align:left;color:var(--text-muted);">Fecha</th>
+                    <th style="padding:6px 10px;font-size:10px;text-align:left;color:var(--text-muted);">Estado</th>
+                </tr></thead>
+                <tbody>${pagoRows}</tbody>
+            </table>
+        </div>` : ''}`;
+        document.getElementById('cv-confirm-btn').style.background = 'var(--brand-red)';
+        document.getElementById('cv-confirm-btn').innerHTML = '<i class="bi bi-trash-fill me-1"></i>Sí, eliminar todo';
+        document.getElementById('cv-confirm-btn').onclick = async () => {
+            closeModal();
+            const del = await fetch(`/api/inversionistas/${id}/eliminar-permanente/`, {
+                method: 'DELETE',
+                headers: { 'X-CSRFToken': getCookie('csrftoken') }
+            });
+            if(del.ok){
+                showToast(`${nombre} eliminado permanentemente`, 'trash-fill', '#C8282A');
+                cargarPapelera();
+            } else {
+                showToast('Error al eliminar', 'x-circle-fill', '#FCA5A5');
+            }
+        };
+        showOverlay();
+        document.getElementById('convert-modal').style.display = 'block';
+    }
+</script>
+{% endblock %}

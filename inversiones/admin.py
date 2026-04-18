@@ -35,10 +35,11 @@ class InversionInline(admin.TabularInline):
 
 @admin.register(Inversionista)
 class InversionistaAdmin(admin.ModelAdmin):
-    list_display  = ('nombre_completo', 'rfc', 'tipo_contribuyente', 'correo', 'telefono', 'promotor')
-    list_filter   = ('tipo_contribuyente', 'es_entidad_financiera', 'promotor')
+    list_display  = ('nombre_completo', 'rfc', 'tipo_contribuyente', 'correo', 'telefono', 'promotor', 'eliminado', 'fecha_eliminado')
+    list_filter   = ('tipo_contribuyente', 'es_entidad_financiera', 'promotor', 'eliminado')
     search_fields = ('nombre_completo', 'rfc', 'curp', 'correo')
     inlines       = [InversionInline]
+    actions       = ['restaurar_seleccionados']
     fieldsets = (
         ('Datos Personales', {
             'fields': (
@@ -62,8 +63,15 @@ class InversionistaAdmin(admin.ModelAdmin):
         ('Red', {
             'fields': ('promotor',)
         }),
+        ('Papelera', {
+            'fields': ('eliminado', 'fecha_eliminado')
+        }),
     )
 
+    def restaurar_seleccionados(self, request, queryset):
+        queryset.update(eliminado=False, fecha_eliminado=None)
+    restaurar_seleccionados.short_description = 'Restaurar inversionistas seleccionados'
+    
 
 @admin.register(Inversion)
 class InversionAdmin(admin.ModelAdmin):

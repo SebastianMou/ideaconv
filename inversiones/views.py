@@ -15,6 +15,8 @@ from io import BytesIO as BIO
 from datetime import datetime
 from reportlab.lib.pagesizes import letter
 from django.db.models import Q
+from django.db import models as django_models
+
 from reportlab.platypus import (
 SimpleDocTemplate, Paragraph, Spacer,
 Table, TableStyle, HRFlowable,
@@ -181,6 +183,9 @@ def promotores_view(request):
 def prospectos_view(request):
     return render(request, 'inversiones/prospectos.html')
 
+@login_required(login_url='login')
+def papelera_view(request):
+    return render(request, 'inversiones/papelera.html')
 
 # ══════════════════════════════════════════════
 #  INVERSIONISTAS API
@@ -193,7 +198,7 @@ def inversionistas_list(request):
     POST /api/inversionistas/       — create new investor
     """
     if request.method == 'GET':
-        queryset = Inversionista.objects.all().order_by('-id')
+        queryset = Inversionista.objects.filter(eliminado=False).order_by('-id')
 
         # Optional filters
         search = request.GET.get('search')
@@ -212,8 +217,16 @@ def inversionistas_list(request):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+        from django.db.models import Q
+        errors  = dict(serializer.errors)
+        for field in ['curp', 'rfc']:
+            if field in errors:
+                value = request.data.get(field, '').strip()
+                if value and Inversionista.objects.filter(**{field: value, 'eliminado': True}).exists():
+                    errors[field] = [f'Este {field.upper()} ya existe pero el inversionista está en la Papelera. Restáuralo desde la Papelera antes de continuar.']
+        return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def inversionista_detail(request, pk):
@@ -236,9 +249,29 @@ def inversionista_detail(request, pk):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     if request.method == 'DELETE':
-        inversionista.delete()
+        from django.utils import timezone
+        inversionista.eliminado = True
+        inversionista.fecha_eliminado = timezone.now()
+        inversionista.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
+@api_view(['GET'])
+def papelera_list(request):
+    """GET /api/papelera/ — list soft-deleted investors"""
+    queryset = Inversionista.objects.filter(eliminado=True).order_by('-fecha_eliminado')
+    serializer = InversionistaListSerializer(queryset, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['POST'])
+def restaurar_inversionista(request, pk):
+    """POST /api/papelera/<pk>/restaurar/ — restore a soft-deleted investor"""
+    inversionista = get_object_or_404(Inversionista, pk=pk, eliminado=True)
+    inversionista.eliminado = False
+    inversionista.fecha_eliminado = None
+    inversionista.save()
+    return Response({'message': f'{inversionista.nombre_completo} restaurado exitosamente.'})
 
 # ══════════════════════════════════════════════
 #  INVERSIONES API
@@ -394,8 +427,12 @@ def estados_list(request):
     """
     if request.method == 'GET':
         queryset = EstadoDeCuenta.objects.select_related(
-            'inversion__inversionista'
-        ).all().order_by('-fecha_generado')
+            'inversion__inversionista',
+            'inversionista'
+        ).filter(
+            Q(inversionista__eliminado=False) |
+            Q(inversionista__isnull=True, inversion__inversionista__eliminado=False)
+        ).order_by('-fecha_generado')
 
         estado = request.GET.get('estado')
         if estado:
@@ -457,7 +494,8 @@ def generar_estados_todos(request):
 
     # Get all investors that have at least one active investment
     inversionistas = Inversionista.objects.filter(
-        inversiones__estado='activo'
+        inversiones__estado='activo',
+        eliminado=False
     ).distinct()
 
     generados = []
@@ -710,8 +748,11 @@ def pagos_list(request):
     GET /api/pagos/  — list all pagos (filter by ?estado=pendiente&mes=2026-03)
     """
     queryset = Pago.objects.select_related(
-        'estado_de_cuenta__inversion__inversionista'
-    ).all().order_by('-estado_de_cuenta__periodo_inicio')
+        'estado_de_cuenta__inversion__inversionista',
+        'estado_de_cuenta__inversionista'
+    ).filter(
+        estado_de_cuenta__inversionista__eliminado=False
+    ).order_by('-estado_de_cuenta__periodo_inicio')
 
     estado = request.GET.get('estado')
     if estado:
@@ -784,11 +825,27 @@ def promotores_list(request):
         return Response(serializer.data)
 
     if request.method == 'POST':
-        serializer = PromotorSerializer(data=request.data)
+        serializer = InversionistaSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        errors = serializer.errors
+        custom = {}
+        for field in ['curp', 'rfc']:
+            if field in errors:
+                value = request.data.get(field, '')
+                in_papelera = Inversionista.objects.filter(
+                    **{field: value, 'eliminado': True}
+                ).exists()
+                if in_papelera:
+                    custom[field] = [f'Este {field.upper()} pertenece a un inversionista en la papelera. Restáuralo desde la Papelera antes de continuar.']
+                else:
+                    custom[field] = errors[field]
+            elif field in errors:
+                custom[field] = errors[field]
+        final_errors = {**errors, **custom}
+        return Response(final_errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -2021,3 +2078,52 @@ def bug_report(request):
         usuario     = request.data.get('usuario', ''),
     )
     return Response({'message': 'Reporte recibido'}, status=status.HTTP_201_CREATED)
+
+@api_view(['GET', 'DELETE'])
+def eliminar_permanente(request, pk):
+    inversionista = get_object_or_404(Inversionista, pk=pk, eliminado=True)
+
+    if request.method == 'GET':
+        inversiones_qs = inversionista.inversiones.all()
+        estados_qs     = EstadoDeCuenta.objects.filter(
+            Q(inversionista=inversionista) |
+            Q(inversion__inversionista=inversionista)
+        ).order_by('-periodo_inicio')
+        pagos_qs = Pago.objects.filter(
+            Q(estado_de_cuenta__inversionista=inversionista) |
+            Q(estado_de_cuenta__inversion__inversionista=inversionista)
+        )
+        return Response({
+            'nombre': inversionista.nombre_completo,
+            'inversiones': [
+                {
+                    'folio':    f'INV-{inv.id}',
+                    'capital':  str(inv.capital),
+                    'tasa':     str(inv.tasa_anual),
+                    'estado':   inv.estado,
+                    'inicio':   str(inv.fecha_inicio),
+                }
+                for inv in inversiones_qs
+            ],
+            'estados': [
+                {
+                    'periodo':      f'{e.periodo_inicio} → {e.periodo_fin}',
+                    'total_pagar':  str(e.total_pagar),
+                    'estado':       e.estado,
+                }
+                for e in estados_qs
+            ],
+            'pagos': [
+                {
+                    'folio':  p.folio or '—',
+                    'estado': p.estado,
+                    'fecha':  str(p.fecha_pago) if p.fecha_pago else '—',
+                    'total':  str(p.estado_de_cuenta.total_pagar),
+                }
+                for p in pagos_qs
+            ],
+        })
+
+    if request.method == 'DELETE':
+        inversionista.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

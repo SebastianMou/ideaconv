@@ -60,4 +60,11 @@ urlpatterns = [
 
     # ── Misc ──
     path('api/bug-report/', views.bug_report, name='api-bug-report'),
+
+    # ── Papelera ──
+    path('papelera/', views.papelera_view, name='papelera'),
+    path('api/papelera/', views.papelera_list),
+    path('api/papelera/<int:pk>/restaurar/', views.restaurar_inversionista),
+    path('api/inversionistas/<int:pk>/eliminar-permanente/', views.eliminar_permanente),
+
 ]
