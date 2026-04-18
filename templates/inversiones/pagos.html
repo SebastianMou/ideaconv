@@ -16,7 +16,7 @@
       <option value="pagado">Pagados</option>
     </select>
     <button class="btn-brand" onclick="marcarTodosPagados()">
-      <i class="bi bi-check2-all me-1"></i>Marcar Pagados
+      <i class="bi bi-check2-all me-1"></i>Marcar Seleccionados
     </button>
   </div>
 </div>
@@ -244,11 +244,13 @@
   }
 
   function marcarTodosPagados(){
-    const checked=[...document.querySelectorAll('.pago-check:checked')].map(c=>c.value);
-    if(!checked.length){ showToast('Selecciona al menos un pago','exclamation-circle','#F5A623'); return; }
-    const first=pagosData.find(p=>checked.includes(String(p.id))&&p.estado==='pendiente');
-    if(first) confirmarPago(first.id,fmtMoney(first.total_pagar),first.metodo_display||first.metodo,first.inversionista_nombre);
-    else showToast('Los pagos seleccionados ya están pagados','check-circle-fill','#1CB87E');
+      const checked=[...document.querySelectorAll('.pago-check:checked')].map(c=>c.value);
+      const pool = checked.length
+          ? pagosData.filter(p=>checked.includes(String(p.id))&&p.estado==='pendiente')
+          : pagosData.filter(p=>p.estado==='pendiente');
+      if(!pool.length){ showToast('No hay pagos pendientes','exclamation-circle','#F5A623'); return; }
+      const first=pool[0];
+      confirmarPago(first.id,fmtMoney(first.total_pagar),first.metodo_display||first.metodo,first.inversionista_nombre);
   }
 
   function eliminarPago(id, nombre) {

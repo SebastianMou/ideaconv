@@ -122,7 +122,7 @@ class Inversion(models.Model):
     capital = models.DecimalField(max_digits=14, decimal_places=2)
     tasa_anual = models.DecimalField(max_digits=5, decimal_places=2, help_text='Porcentaje, ej. 15.00')
     base_calculo = models.IntegerField(choices=BASE_CHOICES, default=365)
-    porcentaje_factura = models.DecimalField(max_digits=5, decimal_places=2, default=100, help_text='% que se factura, el resto es pago externo')
+    porcentaje_factura = models.DecimalField(max_digits=10, decimal_places=6, default=100, help_text='% que se factura, el resto es pago externo')
     fecha_inicio = models.DateField()
     fecha_vencimiento = models.DateField(null=True, blank=True)
     estado = models.CharField(max_length=15, choices=ESTADO_CHOICES, default='activo')

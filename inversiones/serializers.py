@@ -107,24 +107,15 @@ class EstadoDeCuentaSerializer(serializers.ModelSerializer):
 
 
 class PagoSerializer(serializers.ModelSerializer):
-    inversionista_nombre = serializers.CharField(
-        source='estado_de_cuenta.inversion.inversionista.nombre_completo',
-        read_only=True
-    )
-    inversionista_rfc = serializers.CharField(
-        source='estado_de_cuenta.inversion.inversionista.rfc',
-        read_only=True
-    )
+    inversionista_nombre = serializers.SerializerMethodField()
+    inversionista_rfc    = serializers.SerializerMethodField()
     metodo_display = serializers.CharField(source='get_metodo_display', read_only=True)
     estado_display = serializers.CharField(source='get_estado_display', read_only=True)
     total_pagar = serializers.DecimalField(
         source='estado_de_cuenta.total_pagar',
         max_digits=14, decimal_places=2, read_only=True
     )
-    capital = serializers.DecimalField(
-        source='estado_de_cuenta.inversion.capital',
-        max_digits=14, decimal_places=2, read_only=True
-    )
+    capital = serializers.SerializerMethodField()
     interes_neto = serializers.DecimalField(
         source='estado_de_cuenta.interes_neto',
         max_digits=14, decimal_places=2, read_only=True
@@ -139,21 +130,54 @@ class PagoSerializer(serializers.ModelSerializer):
         model = Pago
         fields = '__all__'
 
+    def _get_inv(self, obj):
+        edc = obj.estado_de_cuenta
+        if edc.inversionista:
+            return edc.inversionista
+        if edc.inversion:
+            return edc.inversion.inversionista
+        return None
+
+    def get_inversionista_nombre(self, obj):
+        inv = self._get_inv(obj)
+        return inv.nombre_completo if inv else '—'
+
+    def get_inversionista_rfc(self, obj):
+        inv = self._get_inv(obj)
+        return inv.rfc if inv else ''
+
+    def get_capital(self, obj):
+        edc = obj.estado_de_cuenta
+        if edc.inversion:
+            return str(edc.inversion.capital)
+        if edc.inversionista:
+            total = sum(i.capital for i in edc.inversionista.inversiones.filter(estado='activo'))
+            return str(total)
+        return '0'
+
     def get_estado_de_cuenta_detalle(self, obj):
         edc = obj.estado_de_cuenta
+        capital = self.get_capital(obj)
+        tasa = '—'
+        if edc.inversion:
+            tasa = str(edc.inversion.tasa_anual)
+        elif edc.inversionista:
+            inv = edc.inversionista.inversiones.filter(estado='activo').first()
+            if inv:
+                tasa = str(inv.tasa_anual)
         return {
-            'id':              edc.id,
-            'periodo_inicio':  str(edc.periodo_inicio),
-            'periodo_fin':     str(edc.periodo_fin),
-            'dias_periodo':    edc.dias_periodo,
-            'interes_bruto':   str(edc.interes_bruto),
-            'isr':             str(edc.isr),
-            'iva':             str(edc.iva),
-            'interes_neto':    str(edc.interes_neto),
-            'pago_externo':    str(edc.pago_externo),
-            'total_pagar':     str(edc.total_pagar),
-            'capital':         str(edc.inversion.capital),
-            'tasa_anual':      str(edc.inversion.tasa_anual),
+            'id':             edc.id,
+            'periodo_inicio': str(edc.periodo_inicio),
+            'periodo_fin':    str(edc.periodo_fin),
+            'dias_periodo':   edc.dias_periodo,
+            'interes_bruto':  str(edc.interes_bruto),
+            'isr':            str(edc.isr),
+            'iva':            str(edc.iva),
+            'interes_neto':   str(edc.interes_neto),
+            'pago_externo':   str(edc.pago_externo),
+            'total_pagar':    str(edc.total_pagar),
+            'capital':        capital,
+            'tasa_anual':     tasa,
         }
 
 
@@ -173,6 +197,6 @@ class CalculadoraInputSerializer(serializers.Serializer):
     dias = serializers.IntegerField(min_value=1, max_value=366)
     base = serializers.ChoiceField(choices=[360, 365])
     porcentaje_factura = serializers.DecimalField(
-        max_digits=5, decimal_places=2,
+        max_digits=10, decimal_places=6,
         min_value=0, max_value=100
     )

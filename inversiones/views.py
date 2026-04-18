@@ -502,7 +502,7 @@ def generar_estados_todos(request):
         interes_neto  = subtotal_fact + total_iva
         total_pagar   = total_fact + total_externo
 
-        EstadoDeCuenta.objects.create(
+        estado = EstadoDeCuenta.objects.create(
             inversionista=inversionista,
             inversion=None,
             periodo_inicio=periodo_inicio,
@@ -515,6 +515,10 @@ def generar_estados_todos(request):
             pago_externo=total_externo.quantize(Decimal('0.01')),
             total_pagar=total_pagar.quantize(Decimal('0.01')),
             estado='generado'
+        )
+        Pago.objects.get_or_create(
+            estado_de_cuenta=estado,
+            defaults={'metodo': 'transferencia', 'estado': 'pendiente'}
         )
         generados.append(inversionista.nombre_completo)
 
@@ -1185,13 +1189,23 @@ def _build_estado_pdf(data):
     kpi_val_s = S('kv', fontName='Helvetica-Bold', fontSize=14, textColor=WHITE,  alignment=TA_CENTER)
     kpi_lbl_s = S('kl', fontName='Helvetica',      fontSize=8,  textColor=LIGHT_BLUE, alignment=TA_CENTER)
  
+    # Page 1 shows only the invoice portion
+    total_bruto_inv   = sum(float(i['interes_bruto']) for i in data.get('inversiones', []))
+    total_fact_base   = sum(
+        float(i['interes_bruto']) * (float(i.get('porcentaje_factura', 100)) / 100)
+        for i in data.get('inversiones', [])
+    )
+    total_isr_inv     = sum(float(i.get('retencion', 0)) for i in data.get('inversiones', []))
+    total_iva_inv     = sum(float(i.get('iva_inv', 0))   for i in data.get('inversiones', []))
+    total_neto_inv    = total_fact_base - total_isr_inv + total_iva_inv
+
     kpi_tbl = Table([
-        [Paragraph(fmt(data['capital']),       kpi_val_s),
-         Paragraph(fmt(data['interes_bruto']), kpi_val_s),
-         Paragraph(fmt(data['total_pagar']),   kpi_val_s)],
+        [Paragraph(fmt(data['capital']),    kpi_val_s),
+        Paragraph(fmt(total_fact_base),    kpi_val_s),
+        Paragraph(fmt(total_neto_inv),     kpi_val_s)],
         [Paragraph('Monto capital',   kpi_lbl_s),
-         Paragraph('Interés Bruto',   kpi_lbl_s),
-         Paragraph('Interés a Pagar', kpi_lbl_s)],
+        Paragraph('Base Factura',    kpi_lbl_s),
+        Paragraph('Interés a Pagar', kpi_lbl_s)],
     ], colWidths=[2.33*inch]*3)
     kpi_tbl.setStyle(TableStyle([
         ('ROWBACKGROUNDS', (0,0), (-1,-1), [BGBLUE, colors.HexColor('#154360')]),
@@ -1477,6 +1491,55 @@ def _build_estado_pdf(data):
             ('BOTTOMPADDING', (0,0),  (-1,-1), 5),
         ]))
         story.append(detail_tbl)
+
+        # Pago externo section — only if there is external payment
+        pago_externo_total = sum(
+            float(tramo['interes_bruto']) * (1 - float(inv.get('porcentaje_factura', 100)) / 100)
+            for tramo in inv.get('tramos', [])
+            if tramo['tipo'] == 'interes'
+        )
+        if pago_externo_total > 0:
+            story.append(Spacer(1, 14))
+            story.append(Table(
+                [[Paragraph('Pago Externo / Sindicato / Efectivo',
+                    S('exh', fontName='Helvetica-Bold', fontSize=9, textColor=WHITE, alignment=TA_CENTER))]],
+                colWidths=[7.0*inch],
+                style=TableStyle([
+                    ('BACKGROUND',    (0,0), (-1,-1), RED),
+                    ('TOPPADDING',    (0,0), (-1,-1), 8),
+                    ('BOTTOMPADDING', (0,0), (-1,-1), 8),
+                ])
+            ))
+            story.append(Spacer(1, 1))
+            ext_rows = [[
+                Paragraph('Concepto', dhdr_s),
+                Paragraph('Monto', dhdr_s),
+            ]]
+            for tramo in inv.get('tramos', []):
+                if tramo['tipo'] == 'interes':
+                    pct_ext = 1 - float(inv.get('porcentaje_factura', 100)) / 100
+                    monto_ext = float(tramo['interes_bruto']) * pct_ext
+                    if monto_ext > 0:
+                        ext_rows.append([
+                            Paragraph(f"Intereses {tramo['fecha_inicio']} al {tramo['fecha_fin']} ({tramo['dias']} días)", dlft_s),
+                            Paragraph('$' + '{:,.2f}'.format(monto_ext), dvbl_s),
+                        ])
+            ext_rows.append([
+                Paragraph('Total Pago Externo', dtot_s),
+                Paragraph('$' + '{:,.2f}'.format(pago_externo_total), dtot_s),
+            ])
+            ext_tbl = Table(ext_rows, colWidths=[5.0*inch, 2.0*inch])
+            ext_tbl.setStyle(TableStyle([
+                ('BACKGROUND',    (0,0),  (-1,0),  BGBLUE),
+                ('BACKGROUND',    (0,-1), (-1,-1), BGBLUE),
+                ('ROWBACKGROUNDS',(0,1),  (-1,-2), [WHITE, ROWBG]),
+                ('GRID',          (0,0),  (-1,-1), 0.5, BORDER),
+                ('VALIGN',        (0,0),  (-1,-1), 'MIDDLE'),
+                ('TOPPADDING',    (0,0),  (-1,-1), 5),
+                ('BOTTOMPADDING', (0,0),  (-1,-1), 5),
+            ]))
+            story.append(ext_tbl)
+
         story.append(Spacer(1, 20))
 
         # Footer on detail page
@@ -1751,6 +1814,7 @@ def estado_enviar(request, pk):
             'retencion':         f'{isr_i:.2f}',
             'iva_inv':           f'{iva_i:.2f}',
             'interes_neto':      f'{neto_i:.2f}',
+            'porcentaje_factura': str(inversion.porcentaje_factura),
             'tramos':            tramos_inv,
             'estados_historicos': [
                 {'periodo_inicio': str(e.periodo_inicio),
