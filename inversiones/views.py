@@ -1311,25 +1311,26 @@ def _build_estado_pdf(data):
         totals['ret']   += r
         totals['iva']   += iv
         totals['neto']  += n
-        neto_f = float(inv['interes_bruto']) * (float(inv.get('porcentaje_factura', 100)) / 100)
-        isr_f  = neto_f * 0.20
-        iva_f  = neto_f * 0.16
-        totals['neto_invoice'] += neto_f - isr_f + iva_f
+        bruto_f = float(inv['interes_bruto']) * (float(inv.get('porcentaje_factura', 100)) / 100)
+        isr_f   = bruto_f * 0.20
+        iva_f   = bruto_f * 0.16
+        totals['bruto_invoice']  = totals.get('bruto_invoice', 0) + bruto_f
+        totals['neto_invoice']  += bruto_f - isr_f + iva_f
         # Show only the invoiced portion of the rate
         tasa_factura = float(inv['tasa_anual']) * (float(inv.get('porcentaje_factura', 100)) / 100)
-        neto_factura = float(inv['interes_bruto']) * (float(inv.get('porcentaje_factura', 100)) / 100)
-        isr_fact     = neto_factura * 0.20
-        iva_fact     = neto_factura * 0.16
-        neto_invoice = neto_factura - isr_fact + iva_fact
+        bruto_factura = float(inv['interes_bruto']) * (float(inv.get('porcentaje_factura', 100)) / 100)
+        isr_fact      = bruto_factura * 0.20
+        iva_fact      = bruto_factura * 0.16
+        neto_invoice  = bruto_factura - isr_fact + iva_fact
         rows.append([
-            Paragraph(inv['folio'],         vbl_s),
-            Paragraph(fmt(inv['capital']),  val_s),
-            Paragraph(str(inv['dias']),     val_s),
-            Paragraph(f'{tasa_factura:.2f} %', val_s),
-            Paragraph(fmt(inv['interes_bruto']), val_s),
+            Paragraph(inv['folio'],              vbl_s),
+            Paragraph(fmt(inv['capital']),       val_s),
+            Paragraph(str(inv['dias']),          val_s),
+            Paragraph(f'{tasa_factura:.2f} %',   val_s),
+            Paragraph(fmt(bruto_factura),        val_s),
             Paragraph('-' if r  == 0 else fmt(r),  val_s),
             Paragraph('-' if iv == 0 else fmt(iv), val_s),
-            Paragraph(fmt(neto_invoice), vbl_s),
+            Paragraph(fmt(neto_invoice),         vbl_s),
         ])
  
     rows.append([
@@ -1337,7 +1338,7 @@ def _build_estado_pdf(data):
         Paragraph('',                       tot_s),
         Paragraph('',                       tot_s),
         Paragraph('',                       tot_s),
-        Paragraph(fmt(totals['bruto']),     tot_s),
+        Paragraph(fmt(totals.get('bruto_invoice', totals['bruto'])), tot_s),
         Paragraph(fmt(totals['ret']),       tot_s),
         Paragraph(fmt(totals['iva']),       tot_s),
         Paragraph(fmt(totals['neto_invoice']), tot_s),
