@@ -1278,8 +1278,8 @@ def _build_estado_pdf(data):
     # ════════════════════════════════
     # Section header bar
     story.append(Table(
-        [[Paragraph('Desglose de Pagarés en MXN del mes',
-            S('dh', fontName='Helvetica-Bold', fontSize=9, textColor=WHITE, alignment=TA_CENTER))]],
+        [[Paragraph('Complemento',
+            S('exh', fontName='Helvetica-Bold', fontSize=9, textColor=WHITE, alignment=TA_CENTER))]],
         colWidths=[7.0*inch],
         style=TableStyle([
             ('BACKGROUND',    (0,0), (-1,-1), BGBLUE),
