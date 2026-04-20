@@ -2212,7 +2212,7 @@ def exportar_excel_estados(request):
     c.alignment = center
 
     # Row 2 — column headers
-    headers = ['Inversionista', 'Interés Neto Total', 'Complemento', 'ISR', 'IVA', 'Neto Facturado + Complemento']
+    headers = ['Inversionista', 'Interés Neto Total', 'Pago Externo', 'ISR', 'IVA', 'Neto Facturado + Pago Externo']
     for col, h in enumerate(headers, 1):
         c = ws.cell(row=2, column=col, value=h)
         c.font      = hdr_font
