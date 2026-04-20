@@ -1300,7 +1300,7 @@ def _build_estado_pdf(data):
              'Interés Bruto', 'Retención', 'IVA', 'Interés Neto']
  
     rows = [[Paragraph(h, hdr_s) for h in hdrs]]
-    totals = {'bruto': 0.0, 'ret': 0.0, 'iva': 0.0, 'neto': 0.0}
+    totals = {'bruto': 0.0, 'ret': 0.0, 'iva': 0.0, 'neto': 0.0, 'neto_invoice': 0.0}
  
     for inv in data.get('inversiones', []):
         b  = float(inv['interes_bruto'])
@@ -1311,15 +1311,25 @@ def _build_estado_pdf(data):
         totals['ret']   += r
         totals['iva']   += iv
         totals['neto']  += n
+        neto_f = float(inv['interes_bruto']) * (float(inv.get('porcentaje_factura', 100)) / 100)
+        isr_f  = neto_f * 0.20
+        iva_f  = neto_f * 0.16
+        totals['neto_invoice'] += neto_f - isr_f + iva_f
+        # Show only the invoiced portion of the rate
+        tasa_factura = float(inv['tasa_anual']) * (float(inv.get('porcentaje_factura', 100)) / 100)
+        neto_factura = float(inv['interes_bruto']) * (float(inv.get('porcentaje_factura', 100)) / 100)
+        isr_fact     = neto_factura * 0.20
+        iva_fact     = neto_factura * 0.16
+        neto_invoice = neto_factura - isr_fact + iva_fact
         rows.append([
             Paragraph(inv['folio'],         vbl_s),
             Paragraph(fmt(inv['capital']),  val_s),
             Paragraph(str(inv['dias']),     val_s),
-            Paragraph(str(inv['tasa_anual']) + ' %', val_s),
+            Paragraph(f'{tasa_factura:.2f} %', val_s),
             Paragraph(fmt(inv['interes_bruto']), val_s),
             Paragraph('-' if r  == 0 else fmt(r),  val_s),
             Paragraph('-' if iv == 0 else fmt(iv), val_s),
-            Paragraph(fmt(inv['interes_neto']), vbl_s),
+            Paragraph(fmt(neto_invoice), vbl_s),
         ])
  
     rows.append([
@@ -1330,7 +1340,7 @@ def _build_estado_pdf(data):
         Paragraph(fmt(totals['bruto']),     tot_s),
         Paragraph(fmt(totals['ret']),       tot_s),
         Paragraph(fmt(totals['iva']),       tot_s),
-        Paragraph(fmt(totals['neto']),      tot_s),
+        Paragraph(fmt(totals['neto_invoice']), tot_s),
     ])
  
     breakdown = Table(rows, colWidths=col_w)
