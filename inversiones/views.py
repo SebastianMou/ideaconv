@@ -2204,7 +2204,7 @@ def exportar_excel_estados(request):
         mes_label = str(periodo_fin or 'PERÍODO')
 
     # Row 1 — month title
-    ws.merge_cells('A1:F1')
+    ws.merge_cells('A1:G1')
     c = ws['A1']
     c.value     = mes_label
     c.font      = Font(name='Arial', bold=True, size=12, color=WHITE)
@@ -2212,7 +2212,7 @@ def exportar_excel_estados(request):
     c.alignment = center
 
     # Row 2 — column headers
-    headers = ['Inversionista', 'Interés Neto', 'Factura', 'Pago Externo', 'ISR', 'IVA']
+    headers = ['Inversionista', 'Interés Neto Total', 'Neto Facturado', 'Pago Externo', 'ISR', 'IVA', 'Neto Facturado + Pago Externo']
     for col, h in enumerate(headers, 1):
         c = ws.cell(row=2, column=col, value=h)
         c.font      = hdr_font
@@ -2230,13 +2230,16 @@ def exportar_excel_estados(request):
             if estado.inversion
             else '—'
         )
+        neto_facturado = float(estado.interes_neto) - float(estado.pago_externo)
+        pago_externo   = float(estado.pago_externo)
         data_rows.append({
-            'nombre':       nombre,
-            'interes_neto': float(estado.interes_neto),
-            'factura':      float(estado.interes_neto - estado.pago_externo),
-            'externo':      float(estado.pago_externo),
-            'isr':          float(estado.isr),
-            'iva':          float(estado.iva),
+            'nombre':        nombre,
+            'interes_neto':  float(estado.total_pagar),
+            'neto_facturado': neto_facturado,
+            'externo':       pago_externo,
+            'isr':           float(estado.isr),
+            'iva':           float(estado.iva),
+            'suma':          neto_facturado + pago_externo,
         })
 
     # Write data
@@ -2246,7 +2249,7 @@ def exportar_excel_estados(request):
         ws.cell(row=i, column=1).alignment  = left
         ws.cell(row=i, column=1).fill       = fill
         ws.cell(row=i, column=1).border     = border
-        for col, key in enumerate(['interes_neto','factura','externo','isr','iva'], 2):
+        for col, key in enumerate(['interes_neto','neto_facturado','externo','isr','iva','suma'], 2):
             c = ws.cell(row=i, column=col, value=row[key])
             c.font           = cell_font
             c.number_format  = money_fmt
@@ -2261,7 +2264,7 @@ def exportar_excel_estados(request):
     ws.cell(row=total_row, column=1).fill      = tot_fill
     ws.cell(row=total_row, column=1).alignment = center
     ws.cell(row=total_row, column=1).border    = border
-    for col in range(2, 7):
+    for col in range(2, 8):
         col_letter = get_column_letter(col)
         c = ws.cell(row=total_row, column=col,
                     value=f'=SUM({col_letter}3:{col_letter}{last_data})')
@@ -2273,7 +2276,7 @@ def exportar_excel_estados(request):
 
     # Column widths
     ws.column_dimensions['A'].width = 35
-    for col in ['B','C','D','E','F']:
+    for col in ['B','C','D','E','F','G']:
         ws.column_dimensions[col].width = 18
 
     # Row heights
