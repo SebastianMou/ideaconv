@@ -69,4 +69,6 @@ urlpatterns = [
 
     # ── Exportar Excel ──
     path('api/estados/exportar-excel/', views.exportar_excel_estados),
+    path('api/notificaciones/dismiss/', views.dismiss_notification, name='api-dismiss-notification'),
+
 ]

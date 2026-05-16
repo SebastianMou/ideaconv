@@ -300,3 +300,20 @@ class BugReport(models.Model):
         verbose_name = 'Reporte de Error'
         verbose_name_plural = 'Reportes de Errores'
         ordering = ['-fecha']
+
+
+class NotificacionDismissed(models.Model):
+    """Track dismissed notifications to prevent showing them again until next day"""
+    inversion = models.ForeignKey(
+        Inversion, on_delete=models.CASCADE,
+        related_name='notificaciones_dismissed'
+    )
+    fecha_dismissed = models.DateField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name = 'Notificación Descartada'
+        verbose_name_plural = 'Notificaciones Descartadas'
+        unique_together = [['inversion', 'fecha_dismissed']]
+    
+    def __str__(self):
+        return f"{self.inversion.inversionista.nombre_completo} - {self.fecha_dismissed}"

@@ -1675,6 +1675,31 @@
       const panel = document.getElementById('notif-panel');
       panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
     }
+
+    async function dismissNotification(inversionId) {
+      try {
+        const res = await fetch('/api/notificaciones/dismiss/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+          },
+          body: JSON.stringify({ inversion_id: inversionId })
+        });
+        
+        if (res.ok) {
+          showToast('Notificación descartada hasta mañana', 'check-circle-fill', '#1CB87E');
+          // Reload notifications to remove dismissed one
+          cargarNotificaciones();
+        } else {
+          showToast('Error al descartar notificación', 'x-circle-fill', '#C8282A');
+        }
+      } catch (e) {
+        console.error('Error dismissing notification:', e);
+        showToast('Error de conexión', 'wifi-off', '#C8282A');
+      }
+    }
+
     document.addEventListener('click', e => {
       const btn = document.getElementById('notif-btn');
       const panel = document.getElementById('notif-panel');
@@ -1694,9 +1719,9 @@
         // Build notifications from inversiones venciendo + advertencias
         const notifs = [];
 
-        // Contracts expiring within 60 days — one notification per investor
-        if (data.venciendo_detalle && data.venciendo_detalle.length > 0) {
-          data.venciendo_detalle
+        // Contracts expiring — with dismiss option for investments expiring soon
+        if (data.advertencias && data.advertencias.length > 0) {
+          data.advertencias
             .filter(a => a.tipo === 'por_vencer')
             .forEach(a => {
               notifs.push({
@@ -1705,7 +1730,8 @@
                 iconColor: a.color === 'red' ? 'var(--brand-red)' : 'var(--warning)',
                 title: a.nombre,
                 detail: a.detalle,
-                link: '/inversionistas/'
+                link: '/inversionistas/',
+                inversion_id: a.inversion_id  // ADD this for dismiss functionality
               });
             });
         }
@@ -1745,16 +1771,21 @@
         if (notifs.length > 0) {
           dot.style.display = 'block';
           list.innerHTML = notifs.map(n => `
-                <a href="${n.link}" style="display:flex;align-items:center;gap:12px;padding:12px 18px;text-decoration:none;border-bottom:1px solid var(--border);transition:background .15s;" onmouseover="this.style.background='#F8FAFF'" onmouseout="this.style.background=''">
+                <div style="display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--border);position:relative;" onmouseover="this.style.background='#F8FAFF'" onmouseout="this.style.background=''">
                   <div style="width:36px;height:36px;border-radius:9px;background:${n.color};display:flex;align-items:center;justify-content:center;flex-shrink:0;color:${n.iconColor};font-size:16px;">
                     <i class="bi bi-${n.icon}"></i>
                   </div>
-                  <div>
-                    <div style="font-size:13px;font-weight:600;color:var(--text-main)">${n.title}</div>
+                  <a href="${n.link}" style="flex:1;min-width:0;text-decoration:none;">
+                    <div style="font-weight:600;font-size:13px;color:var(--text-main);margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${n.title}</div>
                     <div style="font-size:11.5px;color:var(--text-muted)">${n.detail}</div>
-                  </div>
-                  <i class="bi bi-chevron-right ms-auto" style="color:var(--text-muted);font-size:12px;"></i>
-                </a>`).join('');
+                  </a>
+                  ${n.inversion_id ? `
+                    <button onclick="event.preventDefault(); dismissNotification(${n.inversion_id})" style="background:none;border:none;color:var(--text-muted);cursor:pointer;padding:4px 8px;border-radius:4px;transition:all .15s;" onmouseover="this.style.background='var(--border)';this.style.color='var(--brand-red)'" onmouseout="this.style.background='none';this.style.color='var(--text-muted)'">
+                      <i class="bi bi-x-lg" style="font-size:12px;"></i>
+                    </button>
+                  ` : ''}
+                </div>
+              `).join('');
         } else {
           dot.style.display = 'none';
           list.innerHTML = `<div style="text-align:center;padding:24px;color:var(--text-muted);font-size:13px;">

@@ -985,29 +985,58 @@ def dashboard_summary(request):
     pagos_pendientes = Pago.objects.filter(estado='pendiente').count()
     pagos_pagados    = Pago.objects.filter(estado='pagado').count()
 
-    # ── Advertencias ──
+   # ── Advertencias ──
     advertencias = []
 
-    # Inversiones por vencer en 60 días (2 meses)
-    for inv in inversiones_venciendo.select_related('inversionista').order_by('fecha_vencimiento')[:10]:
-        dias_restantes = (inv.fecha_vencimiento - today).days
-        if dias_restantes <= 7:
-            urgencia = 'red'
-            detalle  = f'⚠️ Vence en {dias_restantes} día{"s" if dias_restantes != 1 else ""} — URGENTE'
-        elif dias_restantes <= 30:
-            urgencia = 'red'
-            detalle  = f'Vence en {dias_restantes} días ({inv.fecha_vencimiento.strftime("%d/%m/%Y")})'
-        else:
-            urgencia = 'warning'
-            detalle  = f'Vence en {dias_restantes} días ({inv.fecha_vencimiento.strftime("%d/%m/%Y")})'
-        advertencias.append({
-            'tipo':   'por_vencer',
-            'nombre': inv.inversionista.nombre_completo,
-            'detalle': detalle,
-            'icono':  'calendar-x-fill',
-            'color':  urgencia,
-            'capital': str(inv.capital),
-        })
+    # Inversiones por vencer — DAILY NOTIFICATIONS starting 30 days before expiration
+    from .models import NotificacionDismissed
+    
+    # Get investments expiring within 30 days (1 month)
+    inversiones_pronto_vencer = Inversion.objects.filter(
+        estado='activo',
+        fecha_vencimiento__lte=today + timedelta(days=30),
+        fecha_vencimiento__gte=today
+    ).select_related('inversionista').order_by('fecha_vencimiento')
+    
+    for inv in inversiones_pronto_vencer:
+        # Check if user dismissed this notification today
+        dismissed_today = NotificacionDismissed.objects.filter(
+            inversion=inv,
+            fecha_dismissed=today
+        ).exists()
+        
+        if not dismissed_today:
+            dias_restantes = (inv.fecha_vencimiento - today).days
+            
+            if dias_restantes == 0:
+                urgencia = 'red'
+                detalle  = f'⚠️ VENCE HOY — Renovar o retirar capital URGENTE'
+            elif dias_restantes <= 7:
+                urgencia = 'red'
+                detalle  = f'⚠️ Vence en {dias_restantes} día{"s" if dias_restantes != 1 else ""} — URGENTE'
+            elif dias_restantes <= 14:
+                urgencia = 'red'
+                detalle  = f'Vence en {dias_restantes} días ({inv.fecha_vencimiento.strftime("%d/%m/%Y")})'
+            else:
+                urgencia = 'warning'
+                detalle  = f'Vence en {dias_restantes} días ({inv.fecha_vencimiento.strftime("%d/%m/%Y")})'
+            
+            advertencias.append({
+                'tipo':   'por_vencer',
+                'nombre': inv.inversionista.nombre_completo,
+                'detalle': detalle,
+                'icono':  'calendar-x-fill',
+                'color':  urgencia,
+                'capital': str(inv.capital),
+                'inversion_id': inv.id,  # ADD this for dismissing
+                'dias_restantes': dias_restantes,
+            })
+    
+    # Also include investments expiring within 60 days in separate list for dashboard stats
+    inversiones_venciendo_60 = Inversion.objects.filter(
+        estado='activo',
+        fecha_vencimiento__range=[today, today + timedelta(days=60)]
+    )
 
     # Inversionistas sin RFC
     sin_rfc = Inversionista.objects.filter(rfc='').select_related()[:3]
@@ -1059,7 +1088,7 @@ def dashboard_summary(request):
     return Response({
         'total_inversionistas':  total_inversionistas,
         'inversiones_activas':   inversiones_activas.count(),
-        'inversiones_venciendo': inversiones_venciendo.count(),
+        'inversiones_venciendo': inversiones_venciendo_60.count(),
         'venciendo_detalle':     advertencias[:10],
         'inversiones_vencidas':  inversiones_vencidas,
         'capital_total':         str(capital_total),
@@ -2089,6 +2118,38 @@ def bug_report(request):
         usuario     = request.data.get('usuario', ''),
     )
     return Response({'message': 'Reporte recibido'}, status=status.HTTP_201_CREATED)
+
+@api_view(['POST'])
+@login_required(login_url='login')
+def dismiss_notification(request):
+    """
+    POST /api/notificaciones/dismiss/
+    Body: { inversion_id: int }
+    Creates a NotificacionDismissed record to hide the notification for today
+    """
+    from .models import NotificacionDismissed
+    from datetime import date
+    
+    inversion_id = request.data.get('inversion_id')
+    if not inversion_id:
+        return Response(
+            {'error': 'Se requiere inversion_id'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    inversion = get_object_or_404(Inversion, pk=inversion_id)
+    today = date.today()
+    
+    # Create or update dismissed record for today
+    NotificacionDismissed.objects.get_or_create(
+        inversion=inversion,
+        fecha_dismissed=today
+    )
+    
+    return Response({
+        'message': 'Notificación descartada hasta mañana',
+        'inversion_id': inversion_id
+    })
 
 @api_view(['GET', 'DELETE'])
 def eliminar_permanente(request, pk):
