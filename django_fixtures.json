@@ -1,0 +1,5249 @@
+[
+  {
+    "model": "inversiones.promotor",
+    "pk": 1,
+    "fields": {
+      "nombre": "MIGUEL AMADOR",
+      "telefono": "",
+      "correo": "mavala@live.com.mx",
+      "activo": false,
+      "fecha_registro": "2025-06-20"
+    }
+  },
+  {
+    "model": "inversiones.promotor",
+    "pk": 2,
+    "fields": {
+      "nombre": "LUIS ALBERTO",
+      "telefono": "",
+      "correo": null,
+      "activo": false,
+      "fecha_registro": "2025-02-04"
+    }
+  },
+  {
+    "model": "inversiones.promotor",
+    "pk": 3,
+    "fields": {
+      "nombre": "Mauricio",
+      "telefono": "",
+      "correo": "mauricio.rivera.arreola@gmail.com",
+      "activo": false,
+      "fecha_registro": "2020-06-29"
+    }
+  },
+  {
+    "model": "inversiones.promotor",
+    "pk": 4,
+    "fields": {
+      "nombre": "JORGE",
+      "telefono": "",
+      "correo": "jorgeazcunaga@hotmail.com",
+      "activo": false,
+      "fecha_registro": "2020-04-29"
+    }
+  },
+  {
+    "model": "inversiones.promotor",
+    "pk": 5,
+    "fields": {
+      "nombre": "Miguel Vital ",
+      "telefono": "",
+      "correo": "miguel.valdes@ideacon.com.mx",
+      "activo": false,
+      "fecha_registro": "2019-12-13"
+    }
+  },
+  {
+    "model": "inversiones.promotor",
+    "pk": 6,
+    "fields": {
+      "nombre": "Héctor Alejandro ",
+      "telefono": "",
+      "correo": "rotcehmty@live.com.mx",
+      "activo": false,
+      "fecha_registro": "2019-12-13"
+    }
+  },
+  {
+    "model": "inversiones.promotor",
+    "pk": 7,
+    "fields": {
+      "nombre": "IDEACONV",
+      "telefono": "",
+      "correo": "eduardo.munoz@ideacon.com.mx",
+      "activo": false,
+      "fecha_registro": "2019-12-13"
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 1,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "HECTOR ENRIQUE LUNA GONZALEZ",
+      "nacionalidad": "Mexicana",
+      "curp": "LUGH601118IS3",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "JUAREZ 301",
+      "ciudad": "LINARES",
+      "estado": "NUEVO ELON",
+      "codigo_postal": "67700",
+      "rfc": "LUGH601118IS3",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "HECTOR ENRIQUE LUNA GONZALEZ",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "67700",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 2,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "MARIA ELENA GOMEZ GIL",
+      "nacionalidad": "Mexicana",
+      "curp": "ZAGJ460523JH7",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "CAMINO DE LOS PERDICES 109",
+      "ciudad": "MONTERREY",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "64630",
+      "rfc": "ZAGJ460523JH7",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "MARIA ELENA GOMEZ GIL",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "64630",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 3,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "HILDA NELLY TREVIÑO ELIZONDO",
+      "nacionalidad": "Mexicana",
+      "curp": "TEEH441129674",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "BARCELONA 118",
+      "ciudad": "GUADALUPE",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "67130",
+      "rfc": "TEEH441129674",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "HILDA NELLY TREVIÑO ELIZONDO",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "67130",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 6
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 4,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "ROCIO SAUZA PUTZ",
+      "nacionalidad": "Mexicana",
+      "curp": "SAPR861212AV0",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "JUANA DE ASBAJE 110",
+      "ciudad": "MONTERREY",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "64700",
+      "rfc": "SAPR861212AV0",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "ROCIO SAUZA PUTZ",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "64700",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 2
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 5,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "JORGE LUIS DE LA GARZA PEREZ",
+      "nacionalidad": "Mexicana",
+      "curp": "GAPJ531217LH1",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "VICTOR HUGO 212",
+      "ciudad": "APODACA",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "66640",
+      "rfc": "GAPJ531217LH1",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "JORGE LUIS DE LA GARZA PEREZ",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "66640",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 6,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "DOMINGO ANTONIO TREVIÑO GARZA",
+      "nacionalidad": "Mexicana",
+      "curp": "TEGD880515RJ0",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "CALLE MIRADOR DE COATZACOALCOS 210",
+      "ciudad": "SAN PEDRO GARZA GARCIA",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "66256",
+      "rfc": "TEGD880515RJ0",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "DOMINGO ANTONIO TREVIÑO GARZA",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "66256",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 5
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 7,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "ALFONSO CAVAZOS ELIZONDO",
+      "nacionalidad": "Mexicana",
+      "curp": "CAEA570807GY0",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "AV LOS ANGELES 1000",
+      "ciudad": "SAN NICOLAS DE LOS GARZA",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "66480",
+      "rfc": "CAEA570807GY0",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "ALFONSO CAVAZOS ELIZONDO",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "66480",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 5
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 8,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "ERIKA LIZBETH GARZA HERNANDEZ",
+      "nacionalidad": "Mexicana",
+      "curp": "GAHE890421K56",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "PAPAGAYO 119",
+      "ciudad": "SAN NICOLAS DE LOS GARZA",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "66450",
+      "rfc": "GAHE890421K56",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "ERIKA LIZBETH GARZA HERNANDEZ",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "66450",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 1
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 9,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "IVAN MARCELO DE LA GARZA TREVIÑO",
+      "nacionalidad": "Mexicana",
+      "curp": "GATI8305143Z1",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "CARRETERA V JUAREZ 200",
+      "ciudad": "APODACA",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "66640",
+      "rfc": "GATI8305143Z1",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "IVAN MARCELO DE LA GARZA TREVIÑO",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "66640",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 1
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 10,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "JORGE LUIS DE LA GARZA TREVIÑO",
+      "nacionalidad": "Mexicana",
+      "curp": "GATJ81120918A",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "VICTOR HUGO 212",
+      "ciudad": "APODACA",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "66640",
+      "rfc": "GATJ81120918A",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "JORGE LUIS DE LA GARZA TREVIÑO",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "66640",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 1
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 11,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "MARTHA ELIA TREVIÑO ELIZONDO",
+      "nacionalidad": "Mexicana",
+      "curp": "TEEM541022C32",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "VICTOR HUGO 212",
+      "ciudad": "APODACA",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "66640",
+      "rfc": "TEEM541022C32",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "MARTHA ELIA TREVIÑO ELIZONDO",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "66640",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 1
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 12,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "RAUL EUGENIO TASSINARI GUTIERREZ",
+      "nacionalidad": "Mexicana",
+      "curp": "TAGR8008227D4",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "LIBRAMIENTO ARCO VIAL K3.8",
+      "ciudad": "SANTA CATARINA",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "66001",
+      "rfc": "TAGR8008227D4",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "RAUL EUGENIO TASSINARI GUTIERREZ",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "66001",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 13,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "SERGIO EDUARDO ELIZONDO GUZMAN",
+      "nacionalidad": "Mexicana",
+      "curp": null,
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "AVENIDA HIDALGO 905",
+      "ciudad": "LINARES",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "67700",
+      "rfc": null,
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "SERGIO EDUARDO ELIZONDO GUZMAN",
+      "pais_fiscal": "México",
+      "estado_fiscal": "",
+      "cp_fiscal": "67700",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 14,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "MARIA CONCEPCION CATALINA PUTZ ZAMBRANO",
+      "nacionalidad": "Mexicana",
+      "curp": "PUZC520515AC1",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "TIGRIS 1002",
+      "ciudad": "SAN PEDRO  GARZA GARCIA",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "66220",
+      "rfc": "PUZC520515AC1",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "MARIA CONCEPCION CATALINA PUTZ ZAMBRANO",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "66220",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 15,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "PATRICIO BERNARDO SAUZA GONZALEZ",
+      "nacionalidad": "Mexicana",
+      "curp": "SAGO6002122K9",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "MONTES CARPATOS 213",
+      "ciudad": "SAN PEDRO  GARZA GARCIA",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "66260",
+      "rfc": "SAGO6002122K9",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "PATRICIO BERNARDO SAUZA GONZALEZ",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "66260",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 5
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 16,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "MARIA DEL ROSARIO SAUZA PUTZ",
+      "nacionalidad": "Mexicana",
+      "curp": "SAPR890509ID7",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "MONTES CARPATOS 213",
+      "ciudad": "SAN PEDRO  GARZA GARCIA",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "66260",
+      "rfc": "SAPR890509ID7",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "MARIA DEL ROSARIO SAUZA PUTZ",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "66260",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 5
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 17,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "MAURICIO RENE RIVERA ARREOLA",
+      "nacionalidad": "Mexicana",
+      "curp": "RIAM870923BVA",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "LOMAS DEL ENCINO 106",
+      "ciudad": "SAN PEDRO  GARZA GARCIA",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "66278",
+      "rfc": "RIAM870923BVA",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "MAURICIO RENE RIVERA ARREOLA",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "66278",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 18,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "DIEGO MANUEL GUERRA  PEREZ",
+      "nacionalidad": "Mexicana",
+      "curp": "GUPD870924KT7",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "TEMISTOCLES 111",
+      "ciudad": "SAN PEDRO  GARZA GARCIA",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "66297",
+      "rfc": "GUPD870924KT7",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "DIEGO MANUEL GUERRA  PEREZ",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "66297",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 19,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "Gilberto Rivera Nevarez",
+      "nacionalidad": "Mexicana",
+      "curp": "RING780805SXA",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "RIO POTOSI 125",
+      "ciudad": "SAN NICOLAS",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "66430",
+      "rfc": "RING780805SXA",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "Gilberto Rivera Nevarez",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "66430",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 20,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "María Cecilia Garza de la Garza",
+      "nacionalidad": "Mexicana",
+      "curp": "GAGC580613GD9",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "Alfonso Reyes 151",
+      "ciudad": "San Pedro Garza Garcia",
+      "estado": "Nuevo León",
+      "codigo_postal": "66250",
+      "rfc": "GAGC580613GD9",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "María Cecilia Garza de la Garza",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "Nuevo León",
+      "cp_fiscal": "66250",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 21,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "RUBEN ARTURO GARZA GARZA",
+      "nacionalidad": "Mexicana",
+      "curp": " GAGR900307428",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "PLAZA DE LA AGUILILLA 7",
+      "ciudad": "MONTERREY",
+      "estado": "NUEVO ELON",
+      "codigo_postal": "64960",
+      "rfc": " GAGR90030742",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "RUBEN ARTURO GARZA GARZA",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "64960",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 5
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 22,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "Angelica Yolanda Elizondo Cantu",
+      "nacionalidad": "Mexicana",
+      "curp": "EICA390423TP7",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "Niños Heroes 205",
+      "ciudad": "Linares",
+      "estado": "Nuevo Leon",
+      "codigo_postal": "67700",
+      "rfc": "EICA390423TP7",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "Angelica Yolanda Elizondo Cantu",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "Nuevo León",
+      "cp_fiscal": "67700",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 23,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "REGINA BEATRIZ VALDES GARZA",
+      "nacionalidad": "Mexicana",
+      "curp": "VAGR880729MN3",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "SIERRA AZUL 1090",
+      "ciudad": "MONTERREY",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "6656",
+      "rfc": "VAGR880729MN3",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "REGINA BEATRIZ VALDES GARZA",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "Nuevo León",
+      "cp_fiscal": "6656",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 24,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "MARCELA RICO CANTU",
+      "nacionalidad": "Mexicana",
+      "curp": "RICM821012FE9",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "LOUISINA 26  26",
+      "ciudad": "Mexico DF",
+      "estado": "MEXICO DF",
+      "codigo_postal": "03810",
+      "rfc": "RICM821012FE9",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "MARCELA RICO CANTU",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "MEXICO DF",
+      "cp_fiscal": "03810",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 25,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "ARTURO GOMEZ  ABAD",
+      "nacionalidad": "Mexicana",
+      "curp": ".",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "CARRERA TORRES 201",
+      "ciudad": "HIDALGO",
+      "estado": "TAMAULIPAS",
+      "codigo_postal": "87800",
+      "rfc": ".",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "ARTURO GOMEZ  ABAD",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "TAMAULIPAS",
+      "cp_fiscal": "87800",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 26,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "SALVADOR  DIAZ CAMPOS",
+      "nacionalidad": "Mexicana",
+      "curp": ".",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "GIRASOL 220",
+      "ciudad": "SAN PEDRO GARZA GARCIA",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "66275",
+      "rfc": ".",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "SALVADOR  DIAZ CAMPOS",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "66275",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 27,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "ELIAS ALBERTO GARCIA CANTU",
+      "nacionalidad": "Mexicana",
+      "curp": "GACE620520GB1",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "LOMA GRANDE 2714",
+      "ciudad": "MONTERREY",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "64710",
+      "rfc": "GACE620520GB1",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "ELIAS ALBERTO GARCIA CANTU",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "64710",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 28,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "JOSE RODOLFO PEÑA GARCIA",
+      "nacionalidad": "Mexicana",
+      "curp": "PEGR900719IS5",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "JERONIMO SILLER 108",
+      "ciudad": "SAN PEDRO GRZA GARCIA",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "66290",
+      "rfc": "PEGR900719IS5",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "JOSE RODOLFO PEÑA GARCIA",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "66290",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 5
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 29,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "LUIS ALBERTO ALANIS MARTINEZ",
+      "nacionalidad": "Mexicana",
+      "curp": "AAML790819SMA",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "BOSQUES DE LOS PIRINEOS 431",
+      "ciudad": "SAN PEDRO GARZA GARCIA",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "66250",
+      "rfc": "AAML790819SMA",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "LUIS ALBERTO ALANIS MARTINEZ",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "66250",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 30,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "NEREO RIVERA GONZALEZ",
+      "nacionalidad": "Mexicana",
+      "curp": "RIGN570930IY7",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "Corinto 412",
+      "ciudad": "San Pedro Garza Garcia",
+      "estado": "Nuevo Leon",
+      "codigo_postal": "66274",
+      "rfc": "RIGN570930IY7",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "NEREO RIVERA GONZALEZ",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "66274",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 3
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 31,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "OPTIMA ADMINISTRACIÓN Y SERVICIOS ESTRATÉGICOS S.A. DE C.V.",
+      "nacionalidad": "Mexicana",
+      "curp": "OAS131017LT9",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "Mississipi  44",
+      "ciudad": "San Pedro Garza García",
+      "estado": "Nuevo León",
+      "codigo_postal": "66220",
+      "rfc": "OAS131017LT9",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "OPTIMA ADMINISTRACIÓN Y SERVICIOS ESTRATÉGICOS S.A. DE C.V.",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "Nuevo León",
+      "cp_fiscal": "66220",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 6
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 32,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "Myrna Azcunaga Hinojosa",
+      "nacionalidad": "Mexicana",
+      "curp": "AUHM8003275K8",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "CLAVEL 457",
+      "ciudad": "SAN PEDRO GARZA GARCIA",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "66260",
+      "rfc": "AUHM8003275K8",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "Myrna Azcunaga Hinojosa",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "66260",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 4
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 33,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "JORGE  AZCUNAGA HINOJOSA",
+      "nacionalidad": "Mexicana",
+      "curp": "AUHJ770204NQ6",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "MANZANARES 522",
+      "ciudad": "SAN PEDRO GARZA GARCIA",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "66286",
+      "rfc": "AUHJ770204NQ6",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "JORGE  AZCUNAGA HINOJOSA",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "NUEVO LEON",
+      "cp_fiscal": "66286",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 5
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 34,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "Myrna Adriana  González  Elizaldi",
+      "nacionalidad": "Mexicana",
+      "curp": "AUHM8003275K8",
+      "fecha_nacimiento": null,
+      "correo": "Jaime@grupojahe.com.mx",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "Alfonso Reyes 812",
+      "ciudad": "San Pedro Garza Garcia",
+      "estado": "Nuevo León",
+      "codigo_postal": " 66256",
+      "rfc": "AUHM8003275K8",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "Myrna Adriana  González  Elizaldi",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "Nuevo León",
+      "cp_fiscal": " 66256",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 5
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 35,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "Eugenio  Rico  Cantú",
+      "nacionalidad": "Mexicana",
+      "curp": "RICE900918328",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "Pino Suárez Sur 400",
+      "ciudad": "Linares",
+      "estado": "Nuevo León",
+      "codigo_postal": "67700",
+      "rfc": "RICE900918328",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "Eugenio  Rico  Cantú",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "Nuevo León",
+      "cp_fiscal": "67700",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 36,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": " Heriberto  Rico  Garza",
+      "nacionalidad": "Mexicana",
+      "curp": "RIGH5307256U8",
+      "fecha_nacimiento": null,
+      "correo": "eugenio.rico@lamisionsuper.com",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "Pino Suárez Sur 400",
+      "ciudad": "Linares",
+      "estado": "Nuevo León",
+      "codigo_postal": "67700",
+      "rfc": "RIGH5307256U8",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": " Heriberto  Rico  Garza",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "Nuevo León",
+      "cp_fiscal": "67700",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 37,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "Bertha Aída  Valdés  Alanís",
+      "nacionalidad": "Mexicana",
+      "curp": "VAAB5401145F8",
+      "fecha_nacimiento": null,
+      "correo": "delagarza.valdes@gmail.com",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "Cumbres de Asturias 217",
+      "ciudad": "Monterrey",
+      "estado": "Nuevo León",
+      "codigo_postal": "64346",
+      "rfc": "VAAB5401145F8",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "Bertha Aída  Valdés  Alanís",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "Nuevo León",
+      "cp_fiscal": "64346",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 38,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "Rubén Arturo  Garza  Gómez",
+      "nacionalidad": "Mexicana",
+      "curp": "GARG5902065F8",
+      "fecha_nacimiento": null,
+      "correo": "rgarza@arquitecturafiscal.com",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "Plaza del Aguililla 7",
+      "ciudad": "Monterrey",
+      "estado": "Nuevo León",
+      "codigo_postal": "64960",
+      "rfc": "GARG5902065F8",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "Rubén Arturo  Garza  Gómez",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "Nuevo León",
+      "cp_fiscal": "64960",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 5
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 39,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "Alvaro  Díaz  Campos",
+      "nacionalidad": "Mexicana",
+      "curp": "XAXX010101000",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "N 0",
+      "ciudad": "N",
+      "estado": "N",
+      "codigo_postal": "0",
+      "rfc": "XAXX010101000",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "Alvaro  Díaz  Campos",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "N",
+      "cp_fiscal": "0",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 40,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "Martha Alicia  Moya  Anchondo",
+      "nacionalidad": "Mexicana",
+      "curp": "MOAM4212263N2",
+      "fecha_nacimiento": null,
+      "correo": "arturo.alanis@axtel.net",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "Sierra de Juárez 231",
+      "ciudad": "San Pedro Garza Garcia",
+      "estado": "Nuevo León",
+      "codigo_postal": "66250",
+      "rfc": "MOAM4212263N2",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "Martha Alicia  Moya  Anchondo",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "Nuevo León",
+      "cp_fiscal": "66250",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 41,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "María Del Carmen  Valdés  Alanís",
+      "nacionalidad": "Mexicana",
+      "curp": "XAXX010101000",
+      "fecha_nacimiento": null,
+      "correo": "hugogamezf@hotmail.com",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "Av. Universidad 2016 ",
+      "ciudad": "Coyoacán",
+      "estado": " Ciudad de México",
+      "codigo_postal": "4360",
+      "rfc": "XAXX010101000",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "María Del Carmen  Valdés  Alanís",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": " Ciudad de México",
+      "cp_fiscal": "4360",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 42,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "Monica Elena  Alanis  Martínez",
+      "nacionalidad": "Mexicana",
+      "curp": "AAMM691202",
+      "fecha_nacimiento": null,
+      "correo": "carlos_alanis@hotmail.it",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "Bosques de Pirineos 431",
+      "ciudad": "San Pedro Garza Garcia",
+      "estado": "Nuevo León",
+      "codigo_postal": "66250",
+      "rfc": "AAMM691202",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "Monica Elena  Alanis  Martínez",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "Nuevo León",
+      "cp_fiscal": "66250",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 43,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "Carlos Ricardo  Alanis  Galindo",
+      "nacionalidad": "Mexicana",
+      "curp": "AAGC340403F31",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "Av. Hidalgo 910",
+      "ciudad": "Linares",
+      "estado": "Nuevo León",
+      "codigo_postal": "67700",
+      "rfc": "AAGC340403F31",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "Carlos Ricardo  Alanis  Galindo",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "Nuevo León",
+      "cp_fiscal": "67700",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 44,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "Roberto De la Garza  Tamez",
+      "nacionalidad": "Mexicana",
+      "curp": "GATR530220668",
+      "fecha_nacimiento": null,
+      "correo": "robertodelag@yahoo.com",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "Cazadores de Galeana 3072",
+      "ciudad": "Monterrey",
+      "estado": "Nuevo León",
+      "codigo_postal": "64920",
+      "rfc": "GATR530220668",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "Roberto De la Garza  Tamez",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "Nuevo León",
+      "cp_fiscal": "64920",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 45,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "JULIAN JAVIER TREVIÑO ELIZONDO",
+      "nacionalidad": "Mexicana",
+      "curp": "TEEJ500509867",
+      "fecha_nacimiento": null,
+      "correo": "rotcehmty@live.com.mx",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "BENITO JUAREZ 202",
+      "ciudad": "APODACA",
+      "estado": "NUEVO LEON",
+      "codigo_postal": "66640",
+      "rfc": "TEEJ500509867",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "JULIAN JAVIER TREVIÑO ELIZONDO",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "Nuevo León",
+      "cp_fiscal": "66640",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 1
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 46,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "Miguel Vital  Valdés  Garza",
+      "nacionalidad": "Mexicana",
+      "curp": "VAGM870115327",
+      "fecha_nacimiento": null,
+      "correo": "",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "Sierra Azul 1090 ",
+      "ciudad": "San Pedro Garza García",
+      "estado": "Nuevo León",
+      "codigo_postal": "66256",
+      "rfc": "VAGM870115327",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "Miguel Vital  Valdés  Garza",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "Nuevo León",
+      "cp_fiscal": "66256",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversionista",
+    "pk": 47,
+    "fields": {
+      "tipo_contribuyente": "fisica",
+      "es_entidad_financiera": false,
+      "nombre_completo": "Miguel Amador  Valdés  Alanís",
+      "nacionalidad": "Mexicana",
+      "curp": "VAAM550401KN4",
+      "fecha_nacimiento": null,
+      "correo": "miguelvaldes87@gmail.com",
+      "telefono": "",
+      "fecha_ingreso": "2026-05-21",
+      "tipo_documento": "ine",
+      "numero_documento": "",
+      "estado_civil": "soltero",
+      "calle": "Sierra Azul 1090",
+      "ciudad": "San Pedro Garza Garcia",
+      "estado": "Nuevo León",
+      "codigo_postal": "66256",
+      "rfc": "VAAM550401KN4",
+      "regimen_fiscal": "Régimen de Intereses",
+      "nombre_fiscal": "Miguel Amador  Valdés  Alanís",
+      "pais_fiscal": "MEX",
+      "estado_fiscal": "Nuevo León",
+      "cp_fiscal": "66256",
+      "banco": "otro",
+      "clabe": "",
+      "eliminado": false,
+      "fecha_eliminado": null,
+      "promotor": 7
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 1,
+    "fields": {
+      "inversionista": 16,
+      "capital": "1000000.00",
+      "tasa_anual": "14.40",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-03-13",
+      "fecha_vencimiento": "2028-03-13",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 2,
+    "fields": {
+      "inversionista": 15,
+      "capital": "3000000.00",
+      "tasa_anual": "14.40",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-05-01",
+      "fecha_vencimiento": "2028-04-18",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 3,
+    "fields": {
+      "inversionista": 15,
+      "capital": "3000000.00",
+      "tasa_anual": "14.40",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-04-18",
+      "fecha_vencimiento": "2028-05-18",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 4,
+    "fields": {
+      "inversionista": 23,
+      "capital": "1970000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-05-17",
+      "fecha_vencimiento": "2028-05-17",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 5,
+    "fields": {
+      "inversionista": 1,
+      "capital": "1000000.00",
+      "tasa_anual": "13.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-05-12",
+      "fecha_vencimiento": "2028-05-12",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 6,
+    "fields": {
+      "inversionista": 19,
+      "capital": "2000100.00",
+      "tasa_anual": "13.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-05-01",
+      "fecha_vencimiento": "2028-05-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 7,
+    "fields": {
+      "inversionista": 36,
+      "capital": "2000000.00",
+      "tasa_anual": "14.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-05-04",
+      "fecha_vencimiento": "2028-05-04",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 8,
+    "fields": {
+      "inversionista": 27,
+      "capital": "5000000.00",
+      "tasa_anual": "15.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-04-30",
+      "fecha_vencimiento": "2028-04-30",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 9,
+    "fields": {
+      "inversionista": 27,
+      "capital": "13000000.00",
+      "tasa_anual": "15.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-04-04",
+      "fecha_vencimiento": "2028-04-04",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 10,
+    "fields": {
+      "inversionista": 27,
+      "capital": "5000000.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-04-30",
+      "fecha_vencimiento": "2028-04-30",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 11,
+    "fields": {
+      "inversionista": 32,
+      "capital": "1500000.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-04-30",
+      "fecha_vencimiento": "2028-04-30",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 12,
+    "fields": {
+      "inversionista": 40,
+      "capital": "1500000.00",
+      "tasa_anual": "14.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-03-01",
+      "fecha_vencimiento": "2028-03-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 13,
+    "fields": {
+      "inversionista": 5,
+      "capital": "1000000.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-03-23",
+      "fecha_vencimiento": "2028-03-23",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 14,
+    "fields": {
+      "inversionista": 2,
+      "capital": "1000000.00",
+      "tasa_anual": "13.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-03-17",
+      "fecha_vencimiento": "2028-03-17",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 15,
+    "fields": {
+      "inversionista": 40,
+      "capital": "1500000.00",
+      "tasa_anual": "13.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-03-01",
+      "fecha_vencimiento": "2028-03-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 16,
+    "fields": {
+      "inversionista": 33,
+      "capital": "1000000.00",
+      "tasa_anual": "14.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-03-23",
+      "fecha_vencimiento": "2028-03-23",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 17,
+    "fields": {
+      "inversionista": 35,
+      "capital": "3000000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-03-02",
+      "fecha_vencimiento": "2028-03-02",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 18,
+    "fields": {
+      "inversionista": 35,
+      "capital": "3000000.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-03-01",
+      "fecha_vencimiento": "2028-03-02",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 19,
+    "fields": {
+      "inversionista": 37,
+      "capital": "6600000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-02-02",
+      "fecha_vencimiento": "2028-02-02",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 20,
+    "fields": {
+      "inversionista": 27,
+      "capital": "-12000000.00",
+      "tasa_anual": "18.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-02-02",
+      "fecha_vencimiento": "2026-02-03",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 21,
+    "fields": {
+      "inversionista": 3,
+      "capital": "3000000.00",
+      "tasa_anual": "16.75",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-01-29",
+      "fecha_vencimiento": "2028-01-29",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 22,
+    "fields": {
+      "inversionista": 17,
+      "capital": "3000000.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-01-27",
+      "fecha_vencimiento": "2028-01-27",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 23,
+    "fields": {
+      "inversionista": 10,
+      "capital": "1000000.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-01-03",
+      "fecha_vencimiento": "2028-01-02",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 24,
+    "fields": {
+      "inversionista": 29,
+      "capital": "5000000.00",
+      "tasa_anual": "21.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-01-22",
+      "fecha_vencimiento": "2028-01-22",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 25,
+    "fields": {
+      "inversionista": 43,
+      "capital": "800000.00",
+      "tasa_anual": "14.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-01-07",
+      "fecha_vencimiento": "2028-01-07",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 26,
+    "fields": {
+      "inversionista": 13,
+      "capital": "1000000.00",
+      "tasa_anual": "14.40",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-01-05",
+      "fecha_vencimiento": "2028-01-05",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 27,
+    "fields": {
+      "inversionista": 37,
+      "capital": "1000000.00",
+      "tasa_anual": "14.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-01-05",
+      "fecha_vencimiento": "2028-01-05",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 28,
+    "fields": {
+      "inversionista": 10,
+      "capital": "1000000.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-01-02",
+      "fecha_vencimiento": "2028-01-02",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 29,
+    "fields": {
+      "inversionista": 44,
+      "capital": "4000000.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-01-01",
+      "fecha_vencimiento": "2027-12-31",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 30,
+    "fields": {
+      "inversionista": 44,
+      "capital": "4000000.00",
+      "tasa_anual": "17.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-01-01",
+      "fecha_vencimiento": "2026-01-02",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 31,
+    "fields": {
+      "inversionista": 44,
+      "capital": "4000000.00",
+      "tasa_anual": "17.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-12-07",
+      "fecha_vencimiento": "2027-12-07",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 32,
+    "fields": {
+      "inversionista": 4,
+      "capital": "1000000.00",
+      "tasa_anual": "14.40",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-12-08",
+      "fecha_vencimiento": "2027-12-08",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 33,
+    "fields": {
+      "inversionista": 17,
+      "capital": "500000.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-12-04",
+      "fecha_vencimiento": "2027-12-04",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 34,
+    "fields": {
+      "inversionista": 19,
+      "capital": "2000000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-12-01",
+      "fecha_vencimiento": "2027-11-30",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 35,
+    "fields": {
+      "inversionista": 19,
+      "capital": "1000000.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-12-01",
+      "fecha_vencimiento": "2027-10-03",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 36,
+    "fields": {
+      "inversionista": 16,
+      "capital": "1000000.00",
+      "tasa_anual": "14.40",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2026-01-01",
+      "fecha_vencimiento": "2028-01-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 37,
+    "fields": {
+      "inversionista": 34,
+      "capital": "1595000.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-11-10",
+      "fecha_vencimiento": "2027-11-10",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 38,
+    "fields": {
+      "inversionista": 5,
+      "capital": "1000000.00",
+      "tasa_anual": "16.75",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-11-04",
+      "fecha_vencimiento": "2027-11-04",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 39,
+    "fields": {
+      "inversionista": 17,
+      "capital": "-850000.00",
+      "tasa_anual": "18.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-11-23",
+      "fecha_vencimiento": "2027-11-23",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 40,
+    "fields": {
+      "inversionista": 19,
+      "capital": "1000000.00",
+      "tasa_anual": "17.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-10-03",
+      "fecha_vencimiento": "2027-10-03",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 41,
+    "fields": {
+      "inversionista": 6,
+      "capital": "1000000.00",
+      "tasa_anual": "14.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-10-01",
+      "fecha_vencimiento": "2027-10-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 42,
+    "fields": {
+      "inversionista": 7,
+      "capital": "0.00",
+      "tasa_anual": "14.75",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-10-09",
+      "fecha_vencimiento": "2027-10-09",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 43,
+    "fields": {
+      "inversionista": 16,
+      "capital": "500000.00",
+      "tasa_anual": "14.40",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-09-24",
+      "fecha_vencimiento": "2027-09-24",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 44,
+    "fields": {
+      "inversionista": 17,
+      "capital": "-500000.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-09-05",
+      "fecha_vencimiento": "2027-09-05",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 45,
+    "fields": {
+      "inversionista": 8,
+      "capital": "2500000.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-09-05",
+      "fecha_vencimiento": "2027-09-05",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 46,
+    "fields": {
+      "inversionista": 9,
+      "capital": "3000000.00",
+      "tasa_anual": "16.75",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-09-01",
+      "fecha_vencimiento": "2027-09-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 47,
+    "fields": {
+      "inversionista": 33,
+      "capital": "2000000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-08-08",
+      "fecha_vencimiento": "2027-08-08",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 48,
+    "fields": {
+      "inversionista": 45,
+      "capital": "2000000.00",
+      "tasa_anual": "16.75",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-08-06",
+      "fecha_vencimiento": "2027-08-06",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 49,
+    "fields": {
+      "inversionista": 10,
+      "capital": "1500000.00",
+      "tasa_anual": "16.75",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-08-01",
+      "fecha_vencimiento": "2027-08-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 50,
+    "fields": {
+      "inversionista": 47,
+      "capital": "865300.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-07-01",
+      "fecha_vencimiento": "2027-07-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 51,
+    "fields": {
+      "inversionista": 22,
+      "capital": "1000000.00",
+      "tasa_anual": "14.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-07-01",
+      "fecha_vencimiento": "2027-07-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 52,
+    "fields": {
+      "inversionista": 22,
+      "capital": "1000000.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-06-08",
+      "fecha_vencimiento": "2027-06-08",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 53,
+    "fields": {
+      "inversionista": 45,
+      "capital": "14000000.00",
+      "tasa_anual": "17.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-06-05",
+      "fecha_vencimiento": "2027-06-05",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 54,
+    "fields": {
+      "inversionista": 11,
+      "capital": "4000000.00",
+      "tasa_anual": "17.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-06-05",
+      "fecha_vencimiento": "2027-06-05",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 55,
+    "fields": {
+      "inversionista": 10,
+      "capital": "5000000.00",
+      "tasa_anual": "17.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-06-05",
+      "fecha_vencimiento": "2027-06-05",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 56,
+    "fields": {
+      "inversionista": 34,
+      "capital": "1595000.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-05-10",
+      "fecha_vencimiento": "2025-11-10",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 57,
+    "fields": {
+      "inversionista": 20,
+      "capital": "1000000.00",
+      "tasa_anual": "17.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-04-01",
+      "fecha_vencimiento": "2027-03-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 58,
+    "fields": {
+      "inversionista": 27,
+      "capital": "5000000.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-04-14",
+      "fecha_vencimiento": "2027-04-14",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 59,
+    "fields": {
+      "inversionista": 19,
+      "capital": "3000000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-03-09",
+      "fecha_vencimiento": "2027-03-09",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 60,
+    "fields": {
+      "inversionista": 40,
+      "capital": "1000000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-03-06",
+      "fecha_vencimiento": "2027-03-06",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 61,
+    "fields": {
+      "inversionista": 14,
+      "capital": "5000000.00",
+      "tasa_anual": "14.40",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-03-25",
+      "fecha_vencimiento": "2027-04-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 62,
+    "fields": {
+      "inversionista": 39,
+      "capital": "5200000.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-03-10",
+      "fecha_vencimiento": "2027-03-10",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 63,
+    "fields": {
+      "inversionista": 20,
+      "capital": "1500000.00",
+      "tasa_anual": "17.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-03-01",
+      "fecha_vencimiento": "2027-01-09",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 64,
+    "fields": {
+      "inversionista": 20,
+      "capital": "1000000.00",
+      "tasa_anual": "17.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-03-01",
+      "fecha_vencimiento": "2027-03-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 65,
+    "fields": {
+      "inversionista": 42,
+      "capital": "425000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-02-01",
+      "fecha_vencimiento": "2027-02-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 66,
+    "fields": {
+      "inversionista": 42,
+      "capital": "1050000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-02-01",
+      "fecha_vencimiento": "2026-12-27",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 67,
+    "fields": {
+      "inversionista": 43,
+      "capital": "0.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-02-01",
+      "fecha_vencimiento": "2026-12-27",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 68,
+    "fields": {
+      "inversionista": 14,
+      "capital": "10000000.00",
+      "tasa_anual": "14.40",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-01-30",
+      "fecha_vencimiento": "2027-01-30",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 69,
+    "fields": {
+      "inversionista": 20,
+      "capital": "1500000.00",
+      "tasa_anual": "17.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-01-06",
+      "fecha_vencimiento": "2027-01-06",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 70,
+    "fields": {
+      "inversionista": 24,
+      "capital": "2000000.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2025-01-25",
+      "fecha_vencimiento": "2027-01-25",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 71,
+    "fields": {
+      "inversionista": 46,
+      "capital": "4066420.00",
+      "tasa_anual": "15.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-12-31",
+      "fecha_vencimiento": "2026-12-31",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 72,
+    "fields": {
+      "inversionista": 29,
+      "capital": "12000000.00",
+      "tasa_anual": "21.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-12-20",
+      "fecha_vencimiento": "2026-12-20",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 73,
+    "fields": {
+      "inversionista": 29,
+      "capital": "8000000.00",
+      "tasa_anual": "21.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-12-19",
+      "fecha_vencimiento": "2026-12-19",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 74,
+    "fields": {
+      "inversionista": 12,
+      "capital": "2000000.00",
+      "tasa_anual": "15.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-12-03",
+      "fecha_vencimiento": "2026-12-03",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 75,
+    "fields": {
+      "inversionista": 28,
+      "capital": "-2000000.00",
+      "tasa_anual": "17.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-12-18",
+      "fecha_vencimiento": "2026-12-18",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 76,
+    "fields": {
+      "inversionista": 29,
+      "capital": "8000000.00",
+      "tasa_anual": "21.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-12-19",
+      "fecha_vencimiento": "2026-12-19",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 77,
+    "fields": {
+      "inversionista": 29,
+      "capital": "12000000.00",
+      "tasa_anual": "21.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-12-20",
+      "fecha_vencimiento": "2026-12-20",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 78,
+    "fields": {
+      "inversionista": 25,
+      "capital": "380000.00",
+      "tasa_anual": "13.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-11-09",
+      "fecha_vencimiento": "2026-11-09",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 79,
+    "fields": {
+      "inversionista": 27,
+      "capital": "12000000.00",
+      "tasa_anual": "17.25",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-10-01",
+      "fecha_vencimiento": "2026-10-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 80,
+    "fields": {
+      "inversionista": 27,
+      "capital": "10000000.00",
+      "tasa_anual": "17.25",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-10-01",
+      "fecha_vencimiento": "2026-10-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 81,
+    "fields": {
+      "inversionista": 26,
+      "capital": "6000000.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-10-07",
+      "fecha_vencimiento": "2026-10-06",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 82,
+    "fields": {
+      "inversionista": 26,
+      "capital": "500000.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-10-06",
+      "fecha_vencimiento": "2026-08-06",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 83,
+    "fields": {
+      "inversionista": 26,
+      "capital": "6000000.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-10-06",
+      "fecha_vencimiento": "2026-10-06",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 84,
+    "fields": {
+      "inversionista": 13,
+      "capital": "1000000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-10-21",
+      "fecha_vencimiento": "2026-10-21",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 85,
+    "fields": {
+      "inversionista": 38,
+      "capital": "-2000000.00",
+      "tasa_anual": "17.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-09-30",
+      "fecha_vencimiento": "2025-03-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 86,
+    "fields": {
+      "inversionista": 38,
+      "capital": "-3000000.00",
+      "tasa_anual": "17.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-10-03",
+      "fecha_vencimiento": "2026-09-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 87,
+    "fields": {
+      "inversionista": 39,
+      "capital": "1300000.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-09-30",
+      "fecha_vencimiento": "2026-08-06",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 88,
+    "fields": {
+      "inversionista": 39,
+      "capital": "3500000.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-09-30",
+      "fecha_vencimiento": "2026-09-30",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 89,
+    "fields": {
+      "inversionista": 38,
+      "capital": "2000000.00",
+      "tasa_anual": "17.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-09-01",
+      "fecha_vencimiento": "2024-09-30",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 90,
+    "fields": {
+      "inversionista": 30,
+      "capital": "2350000.00",
+      "tasa_anual": "15.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-08-31",
+      "fecha_vencimiento": "2026-08-31",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 91,
+    "fields": {
+      "inversionista": 27,
+      "capital": "3000000.00",
+      "tasa_anual": "17.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-08-08",
+      "fecha_vencimiento": "2026-08-08",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 92,
+    "fields": {
+      "inversionista": 27,
+      "capital": "12000000.00",
+      "tasa_anual": "18.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-06-30",
+      "fecha_vencimiento": "2026-02-02",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 93,
+    "fields": {
+      "inversionista": 27,
+      "capital": "12000000.00",
+      "tasa_anual": "18.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-05-30",
+      "fecha_vencimiento": "2026-02-02",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 94,
+    "fields": {
+      "inversionista": 30,
+      "capital": "0.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-06-16",
+      "fecha_vencimiento": "2026-06-16",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 95,
+    "fields": {
+      "inversionista": 14,
+      "capital": "10000000.00",
+      "tasa_anual": "14.40",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-06-01",
+      "fecha_vencimiento": "2026-06-03",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 96,
+    "fields": {
+      "inversionista": 23,
+      "capital": "-507910.06",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-05-17",
+      "fecha_vencimiento": "2026-05-17",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 97,
+    "fields": {
+      "inversionista": 23,
+      "capital": "1970000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-05-17",
+      "fecha_vencimiento": "2026-05-17",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 98,
+    "fields": {
+      "inversionista": 15,
+      "capital": "3000000.00",
+      "tasa_anual": "14.40",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-05-01",
+      "fecha_vencimiento": "2026-04-18",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 99,
+    "fields": {
+      "inversionista": 16,
+      "capital": "1000000.00",
+      "tasa_anual": "14.40",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-05-01",
+      "fecha_vencimiento": "2026-03-13",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 100,
+    "fields": {
+      "inversionista": 32,
+      "capital": "1500000.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-04-30",
+      "fecha_vencimiento": "2026-04-30",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 101,
+    "fields": {
+      "inversionista": 27,
+      "capital": "5000000.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-04-30",
+      "fecha_vencimiento": "2026-04-30",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 102,
+    "fields": {
+      "inversionista": 27,
+      "capital": "12000000.00",
+      "tasa_anual": "17.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-04-30",
+      "fecha_vencimiento": "2026-02-02",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 103,
+    "fields": {
+      "inversionista": 15,
+      "capital": "3000000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-04-18",
+      "fecha_vencimiento": "2026-04-18",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 104,
+    "fields": {
+      "inversionista": 27,
+      "capital": "13000000.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-04-05",
+      "fecha_vencimiento": "2026-04-04",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 105,
+    "fields": {
+      "inversionista": 27,
+      "capital": "12000000.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-03-31",
+      "fecha_vencimiento": "2026-02-02",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 106,
+    "fields": {
+      "inversionista": 27,
+      "capital": "12000000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-02-02",
+      "fecha_vencimiento": "2026-02-02",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 107,
+    "fields": {
+      "inversionista": 35,
+      "capital": "2500000.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-03-02",
+      "fecha_vencimiento": "2026-03-02",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 108,
+    "fields": {
+      "inversionista": 33,
+      "capital": "1000000.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-03-25",
+      "fecha_vencimiento": "2026-03-24",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 109,
+    "fields": {
+      "inversionista": 40,
+      "capital": "1500000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-03-06",
+      "fecha_vencimiento": "2026-03-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 110,
+    "fields": {
+      "inversionista": 16,
+      "capital": "1000000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-03-13",
+      "fecha_vencimiento": "2026-03-12",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 111,
+    "fields": {
+      "inversionista": 37,
+      "capital": "6600000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-02-02",
+      "fecha_vencimiento": "2026-02-02",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 112,
+    "fields": {
+      "inversionista": 26,
+      "capital": "6500000.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2024-01-01",
+      "fecha_vencimiento": "2024-10-06",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 113,
+    "fields": {
+      "inversionista": 44,
+      "capital": "4000000.00",
+      "tasa_anual": "17.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-12-07",
+      "fecha_vencimiento": "2025-12-07",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 114,
+    "fields": {
+      "inversionista": 17,
+      "capital": "850000.00",
+      "tasa_anual": "18.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-11-24",
+      "fecha_vencimiento": "2025-11-23",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 115,
+    "fields": {
+      "inversionista": 18,
+      "capital": "0.00",
+      "tasa_anual": "18.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-11-22",
+      "fecha_vencimiento": "2025-11-21",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 116,
+    "fields": {
+      "inversionista": 30,
+      "capital": "1600000.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-11-01",
+      "fecha_vencimiento": "2024-06-16",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 117,
+    "fields": {
+      "inversionista": 38,
+      "capital": "2000000.00",
+      "tasa_anual": "17.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-11-06",
+      "fecha_vencimiento": "2024-09-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 118,
+    "fields": {
+      "inversionista": 19,
+      "capital": "1000000.00",
+      "tasa_anual": "17.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-10-04",
+      "fecha_vencimiento": "2025-10-03",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 119,
+    "fields": {
+      "inversionista": 21,
+      "capital": "0.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-09-01",
+      "fecha_vencimiento": "2024-06-21",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 120,
+    "fields": {
+      "inversionista": 47,
+      "capital": "1765300.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-07-01",
+      "fecha_vencimiento": "2025-07-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 121,
+    "fields": {
+      "inversionista": 38,
+      "capital": "3100000.00",
+      "tasa_anual": "17.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-07-01",
+      "fecha_vencimiento": "2025-03-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 122,
+    "fields": {
+      "inversionista": 30,
+      "capital": "1600000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-06-15",
+      "fecha_vencimiento": "2024-06-15",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 123,
+    "fields": {
+      "inversionista": 22,
+      "capital": "1000000.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-06-09",
+      "fecha_vencimiento": "2025-06-08",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 124,
+    "fields": {
+      "inversionista": 23,
+      "capital": "1970000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-05-01",
+      "fecha_vencimiento": "2024-05-17",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 125,
+    "fields": {
+      "inversionista": 23,
+      "capital": "507910.06",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-05-01",
+      "fecha_vencimiento": "2024-05-17",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 126,
+    "fields": {
+      "inversionista": 34,
+      "capital": "1475000.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-05-10",
+      "fecha_vencimiento": "2025-05-10",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 127,
+    "fields": {
+      "inversionista": 47,
+      "capital": "2065300.00",
+      "tasa_anual": "9.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-03-31",
+      "fecha_vencimiento": "2025-03-31",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 128,
+    "fields": {
+      "inversionista": 38,
+      "capital": "2100000.00",
+      "tasa_anual": "17.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-03-01",
+      "fecha_vencimiento": "2025-03-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 129,
+    "fields": {
+      "inversionista": 39,
+      "capital": "5000000.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-03-10",
+      "fecha_vencimiento": "2025-03-10",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 130,
+    "fields": {
+      "inversionista": 40,
+      "capital": "1500000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-03-06",
+      "fecha_vencimiento": "2024-03-06",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 131,
+    "fields": {
+      "inversionista": 40,
+      "capital": "1000000.00",
+      "tasa_anual": "15.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-03-06",
+      "fecha_vencimiento": "2025-03-06",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 132,
+    "fields": {
+      "inversionista": 19,
+      "capital": "3000000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-03-09",
+      "fecha_vencimiento": "2025-03-09",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 133,
+    "fields": {
+      "inversionista": 20,
+      "capital": "1000000.00",
+      "tasa_anual": "18.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-03-01",
+      "fecha_vencimiento": "2025-03-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 134,
+    "fields": {
+      "inversionista": 42,
+      "capital": "1050000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-02-01",
+      "fecha_vencimiento": "2025-02-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 135,
+    "fields": {
+      "inversionista": 43,
+      "capital": "425000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-02-01",
+      "fecha_vencimiento": "2025-02-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 136,
+    "fields": {
+      "inversionista": 42,
+      "capital": "500000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-02-01",
+      "fecha_vencimiento": "2023-02-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 137,
+    "fields": {
+      "inversionista": 24,
+      "capital": "1825000.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-01-25",
+      "fecha_vencimiento": "2025-01-25",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 138,
+    "fields": {
+      "inversionista": 24,
+      "capital": "1800000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-01-25",
+      "fecha_vencimiento": "2023-01-25",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 139,
+    "fields": {
+      "inversionista": 46,
+      "capital": "4100420.00",
+      "tasa_anual": "15.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-12-31",
+      "fecha_vencimiento": "2024-12-31",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 140,
+    "fields": {
+      "inversionista": 20,
+      "capital": "1500000.00",
+      "tasa_anual": "17.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2023-01-06",
+      "fecha_vencimiento": "2025-01-06",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 141,
+    "fields": {
+      "inversionista": 29,
+      "capital": "12000000.00",
+      "tasa_anual": "21.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-12-20",
+      "fecha_vencimiento": "2024-12-20",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 142,
+    "fields": {
+      "inversionista": 28,
+      "capital": "2000000.00",
+      "tasa_anual": "17.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-12-18",
+      "fecha_vencimiento": "2024-12-18",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 143,
+    "fields": {
+      "inversionista": 28,
+      "capital": "4000000.00",
+      "tasa_anual": "15.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-11-30",
+      "fecha_vencimiento": "2022-12-18",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 144,
+    "fields": {
+      "inversionista": 28,
+      "capital": "4000000.00",
+      "tasa_anual": "17.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-11-18",
+      "fecha_vencimiento": "2022-11-30",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 145,
+    "fields": {
+      "inversionista": 29,
+      "capital": "10850000.00",
+      "tasa_anual": "21.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-11-17",
+      "fecha_vencimiento": "2022-12-20",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 146,
+    "fields": {
+      "inversionista": 25,
+      "capital": "380000.00",
+      "tasa_anual": "13.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-11-09",
+      "fecha_vencimiento": "2024-11-09",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 147,
+    "fields": {
+      "inversionista": 27,
+      "capital": "10000000.00",
+      "tasa_anual": "18.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-10-31",
+      "fecha_vencimiento": "2024-10-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 148,
+    "fields": {
+      "inversionista": 26,
+      "capital": "5500000.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-10-09",
+      "fecha_vencimiento": "2024-10-06",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 149,
+    "fields": {
+      "inversionista": 26,
+      "capital": "5000000.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-10-08",
+      "fecha_vencimiento": "2024-10-06",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 150,
+    "fields": {
+      "inversionista": 27,
+      "capital": "0.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-10-01",
+      "fecha_vencimiento": "2024-10-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 151,
+    "fields": {
+      "inversionista": 39,
+      "capital": "1300000.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-10-17",
+      "fecha_vencimiento": "2024-09-30",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 152,
+    "fields": {
+      "inversionista": 25,
+      "capital": "380000.00",
+      "tasa_anual": "13.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-10-13",
+      "fecha_vencimiento": "2022-11-09",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 153,
+    "fields": {
+      "inversionista": 39,
+      "capital": "0.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-09-30",
+      "fecha_vencimiento": "2024-09-30",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 154,
+    "fields": {
+      "inversionista": 30,
+      "capital": "1000000.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-08-31",
+      "fecha_vencimiento": "2024-08-31",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 155,
+    "fields": {
+      "inversionista": 40,
+      "capital": "1000000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-07-31",
+      "fecha_vencimiento": "2023-03-06",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 156,
+    "fields": {
+      "inversionista": 40,
+      "capital": "0.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-07-24",
+      "fecha_vencimiento": "2022-07-31",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 157,
+    "fields": {
+      "inversionista": 36,
+      "capital": "0.00",
+      "tasa_anual": "18.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-07-05",
+      "fecha_vencimiento": "2024-07-05",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 158,
+    "fields": {
+      "inversionista": 23,
+      "capital": "-1777910.06",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-05-31",
+      "fecha_vencimiento": "2024-05-17",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 159,
+    "fields": {
+      "inversionista": 21,
+      "capital": "800000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-06-21",
+      "fecha_vencimiento": "2024-06-21",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 160,
+    "fields": {
+      "inversionista": 30,
+      "capital": "1600000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-06-15",
+      "fecha_vencimiento": "2023-06-15",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 161,
+    "fields": {
+      "inversionista": 46,
+      "capital": "4100420.00",
+      "tasa_anual": "9.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-03-31",
+      "fecha_vencimiento": "2022-12-31",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 162,
+    "fields": {
+      "inversionista": 23,
+      "capital": "0.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-05-17",
+      "fecha_vencimiento": "2022-05-31",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 163,
+    "fields": {
+      "inversionista": 27,
+      "capital": "0.00",
+      "tasa_anual": "17.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-05-11",
+      "fecha_vencimiento": "2024-05-10",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 164,
+    "fields": {
+      "inversionista": 32,
+      "capital": "1500000.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-04-30",
+      "fecha_vencimiento": "2024-04-30",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 165,
+    "fields": {
+      "inversionista": 33,
+      "capital": "1411000.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-03-31",
+      "fecha_vencimiento": "2024-03-31",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 166,
+    "fields": {
+      "inversionista": 33,
+      "capital": "0.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-03-30",
+      "fecha_vencimiento": "2022-03-31",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 167,
+    "fields": {
+      "inversionista": 38,
+      "capital": "1700000.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-03-17",
+      "fecha_vencimiento": "2024-03-17",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 168,
+    "fields": {
+      "inversionista": 35,
+      "capital": "2500000.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-03-02",
+      "fecha_vencimiento": "2024-03-02",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 169,
+    "fields": {
+      "inversionista": 37,
+      "capital": "6400000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2022-02-28",
+      "fecha_vencimiento": "2024-02-29",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 170,
+    "fields": {
+      "inversionista": 27,
+      "capital": "0.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2021-12-29",
+      "fecha_vencimiento": "2023-12-29",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 171,
+    "fields": {
+      "inversionista": 44,
+      "capital": "0.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2021-12-07",
+      "fecha_vencimiento": "2023-12-07",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 172,
+    "fields": {
+      "inversionista": 29,
+      "capital": "8000000.00",
+      "tasa_anual": "20.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2021-11-18",
+      "fecha_vencimiento": "2022-11-17",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 173,
+    "fields": {
+      "inversionista": 21,
+      "capital": "0.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2021-10-18",
+      "fecha_vencimiento": "2023-10-18",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 174,
+    "fields": {
+      "inversionista": 44,
+      "capital": "0.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2021-07-01",
+      "fecha_vencimiento": "2023-06-30",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 175,
+    "fields": {
+      "inversionista": 44,
+      "capital": "1000000.00",
+      "tasa_anual": "18.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2021-06-01",
+      "fecha_vencimiento": "2021-07-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 176,
+    "fields": {
+      "inversionista": 22,
+      "capital": "1000000.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2021-06-09",
+      "fecha_vencimiento": "2023-06-09",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 177,
+    "fields": {
+      "inversionista": 34,
+      "capital": "0.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2021-05-20",
+      "fecha_vencimiento": "2023-05-31",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 178,
+    "fields": {
+      "inversionista": 23,
+      "capital": "0.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2021-04-16",
+      "fecha_vencimiento": "2022-05-17",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 179,
+    "fields": {
+      "inversionista": 39,
+      "capital": "4000000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2021-03-10",
+      "fecha_vencimiento": "2023-03-10",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 180,
+    "fields": {
+      "inversionista": 38,
+      "capital": "2000000.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2021-02-28",
+      "fecha_vencimiento": "2023-03-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 181,
+    "fields": {
+      "inversionista": 40,
+      "capital": "1500000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2021-03-07",
+      "fecha_vencimiento": "2023-03-06",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 182,
+    "fields": {
+      "inversionista": 47,
+      "capital": "1665300.00",
+      "tasa_anual": "9.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2021-03-31",
+      "fecha_vencimiento": "2023-03-31",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 183,
+    "fields": {
+      "inversionista": 43,
+      "capital": "850000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2021-02-01",
+      "fecha_vencimiento": "2023-02-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 184,
+    "fields": {
+      "inversionista": 42,
+      "capital": "500000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2021-02-01",
+      "fecha_vencimiento": "2023-02-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 185,
+    "fields": {
+      "inversionista": 24,
+      "capital": "1800000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2021-01-25",
+      "fecha_vencimiento": "2023-01-25",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 186,
+    "fields": {
+      "inversionista": 35,
+      "capital": "0.00",
+      "tasa_anual": "17.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-12-15",
+      "fecha_vencimiento": "2022-03-02",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 187,
+    "fields": {
+      "inversionista": 28,
+      "capital": "4000000.00",
+      "tasa_anual": "15.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-12-21",
+      "fecha_vencimiento": "2022-11-18",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 188,
+    "fields": {
+      "inversionista": 36,
+      "capital": "0.00",
+      "tasa_anual": "17.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-11-30",
+      "fecha_vencimiento": "2022-07-05",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 189,
+    "fields": {
+      "inversionista": 25,
+      "capital": "380000.00",
+      "tasa_anual": "13.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-10-19",
+      "fecha_vencimiento": "2022-10-13",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 190,
+    "fields": {
+      "inversionista": 26,
+      "capital": "4000000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-10-08",
+      "fecha_vencimiento": "2022-10-08",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 191,
+    "fields": {
+      "inversionista": 27,
+      "capital": "2100000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-10-01",
+      "fecha_vencimiento": "2022-10-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 192,
+    "fields": {
+      "inversionista": 39,
+      "capital": "1000000.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-10-17",
+      "fecha_vencimiento": "2022-10-17",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 193,
+    "fields": {
+      "inversionista": 37,
+      "capital": "0.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-08-31",
+      "fecha_vencimiento": "2022-02-28",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 194,
+    "fields": {
+      "inversionista": 32,
+      "capital": "0.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-08-31",
+      "fecha_vencimiento": "2022-04-30",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 195,
+    "fields": {
+      "inversionista": 28,
+      "capital": "0.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-09-22",
+      "fecha_vencimiento": "2022-09-22",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 196,
+    "fields": {
+      "inversionista": 33,
+      "capital": "0.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-03-31",
+      "fecha_vencimiento": "2022-03-31",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 197,
+    "fields": {
+      "inversionista": 32,
+      "capital": "0.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-04-24",
+      "fecha_vencimiento": "2022-04-30",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 198,
+    "fields": {
+      "inversionista": 30,
+      "capital": "0.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-06-17",
+      "fecha_vencimiento": "2022-06-15",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 199,
+    "fields": {
+      "inversionista": 44,
+      "capital": "0.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-07-21",
+      "fecha_vencimiento": "2022-07-21",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 200,
+    "fields": {
+      "inversionista": 40,
+      "capital": "0.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-07-28",
+      "fecha_vencimiento": "2022-07-24",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 201,
+    "fields": {
+      "inversionista": 28,
+      "capital": "0.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-07-15",
+      "fecha_vencimiento": "2022-07-15",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 202,
+    "fields": {
+      "inversionista": 35,
+      "capital": "0.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-07-01",
+      "fecha_vencimiento": "2022-07-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 203,
+    "fields": {
+      "inversionista": 36,
+      "capital": "0.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-06-30",
+      "fecha_vencimiento": "2022-06-30",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 204,
+    "fields": {
+      "inversionista": 29,
+      "capital": "6000000.00",
+      "tasa_anual": "20.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-06-25",
+      "fecha_vencimiento": "2021-11-18",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 205,
+    "fields": {
+      "inversionista": 44,
+      "capital": "0.00",
+      "tasa_anual": "16.50",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-06-03",
+      "fecha_vencimiento": "2022-06-03",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 206,
+    "fields": {
+      "inversionista": 47,
+      "capital": "1715300.00",
+      "tasa_anual": "9.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-03-31",
+      "fecha_vencimiento": "2021-03-31",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 207,
+    "fields": {
+      "inversionista": 46,
+      "capital": "0.00",
+      "tasa_anual": "9.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-03-31",
+      "fecha_vencimiento": "2022-03-31",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 208,
+    "fields": {
+      "inversionista": 31,
+      "capital": "0.00",
+      "tasa_anual": "17.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-02-29",
+      "fecha_vencimiento": "2022-02-28",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 209,
+    "fields": {
+      "inversionista": 38,
+      "capital": "2000000.00",
+      "tasa_anual": "19.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-02-29",
+      "fecha_vencimiento": "2021-02-28",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 210,
+    "fields": {
+      "inversionista": 41,
+      "capital": "6582.57",
+      "tasa_anual": "17.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-03-27",
+      "fecha_vencimiento": "2020-03-31",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 211,
+    "fields": {
+      "inversionista": 41,
+      "capital": "0.00",
+      "tasa_anual": "17.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-03-07",
+      "fecha_vencimiento": "2022-03-07",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 212,
+    "fields": {
+      "inversionista": 37,
+      "capital": "0.00",
+      "tasa_anual": "15.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-02-29",
+      "fecha_vencimiento": "2022-03-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 213,
+    "fields": {
+      "inversionista": 37,
+      "capital": "1850000.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2019-02-08",
+      "fecha_vencimiento": "2020-07-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 214,
+    "fields": {
+      "inversionista": 45,
+      "capital": "18235644.23",
+      "tasa_anual": "17.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-01-31",
+      "fecha_vencimiento": "2020-02-29",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 215,
+    "fields": {
+      "inversionista": 35,
+      "capital": "0.00",
+      "tasa_anual": "19.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2019-11-01",
+      "fecha_vencimiento": "2021-11-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 216,
+    "fields": {
+      "inversionista": 45,
+      "capital": "0.00",
+      "tasa_anual": "17.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2020-02-01",
+      "fecha_vencimiento": "2022-04-21",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 217,
+    "fields": {
+      "inversionista": 34,
+      "capital": "800000.00",
+      "tasa_anual": "18.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2019-05-20",
+      "fecha_vencimiento": "2021-05-20",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 218,
+    "fields": {
+      "inversionista": 35,
+      "capital": "0.00",
+      "tasa_anual": "19.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2019-10-31",
+      "fecha_vencimiento": "2021-11-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 219,
+    "fields": {
+      "inversionista": 35,
+      "capital": "0.00",
+      "tasa_anual": "19.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2019-05-31",
+      "fecha_vencimiento": "2019-10-31",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 220,
+    "fields": {
+      "inversionista": 36,
+      "capital": "0.00",
+      "tasa_anual": "19.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2019-10-31",
+      "fecha_vencimiento": "2021-12-02",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 221,
+    "fields": {
+      "inversionista": 36,
+      "capital": "0.00",
+      "tasa_anual": "19.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2019-06-30",
+      "fecha_vencimiento": "2019-10-31",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 222,
+    "fields": {
+      "inversionista": 36,
+      "capital": "0.00",
+      "tasa_anual": "19.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2019-05-31",
+      "fecha_vencimiento": "2019-07-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 223,
+    "fields": {
+      "inversionista": 37,
+      "capital": "0.00",
+      "tasa_anual": "18.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2019-06-30",
+      "fecha_vencimiento": "2020-07-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 224,
+    "fields": {
+      "inversionista": 37,
+      "capital": "2150000.00",
+      "tasa_anual": "18.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2019-03-01",
+      "fecha_vencimiento": "2019-06-30",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 225,
+    "fields": {
+      "inversionista": 37,
+      "capital": "1850000.00",
+      "tasa_anual": "16.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2018-02-08",
+      "fecha_vencimiento": "2019-02-08",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 226,
+    "fields": {
+      "inversionista": 39,
+      "capital": "1000000.00",
+      "tasa_anual": "19.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2019-04-03",
+      "fecha_vencimiento": "2021-03-10",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 227,
+    "fields": {
+      "inversionista": 39,
+      "capital": "0.00",
+      "tasa_anual": "18.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2018-10-22",
+      "fecha_vencimiento": "2020-10-22",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 228,
+    "fields": {
+      "inversionista": 40,
+      "capital": "1000000.00",
+      "tasa_anual": "19.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2019-05-01",
+      "fecha_vencimiento": "2021-03-07",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 229,
+    "fields": {
+      "inversionista": 40,
+      "capital": "1000000.00",
+      "tasa_anual": "19.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2019-03-07",
+      "fecha_vencimiento": "2019-04-30",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 230,
+    "fields": {
+      "inversionista": 41,
+      "capital": "1453582.57",
+      "tasa_anual": "17.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2018-03-07",
+      "fecha_vencimiento": "2020-03-07",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 231,
+    "fields": {
+      "inversionista": 42,
+      "capital": "400000.00",
+      "tasa_anual": "17.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2019-02-01",
+      "fecha_vencimiento": "2021-02-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 232,
+    "fields": {
+      "inversionista": 43,
+      "capital": "750000.00",
+      "tasa_anual": "17.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2019-02-01",
+      "fecha_vencimiento": "2021-02-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 233,
+    "fields": {
+      "inversionista": 43,
+      "capital": "250000.00",
+      "tasa_anual": "17.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2017-05-29",
+      "fecha_vencimiento": "2019-05-29",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 234,
+    "fields": {
+      "inversionista": 44,
+      "capital": "1000000.00",
+      "tasa_anual": "18.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2019-06-01",
+      "fecha_vencimiento": "2021-06-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 235,
+    "fields": {
+      "inversionista": 45,
+      "capital": "16282239.58",
+      "tasa_anual": "17.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2019-05-31",
+      "fecha_vencimiento": "2021-05-31",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 236,
+    "fields": {
+      "inversionista": 46,
+      "capital": "9305420.00",
+      "tasa_anual": "19.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2018-12-01",
+      "fecha_vencimiento": "2020-03-31",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.inversion",
+    "pk": 237,
+    "fields": {
+      "inversionista": 47,
+      "capital": "0.00",
+      "tasa_anual": "19.00",
+      "base_calculo": 365,
+      "porcentaje_factura": "100",
+      "fecha_inicio": "2017-07-01",
+      "fecha_vencimiento": "2020-07-01",
+      "estado": "activo",
+      "notas": ""
+    }
+  },
+  {
+    "model": "inversiones.prospecto",
+    "pk": 1,
+    "fields": {
+      "nombre_completo": "ARTURO GOMEZ ABAD",
+      "telefono": "",
+      "correo": "agomez@supertiendarico.com",
+      "monto_estimado": null,
+      "promotor": 7,
+      "etapa": "inicial",
+      "notas": "",
+      "fecha_registro": "2020-10-28",
+      "convertido": false,
+      "inversionista": null
+    }
+  },
+  {
+    "model": "inversiones.prospecto",
+    "pk": 2,
+    "fields": {
+      "nombre_completo": "SALVADOR DIAZ CAMPOS",
+      "telefono": "",
+      "correo": "salvador_diaz15@hotmail.com",
+      "monto_estimado": null,
+      "promotor": 7,
+      "etapa": "inicial",
+      "notas": "",
+      "fecha_registro": "2020-10-28",
+      "convertido": false,
+      "inversionista": null
+    }
+  },
+  {
+    "model": "inversiones.prospecto",
+    "pk": 3,
+    "fields": {
+      "nombre_completo": "ELIAS ALBERTO GARCIA CANTU",
+      "telefono": "",
+      "correo": "eliasgarcia.doc@gmail.com",
+      "monto_estimado": null,
+      "promotor": 7,
+      "etapa": "inicial",
+      "notas": "",
+      "fecha_registro": "2020-10-28",
+      "convertido": false,
+      "inversionista": null
+    }
+  },
+  {
+    "model": "inversiones.prospecto",
+    "pk": 4,
+    "fields": {
+      "nombre_completo": "JORGE AZCUNAGA HINOJOSA",
+      "telefono": "",
+      "correo": "jorgeazcunaga@hotmail.com",
+      "monto_estimado": null,
+      "promotor": 7,
+      "etapa": "inicial",
+      "notas": "",
+      "fecha_registro": "2020-03-30",
+      "convertido": false,
+      "inversionista": null
+    }
+  }
+]

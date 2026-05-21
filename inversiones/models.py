@@ -19,7 +19,7 @@ class HoneypotAttempt(models.Model):
 class Promotor(models.Model):
     nombre = models.CharField(max_length=200)
     telefono = models.CharField(max_length=20, blank=True)
-    correo = models.EmailField(blank=True)
+    correo = models.EmailField(blank=True, null=True)
     activo = models.BooleanField(default=True)
     fecha_registro = models.DateField(auto_now_add=True)
 
@@ -62,7 +62,7 @@ class Inversionista(models.Model):
     es_entidad_financiera = models.BooleanField(default=False)
     nombre_completo = models.CharField(max_length=300)
     nacionalidad = models.CharField(max_length=100, default='Mexicana')
-    curp = models.CharField(max_length=18, blank=True, unique=True)
+    curp = models.CharField(max_length=18, blank=True, null=True, unique=True)
     fecha_nacimiento = models.DateField(null=True, blank=True)
     correo = models.EmailField(blank=True)
     telefono = models.CharField(max_length=20, blank=True)
@@ -78,7 +78,7 @@ class Inversionista(models.Model):
     codigo_postal = models.CharField(max_length=10, blank=True)
 
     # Datos fiscales
-    rfc = models.CharField(max_length=13, blank=True, unique=True)
+    rfc = models.CharField(max_length=13, blank=True, null=True, unique=True)
     regimen_fiscal = models.CharField(max_length=200, default='Régimen de Intereses')
     nombre_fiscal = models.CharField(max_length=300, blank=True)
     pais_fiscal = models.CharField(max_length=100, default='México')
