@@ -593,6 +593,7 @@
   function getCookie(n){ let v=null; document.cookie.split(';').forEach(c=>{ const[k,val]=c.trim().split('='); if(k===n) v=decodeURIComponent(val); }); return v; }
   function fmtMoney(v){ return '$'+parseFloat(v).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 
+  // REPLACE WITH:
   function eliminarEstado(id) {
     document.getElementById('cv-title').textContent = 'Eliminar estado de cuenta';
     document.getElementById('cv-body').innerHTML = 'Esta accion eliminara el estado de cuenta y su pago asociado. No se puede deshacer.';
@@ -601,13 +602,22 @@
     document.getElementById('cv-confirm-btn').onclick = async () => {
       closeModal();
       try {
-        const res = await fetch(`/api/estados/${id}/`, {
+        const res = await fetch('/api/estados/' + id + '/', {
           method: 'DELETE',
           headers: { 'X-CSRFToken': getCookie('csrftoken') }
         });
         if (res.ok || res.status === 204) {
+          // Remove from memory
+          todosLosEstados = todosLosEstados.filter(e => e.id !== id);
+          // Remove rows from DOM instantly
+          const detailRowId = 'edc-detail-' + id;
+          const mainRow   = document.querySelector('tr[onclick*="toggleEdcDetail(' + id + ',"]');
+          const detailRow = document.getElementById(detailRowId);
+          if (mainRow)   mainRow.remove();
+          if (detailRow) detailRow.remove();
+          // Recompute stats without full reload
+          actualizarStats();
           showToast('Estado eliminado', 'trash', '#F5A623');
-          cargarEstados();
         } else {
           showToast('Error al eliminar', 'x-circle-fill', '#FCA5A5');
         }
@@ -617,6 +627,7 @@
     document.getElementById('convert-modal').style.display = 'block';
   }
 
+  // FIND your current eliminarTodos and REPLACE WITH:
   function eliminarTodos() {
     const ids = todosLosEstados.map(e => e.id);
     if (!ids.length) {
@@ -625,7 +636,7 @@
     }
     document.getElementById('cv-title').textContent = 'Eliminar todos los estados de cuenta';
     document.getElementById('cv-body').innerHTML =
-      `Se eliminarán <strong>${ids.length} estados de cuenta</strong> y sus pagos asociados. Esta acción no se puede deshacer.`;
+      '<strong>' + ids.length + ' estados de cuenta</strong> seran eliminados con sus pagos asociados. Esta accion no se puede deshacer.';
     document.getElementById('cv-confirm-btn').style.background = 'var(--brand-red)';
     document.getElementById('cv-confirm-btn').innerHTML = '<i class="bi bi-trash me-1"></i>Eliminar todos';
     document.getElementById('cv-confirm-btn').onclick = async () => {
@@ -633,19 +644,29 @@
       let ok = 0, fail = 0;
       for (const id of ids) {
         try {
-          const res = await fetch(`/api/estados/${id}/`, {
+          const res = await fetch('/api/estados/' + id + '/', {
             method: 'DELETE',
             headers: { 'X-CSRFToken': getCookie('csrftoken') }
           });
-          (res.ok || res.status === 204) ? ok++ : fail++;
+          if (res.ok || res.status === 204) {
+            // Remove rows from DOM as each one is deleted
+            const detailRowId = 'edc-detail-' + id;
+            const mainRow   = document.querySelector('tr[onclick*="toggleEdcDetail(' + id + ',"]');
+            const detailRow = document.getElementById(detailRowId);
+            if (mainRow)   mainRow.remove();
+            if (detailRow) detailRow.remove();
+            ok++;
+          } else { fail++; }
         } catch { fail++; }
       }
+      // Clear memory
+      todosLosEstados = [];
+      actualizarStats();
       if (fail === 0) {
-        showToast(`${ok} estados eliminados`, 'trash', '#F5A623');
+        showToast(ok + ' estados eliminados', 'trash', '#F5A623');
       } else {
-        showToast(`${ok} eliminados, ${fail} fallaron`, 'exclamation-circle', '#FCA5A5');
+        showToast(ok + ' eliminados, ' + fail + ' fallaron', 'exclamation-circle', '#FCA5A5');
       }
-      cargarEstados();
     };
     showOverlay();
     document.getElementById('convert-modal').style.display = 'block';
@@ -654,7 +675,11 @@
   // ── Load table ──
   async function cargarEstados(){
     const estado = document.getElementById('filtro-edc').value;
-    const url    = '/api/estados/'+(estado?'?estado='+estado:'');
+    const params = new URLSearchParams();
+    if (estado) params.set('estado', estado);
+    params.set('limit', '130');
+    const url = '/api/estados/?' + params.toString();
+
     try{
       const res  = await fetch(url);
       const data = await res.json();
@@ -721,6 +746,25 @@
         </td>
       </tr>`;
     }).join('');
+  }
+
+  // ADD this new function after renderEstados():
+  function actualizarStats() {
+    const data = todosLosEstados;
+    const gen   = data.filter(e => e.estado === 'generado').length;
+    const pend  = data.filter(e => e.estado === 'pendiente').length;
+    const env   = data.filter(e => e.estado === 'enviado').length;
+    const total = data.reduce((s, e) => s + parseFloat(e.total_pagar || 0), 0);
+    document.getElementById('edc-count-gen').textContent  = gen;
+    document.getElementById('edc-count-pend').textContent = pend;
+    document.getElementById('edc-count-env').textContent  = env;
+    document.getElementById('edc-total').textContent      = total >= 1000 ? '$' + (total / 1000).toFixed(1) + 'K' : fmtMoney(total);
+    document.getElementById('edc-subtitle').textContent   = data.length + ' estados de cuenta';
+    document.getElementById('edc-tabla-titulo').textContent = 'Estados de Cuenta (' + data.length + ')';
+    if (!data.length) {
+      document.getElementById('edc-tbody').innerHTML =
+        '<tr><td colspan="10" style="text-align:center;padding:40px;color:var(--text-muted)">No hay estados de cuenta</td></tr>';
+    }
   }
 
   function toggleAllEdc(cb){
