@@ -475,22 +475,30 @@ def estado_detail(request, pk):
 
 
 @api_view(['POST'])
+@login_required(login_url='login')
 def generar_estados_todos(request):
     """
     POST /api/estados/generar-todos/
     Generates ONE EstadoDeCuenta per investor (consolidating all their
     active inversiones) for the given period.
     Body: { periodo_inicio, periodo_fin, dias_periodo }
+
+    NOTE: investors with periodicidad_pago=30 always get a 30-day window
+    starting from periodo_inicio, regardless of the periodo_fin sent.
     """
+    from datetime import date, timedelta
+
     periodo_inicio = request.data.get('periodo_inicio')
     periodo_fin    = request.data.get('periodo_fin')
-    dias_periodo   = int(request.data.get('dias_periodo', 28))
 
     if not periodo_inicio or not periodo_fin:
         return Response(
             {'error': 'Se requiere periodo_inicio y periodo_fin'},
             status=status.HTTP_400_BAD_REQUEST
         )
+
+    p_inicio_default = date.fromisoformat(str(periodo_inicio))
+    p_fin_default    = date.fromisoformat(str(periodo_fin))
 
     # Get all investors that have at least one active investment
     inversionistas = Inversionista.objects.filter(
@@ -502,10 +510,18 @@ def generar_estados_todos(request):
     omitidos  = []
 
     for inversionista in inversionistas:
+
+        # Each investor uses their own periodicidad to calculate periodo_fin
+        periodicidad = getattr(inversionista, 'periodicidad_pago', 28)
+        p_inicio = p_inicio_default
+        p_fin    = p_inicio + timedelta(days=periodicidad - 1)  # 30 days → inicio + 29
+
+        dias_periodo = periodicidad
+
         # Skip if already has a consolidated estado for this period
         already_exists = EstadoDeCuenta.objects.filter(
             inversionista=inversionista,
-            periodo_inicio=periodo_inicio
+            periodo_inicio=p_inicio
         ).exists()
 
         if already_exists:
@@ -524,7 +540,7 @@ def generar_estados_todos(request):
             pct_factura = inv.porcentaje_factura / Decimal('100')
             pct_externo = Decimal('1') - pct_factura
 
-            bruto_inv    = _calcular_interes_con_movimientos(inv, periodo_inicio, periodo_fin)
+            bruto_inv    = _calcular_interes_con_movimientos(inv, p_inicio, p_fin)
             fact_inv     = bruto_inv * pct_factura
             isr_inv      = fact_inv * Decimal('0.20')
             iva_inv      = fact_inv * Decimal('0.16')
@@ -543,8 +559,8 @@ def generar_estados_todos(request):
         estado = EstadoDeCuenta.objects.create(
             inversionista=inversionista,
             inversion=None,
-            periodo_inicio=periodo_inicio,
-            periodo_fin=periodo_fin,
+            periodo_inicio=p_inicio,
+            periodo_fin=p_fin,
             dias_periodo=dias_periodo,
             interes_bruto=total_bruto.quantize(Decimal('0.01')),
             isr=total_isr.quantize(Decimal('0.01')),
@@ -558,7 +574,7 @@ def generar_estados_todos(request):
             estado_de_cuenta=estado,
             defaults={'metodo': 'transferencia', 'estado': 'pendiente'}
         )
-        generados.append(inversionista.nombre_completo)
+        generados.append(f"{inversionista.nombre_completo} ({periodicidad}d: {p_inicio} → {p_fin})")
 
     return Response({
         'generados': len(generados),
@@ -574,25 +590,26 @@ def generar_estado_inversionista(request):
     POST /api/estados/generar-inversionista/
     Generates one consolidated EstadoDeCuenta for a SINGLE investor
     for the given month, using tranche calculation automatically.
-    Body: { inversionista_id, periodo_inicio, periodo_fin }
-    No need to pass dias — calculated from dates automatically.
+    Body: { inversionista_id, periodo_inicio }
+    periodo_fin is calculated automatically from investor's periodicidad_pago.
     """
     inv_id         = request.data.get('inversionista_id')
     periodo_inicio = request.data.get('periodo_inicio')
-    periodo_fin    = request.data.get('periodo_fin')
 
-    if not inv_id or not periodo_inicio or not periodo_fin:
+    if not inv_id or not periodo_inicio:
         return Response(
-            {'error': 'Se requiere inversionista_id, periodo_inicio y periodo_fin'},
+            {'error': 'Se requiere inversionista_id y periodo_inicio'},
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    from datetime import date
+    from datetime import date, timedelta
     p_inicio = date.fromisoformat(str(periodo_inicio))
-    p_fin    = date.fromisoformat(str(periodo_fin))
-    dias_periodo = (p_fin - p_inicio).days + 1
 
     inversionista = get_object_or_404(Inversionista, pk=inv_id)
+
+    dias_periodo = inversionista.periodicidad_pago
+    p_fin        = p_inicio + timedelta(days=dias_periodo - 1)
+    periodo_fin  = p_fin.isoformat()
 
     # Check if already exists
     if EstadoDeCuenta.objects.filter(
@@ -657,16 +674,17 @@ def generar_estado_inversionista(request):
     )
 
     return Response({
-        'message':      f'Estado generado para {inversionista.nombre_completo}',
-        'estado_id':    estado.id,
+        'message':       f'Estado generado para {inversionista.nombre_completo}',
+        'estado_id':     estado.id,
         'inversionista': inversionista.nombre_completo,
-        'periodo':      f'{periodo_inicio} al {periodo_fin}',
-        'dias_periodo': dias_periodo,
-        'total_pagar':  str(total_pagar.quantize(Decimal('0.01'))),
+        'periodo':       f'{periodo_inicio} al {periodo_fin}',
+        'dias_periodo':  dias_periodo,
+        'total_pagar':   str(total_pagar.quantize(Decimal('0.01'))),
         'interes_bruto': str(total_bruto.quantize(Decimal('0.01'))),
         'inversiones_calculadas': inversiones_activas.count(),
     })
 
+    
 def _calcular_interes_con_movimientos(inversion, periodo_inicio, periodo_fin):
     """
     Calculates interest for a period using pro-rated tranches.

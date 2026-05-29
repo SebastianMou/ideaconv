@@ -99,6 +99,12 @@ class Inversionista(models.Model):
         related_name='inversionistas'
     )
 
+    PERIODICIDAD_CHOICES = [
+        (28, '28 días'),
+        (30, '30 días'),
+    ]
+    periodicidad_pago = models.IntegerField(choices=PERIODICIDAD_CHOICES, default=28)
+
     def __str__(self):
         return self.nombre_completo
 
