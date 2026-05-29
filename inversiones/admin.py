@@ -30,7 +30,7 @@ class PromotorAdmin(admin.ModelAdmin):
 class InversionInline(admin.TabularInline):
     model  = Inversion
     extra  = 0
-    fields = ('capital', 'tasa_anual', 'base_calculo', 'porcentaje_factura', 'estado', 'fecha_inicio')
+    fields = ('capital', 'tasa_anual', 'base_calculo', 'porcentaje_factura', 'estado', 'fecha_inicio', 'fecha_vencimiento')
 
 
 @admin.register(Inversionista)
