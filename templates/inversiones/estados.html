@@ -23,7 +23,9 @@
     <button class="btn-brand" onclick="abrirCierreMes()">
       <i class="bi bi-calendar-check-fill"></i><span class="d-none d-sm-inline ms-2">Cierre de Mes</span>
     </button>
-    <a class="btn-icon" onclick="eliminarEstado(${e.id})" title="Eliminar" style="color:var(--brand-red)"><i class="bi bi-trash"></i></a>
+    <button class="btn-icon" onclick="eliminarTodos()" title="Eliminar todos" style="color:var(--brand-red)">
+      <i class="bi bi-trash"></i><span class="d-none d-sm-inline ms-2">Eliminar Todos</span>
+    </button>
   </div>
 </div>
 
@@ -610,6 +612,40 @@
           showToast('Error al eliminar', 'x-circle-fill', '#FCA5A5');
         }
       } catch { showToast('Sin conexion', 'wifi-off-fill', '#FCA5A5'); }
+    };
+    showOverlay();
+    document.getElementById('convert-modal').style.display = 'block';
+  }
+
+  function eliminarTodos() {
+    const ids = todosLosEstados.map(e => e.id);
+    if (!ids.length) {
+      showToast('No hay estados de cuenta para eliminar', 'exclamation-circle', '#F5A623');
+      return;
+    }
+    document.getElementById('cv-title').textContent = 'Eliminar todos los estados de cuenta';
+    document.getElementById('cv-body').innerHTML =
+      `Se eliminarán <strong>${ids.length} estados de cuenta</strong> y sus pagos asociados. Esta acción no se puede deshacer.`;
+    document.getElementById('cv-confirm-btn').style.background = 'var(--brand-red)';
+    document.getElementById('cv-confirm-btn').innerHTML = '<i class="bi bi-trash me-1"></i>Eliminar todos';
+    document.getElementById('cv-confirm-btn').onclick = async () => {
+      closeModal();
+      let ok = 0, fail = 0;
+      for (const id of ids) {
+        try {
+          const res = await fetch(`/api/estados/${id}/`, {
+            method: 'DELETE',
+            headers: { 'X-CSRFToken': getCookie('csrftoken') }
+          });
+          (res.ok || res.status === 204) ? ok++ : fail++;
+        } catch { fail++; }
+      }
+      if (fail === 0) {
+        showToast(`${ok} estados eliminados`, 'trash', '#F5A623');
+      } else {
+        showToast(`${ok} eliminados, ${fail} fallaron`, 'exclamation-circle', '#FCA5A5');
+      }
+      cargarEstados();
     };
     showOverlay();
     document.getElementById('convert-modal').style.display = 'block';
