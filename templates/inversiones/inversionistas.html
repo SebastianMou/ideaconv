@@ -376,7 +376,7 @@
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12.5px;margin-bottom:14px;">
                             <div><span style="color:var(--text-muted)">Tasa anual</span><div style="font-weight:600">${inv.tasa_anual}%</div></div>
                             <div><span style="color:var(--text-muted)">Base</span><div style="font-weight:600">${inv.base_calculo} dias</div></div>
-                            <div><span style="color:var(--text-muted)">% Factura</span><div style="font-weight:600">${inv.porcentaje_factura}%</div></div>
+                            <div><span style="color:var(--text-muted)">% Factura</span><div style="font-weight:600">${parseFloat(inv.porcentaje_factura).toFixed(5)}%</div></div>
                             <div><span style="color:var(--text-muted)">Inicio</span><div style="font-weight:600">${inv.fecha_inicio||'—'}</div></div>
                             <div><span style="color:var(--text-muted)">Vencimiento</span><div style="font-weight:600">${inv.fecha_vencimiento||'Sin vencimiento'}</div></div>
                         </div>
