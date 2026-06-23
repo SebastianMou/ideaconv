@@ -529,14 +529,14 @@ def generar_estados_todos(request):
         selected_ids = set(int(i) for i in inversionista_ids)
     except (TypeError, ValueError):
         selected_ids = set()
-    target_ids = selected_ids | set(dias_override.keys())
-
+    # Scope = ONLY the search-box selection. Días fijos do NOT narrow the run;
+    # they just override the day count for those investors.
     inversionistas = Inversionista.objects.filter(
         inversiones__estado='activo',
         eliminado=False
     ).distinct()
-    if target_ids:
-        inversionistas = inversionistas.filter(id__in=target_ids)
+    if selected_ids:
+        inversionistas = inversionistas.filter(id__in=selected_ids)
 
     generados = []
     omitidos  = []

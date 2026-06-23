@@ -1019,10 +1019,8 @@
     const btn = document.getElementById('btn-cierre-generar');
     const n = Object.keys(_cierreSeleccionados).length;
     const f = Object.keys(_cierreFijos).length;
-    let label;
-    if (n === 0 && f === 0)    label = 'Todos';
-    else if (n === 0)          label = `${f} con días fijos`;
-    else                       label = `${n + f} seleccionado(s)`;
+    let label = (n === 0) ? 'Todos' : `${n} seleccionado(s)`;
+    if (f > 0) label += ` · ${f} días fijos`;
     btn.innerHTML = `<i class="bi bi-calendar-check-fill me-1"></i>Generar Cierre — ${label}`;
   }
 
