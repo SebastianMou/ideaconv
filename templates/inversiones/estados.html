@@ -244,19 +244,33 @@
       </div>
     </div>
 
-    <!-- Investor search (optional — for single investor) -->
-    <div style="border:1.5px solid var(--border);border-radius:10px;padding:14px;margin-bottom:16px;">
+    <!-- Scope: multi-select investors (empty = ALL) -->
+    <div style="border:1.5px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px;">
       <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);margin-bottom:10px;">
-        <i class="bi bi-person-fill me-1"></i>Inversionista específico (opcional)
+        <i class="bi bi-people-fill me-1"></i>Inversionistas (vacío = todos)
       </div>
       <input class="form-control form-control-sm" id="cierre-search" placeholder="Buscar por nombre o RFC…"
              oninput="buscarInversionistaCierre(this.value)" style="margin-bottom:8px;">
       <div id="cierre-search-results" style="max-height:160px;overflow-y:auto;"></div>
-      <div id="cierre-inv-selected" style="display:none;background:#E8F9F2;border:1.5px solid #1CB87E;border-radius:8px;padding:8px 12px;margin-top:8px;align-items:center;gap:10px;">
-        <div id="cierre-inv-avatar" style="width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:#fff;flex-shrink:0;"></div>
-        <div style="flex:1;font-size:13px;font-weight:600;color:var(--brand-navy)" id="cierre-inv-nombre"></div>
-        <button onclick="deseleccionarInvCierre()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:16px;padding:0;">✕</button>
+      <div id="cierre-inv-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;"></div>
+    </div>
+
+    <!-- Fixed-days overrides -->
+    <div style="border:1.5px solid var(--border);border-radius:10px;padding:14px;margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);margin-bottom:4px;">
+        <i class="bi bi-calendar-week-fill me-1"></i>Días fijos por inversionista
       </div>
+      <div style="font-size:11.5px;color:var(--text-muted);margin-bottom:10px;">
+        Siempre usan los días que definas aquí, sin importar las fechas de arriba.
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <input class="form-control form-control-sm" id="cierre-fijo-search" placeholder="Buscar inversionista…"
+               oninput="buscarInversionistaFijo(this.value)" style="flex:1;">
+        <input class="form-control form-control-sm" id="cierre-fijo-dias" type="number" min="1" max="366"
+               placeholder="Días" style="width:90px;">
+      </div>
+      <div id="cierre-fijo-results" style="max-height:140px;overflow-y:auto;"></div>
+      <div id="cierre-fijo-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;"></div>
     </div>
 
     <div id="cierre-error" style="display:none;background:#FDECEA;border:1px solid var(--brand-red);border-radius:8px;padding:9px 12px;font-size:12.5px;color:var(--brand-red);margin-bottom:14px;">
@@ -265,11 +279,8 @@
 
     <div style="display:flex;gap:10px;">
       <button onclick="cerrarCierreMes()" class="btn-outline-brand" style="flex:1">Cancelar</button>
-      <button onclick="ejecutarCierreMes(false)" class="btn-outline-brand" style="flex:1;border-color:#1CB87E;color:#1CB87E;" id="btn-cierre-uno">
-        <i class="bi bi-person-fill me-1"></i>Solo este
-      </button>
-      <button onclick="ejecutarCierreMes(true)" class="btn-brand" style="flex:1;" id="btn-cierre-todos">
-        <i class="bi bi-people-fill me-1"></i>Todos
+      <button onclick="ejecutarCierreMes()" class="btn-brand" style="flex:2;" id="btn-cierre-generar">
+        <i class="bi bi-calendar-check-fill me-1"></i>Generar Cierre — Todos
       </button>
     </div>
   </div>
@@ -946,29 +957,47 @@
     }catch{ showToast('Error al enviar','x-circle-fill','#FCA5A5'); }
   }
 
-  // ── Cierre de Mes ──
+// ── Cierre de Mes ──
   const COLORS_EDC = ['#C8282A','#1A2340','#1CB87E','#F5A623','#6B7A99','#7C3AED','#0284C7'];
-  let _cierreInvId   = null;
-  let _cierreInvNombre = null;
+  let _cierreSeleccionados = {};   // { id: {nombre, color} }        scope
+  let _cierreFijos         = {};   // { id: {nombre, color, dias} }  overrides
 
   function abrirCierreMes() {
-    // Auto-fill current month
     const now   = new Date();
-    const y     = now.getFullYear();
-    const m     = now.getMonth();
-    const start = new Date(y, m, 1).toISOString().split('T')[0];
-    const end   = new Date(y, m + 1, 0).toISOString().split('T')[0];
+    const start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+    const end   = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
     document.getElementById('cierre-inicio').value = start;
     document.getElementById('cierre-fin').value    = end;
     document.getElementById('cierre-search').value = '';
     document.getElementById('cierre-search-results').innerHTML = '';
+    document.getElementById('cierre-fijo-search').value = '';
+    document.getElementById('cierre-fijo-dias').value = '';
+    document.getElementById('cierre-fijo-results').innerHTML = '';
     document.getElementById('cierre-error').style.display = 'none';
-    document.getElementById('cierre-inv-selected').style.display = 'none';
-    _cierreInvId = null;
-    _cierreInvNombre = null;
+    _cierreSeleccionados = {};
+    _cierreFijos = {};
+    renderCierreChips();
+    renderCierreFijoChips();
     actualizarInfoCierre();
+    
     document.getElementById('modal-overlay').style.display = 'block';
+    cargarFijosGuardados();
     document.getElementById('cierre-modal').style.display  = 'block';
+  }
+
+  async function cargarFijosGuardados() {
+    try {
+      const res  = await fetch('/api/inversionistas/');
+      const data = await res.json();
+      data.forEach(inv => {
+        if (inv.dias_cierre_fijo) {
+          const color = COLORS_EDC[inv.id % COLORS_EDC.length];
+          _cierreFijos[inv.id] = { nombre: inv.nombre_completo, color, dias: inv.dias_cierre_fijo };
+        }
+      });
+      renderCierreFijoChips();
+      actualizarInfoCierre();
+    } catch {}
   }
 
   function cerrarCierreMes() {
@@ -980,23 +1009,29 @@
     const ini = document.getElementById('cierre-inicio').value;
     const fin = document.getElementById('cierre-fin').value;
     const infoDiv = document.getElementById('cierre-dias-info');
-    if (!ini || !fin) { infoDiv.style.display = 'none'; return; }
-    const dias = Math.round((new Date(fin) - new Date(ini)) / 86400000) + 1;
-    document.getElementById('cierre-dias-text').textContent = `Período de ${dias} días: ${ini} al ${fin}`;
-    infoDiv.style.display = 'block';
-
-    // Update button labels
-    const btnUno  = document.getElementById('btn-cierre-uno');
-    const btnTodos = document.getElementById('btn-cierre-todos');
-    if (_cierreInvId) {
-      btnUno.innerHTML  = `<i class="bi bi-person-fill me-1"></i>Cerrar — ${_cierreInvNombre.split(' ')[0]}`;
-      btnTodos.innerHTML = '<i class="bi bi-people-fill me-1"></i>Cerrar — Todos';
+    if (ini && fin) {
+      const dias = Math.round((new Date(fin) - new Date(ini)) / 86400000) + 1;
+      document.getElementById('cierre-dias-text').textContent = `Período global de ${dias} días: ${ini} al ${fin}`;
+      infoDiv.style.display = 'block';
     } else {
-      btnUno.innerHTML  = '<i class="bi bi-person-fill me-1"></i>Solo este';
-      btnTodos.innerHTML = '<i class="bi bi-people-fill me-1"></i>Todos';
+      infoDiv.style.display = 'none';
     }
+    const btn = document.getElementById('btn-cierre-generar');
+    const n = Object.keys(_cierreSeleccionados).length;
+    const f = Object.keys(_cierreFijos).length;
+    let label;
+    if (n === 0 && f === 0)    label = 'Todos';
+    else if (n === 0)          label = `${f} con días fijos`;
+    else                       label = `${n + f} seleccionado(s)`;
+    btn.innerHTML = `<i class="bi bi-calendar-check-fill me-1"></i>Generar Cierre — ${label}`;
   }
 
+  function _avatar(nombre, color, size) {
+    const initials = nombre.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+    return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:${Math.round(size*0.36)}px;font-weight:800;color:#fff;flex-shrink:0">${initials}</div>`;
+  }
+
+  // ---- Scope multi-select ----
   let _cierreSearchTimer = null;
   function buscarInversionistaCierre(q) {
     clearTimeout(_cierreSearchTimer);
@@ -1007,17 +1042,14 @@
       try {
         const res  = await fetch(`/api/inversionistas/?search=${encodeURIComponent(q)}`);
         const data = await res.json();
-        if (!data.length) {
-          results.innerHTML = '<div style="padding:8px;font-size:12px;color:var(--text-muted);">Sin resultados</div>';
-          return;
-        }
-        results.innerHTML = data.slice(0, 6).map(inv => {
-          const color = COLORS_EDC[inv.id % COLORS_EDC.length];
-          const initials = inv.nombre_completo.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
-          return `<div onclick="seleccionarInvCierre(${inv.id},'${inv.nombre_completo.replace(/'/g,"\\'")}','${color}')"
-            style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;transition:background .15s"
+        if (!data.length) { results.innerHTML = '<div style="padding:8px;font-size:12px;color:var(--text-muted);">Sin resultados</div>'; return; }
+        results.innerHTML = data.slice(0, 8).map(inv => {
+          const color  = COLORS_EDC[inv.id % COLORS_EDC.length];
+          const picked = _cierreSeleccionados[inv.id] ? 'opacity:.45;pointer-events:none;' : '';
+          return `<div onclick="toggleInvCierre(${inv.id},'${inv.nombre_completo.replace(/'/g,"\\'")}','${color}')"
+            style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;${picked}"
             onmouseover="this.style.background='#F0F4FF'" onmouseout="this.style.background='transparent'">
-            <div style="width:28px;height:28px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0">${initials}</div>
+            ${_avatar(inv.nombre_completo, color, 28)}
             <div style="flex:1">
               <div style="font-weight:600;color:var(--brand-navy)">${inv.nombre_completo}</div>
               <div style="font-size:11px;color:var(--text-muted)">${inv.rfc||'Sin RFC'}</div>
@@ -1028,28 +1060,113 @@
     }, 350);
   }
 
-  function seleccionarInvCierre(id, nombre, color) {
-    _cierreInvId     = id;
-    _cierreInvNombre = nombre;
+  function toggleInvCierre(id, nombre, color) {
+    if (_cierreSeleccionados[id]) delete _cierreSeleccionados[id];
+    else _cierreSeleccionados[id] = { nombre, color };
     document.getElementById('cierre-search').value = '';
     document.getElementById('cierre-search-results').innerHTML = '';
-    const sel = document.getElementById('cierre-inv-selected');
-    const av  = document.getElementById('cierre-inv-avatar');
-    av.textContent   = nombre.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
-    av.style.background = color;
-    document.getElementById('cierre-inv-nombre').textContent = nombre;
-    sel.style.display = 'flex';
+    renderCierreChips();
     actualizarInfoCierre();
   }
 
-  function deseleccionarInvCierre() {
-    _cierreInvId = null;
-    _cierreInvNombre = null;
-    document.getElementById('cierre-inv-selected').style.display = 'none';
+  function quitarInvCierre(id) {
+    delete _cierreSeleccionados[id];
+    renderCierreChips();
     actualizarInfoCierre();
   }
 
-  async function ejecutarCierreMes(todos) {
+  function renderCierreChips() {
+    const wrap = document.getElementById('cierre-inv-chips');
+    const ids  = Object.keys(_cierreSeleccionados);
+    if (!ids.length) { wrap.innerHTML = '<div style="font-size:11.5px;color:var(--text-muted);">Ninguno → se generará para TODOS.</div>'; return; }
+    wrap.innerHTML = ids.map(id => {
+      const it = _cierreSeleccionados[id];
+      return `<span style="display:inline-flex;align-items:center;gap:6px;background:#E8F9F2;border:1.5px solid #1CB87E;border-radius:999px;padding:3px 8px 3px 3px;font-size:12px;font-weight:600;color:var(--brand-navy)">
+        ${_avatar(it.nombre, it.color, 20)}${it.nombre.split(' ')[0]}
+        <span onclick="quitarInvCierre(${id})" style="cursor:pointer;color:var(--text-muted);">✕</span>
+      </span>`;
+    }).join('');
+  }
+
+  // ---- Fixed-days overrides ----
+  let _cierreFijoTimer = null;
+  function buscarInversionistaFijo(q) {
+    clearTimeout(_cierreFijoTimer);
+    const results = document.getElementById('cierre-fijo-results');
+    if (!q.trim()) { results.innerHTML = ''; return; }
+    results.innerHTML = '<div style="padding:8px;font-size:12px;color:var(--text-muted);">Buscando...</div>';
+    _cierreFijoTimer = setTimeout(async () => {
+      try {
+        const res  = await fetch(`/api/inversionistas/?search=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        if (!data.length) { results.innerHTML = '<div style="padding:8px;font-size:12px;color:var(--text-muted);">Sin resultados</div>'; return; }
+        results.innerHTML = data.slice(0, 8).map(inv => {
+          const color = COLORS_EDC[inv.id % COLORS_EDC.length];
+          return `<div onclick="agregarInvFijo(${inv.id},'${inv.nombre_completo.replace(/'/g,"\\'")}','${color}')"
+            style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;"
+            onmouseover="this.style.background='#FFF6E5'" onmouseout="this.style.background='transparent'">
+            ${_avatar(inv.nombre_completo, color, 28)}
+            <div style="flex:1">
+              <div style="font-weight:600;color:var(--brand-navy)">${inv.nombre_completo}</div>
+              <div style="font-size:11px;color:var(--text-muted)">${inv.rfc||'Sin RFC'}</div>
+            </div>
+          </div>`;
+        }).join('');
+      } catch { results.innerHTML = '<div style="padding:8px;font-size:12px;color:var(--brand-red);">Error al buscar</div>'; }
+    }, 350);
+  }
+
+  async function agregarInvFijo(id, nombre, color) {
+      const diasInput = document.getElementById('cierre-fijo-dias');
+      const dias = parseInt(diasInput.value, 10);
+      if (!dias || dias < 1) {
+        document.getElementById('cierre-error-msg').textContent = 'Escribe el número de días antes de agregar el inversionista de días fijos.';
+        document.getElementById('cierre-error').style.display = 'block';
+        return;
+      }
+      document.getElementById('cierre-error').style.display = 'none';
+      _cierreFijos[id] = { nombre, color, dias };
+      diasInput.value = '';
+      document.getElementById('cierre-fijo-search').value = '';
+      document.getElementById('cierre-fijo-results').innerHTML = '';
+      renderCierreFijoChips();
+      actualizarInfoCierre();
+      try {
+        await fetch(`/api/inversionistas/${id}/`, {
+          method:  'PUT',
+          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+          body:    JSON.stringify({ dias_cierre_fijo: dias })
+        });
+      } catch {}
+    }
+
+  async function quitarInvFijo(id) {
+    delete _cierreFijos[id];
+    renderCierreFijoChips();
+    actualizarInfoCierre();
+    try {
+      await fetch(`/api/inversionistas/${id}/`, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+        body:    JSON.stringify({ dias_cierre_fijo: null })
+      });
+    } catch {}
+  }
+
+  function renderCierreFijoChips() {
+    const wrap = document.getElementById('cierre-fijo-chips');
+    const ids  = Object.keys(_cierreFijos);
+    if (!ids.length) { wrap.innerHTML = ''; return; }
+    wrap.innerHTML = ids.map(id => {
+      const it = _cierreFijos[id];
+      return `<span style="display:inline-flex;align-items:center;gap:6px;background:#FFF6E5;border:1.5px solid #F5A623;border-radius:999px;padding:3px 8px 3px 3px;font-size:12px;font-weight:600;color:var(--brand-navy)">
+        ${_avatar(it.nombre, it.color, 20)}${it.nombre.split(' ')[0]} · ${it.dias}d
+        <span onclick="quitarInvFijo(${id})" style="cursor:pointer;color:var(--text-muted);">✕</span>
+      </span>`;
+    }).join('');
+  }
+
+  async function ejecutarCierreMes() {
     const inicio = document.getElementById('cierre-inicio').value;
     const fin    = document.getElementById('cierre-fin').value;
     const errEl  = document.getElementById('cierre-error');
@@ -1061,61 +1178,35 @@
       errEl.style.display = 'block';
       return;
     }
-
-    if (!todos && !_cierreInvId) {
-      errMsg.textContent = 'Selecciona un inversionista o usa "Todos".';
+    if (new Date(fin) < new Date(inicio)) {
+      errMsg.textContent = 'La fecha fin no puede ser anterior a la fecha inicio.';
       errEl.style.display = 'block';
       return;
     }
 
-    const dias = Math.round((new Date(fin) - new Date(inicio)) / 86400000) + 1;
-    const btn  = todos ? document.getElementById('btn-cierre-todos') : document.getElementById('btn-cierre-uno');
+    const inversionista_ids = Object.keys(_cierreSeleccionados).map(Number);
+    const dias_override = {};
+    Object.keys(_cierreFijos).forEach(id => { dias_override[id] = _cierreFijos[id].dias; });
+
+    const btn  = document.getElementById('btn-cierre-generar');
     const orig = btn.innerHTML;
     btn.innerHTML = '<i class="bi bi-arrow-repeat me-1"></i>Calculando...';
     btn.disabled  = true;
 
     try {
-      let res, data;
-      if (todos) {
-        res  = await fetch('/api/estados/generar-todos/', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
-          body:    JSON.stringify({ periodo_inicio: inicio, periodo_fin: fin, dias_periodo: dias })
-        });
-        data = await res.json();
-        if (res.ok) {
-          cerrarCierreMes();
-          showToast(
-            `${data.generados} estados generados · ${data.omitidos} omitidos`,
-            'lightning-fill', '#1CB87E'
-          );
-          cargarEstados();
-        } else {
-          errMsg.textContent = data.error || 'Error al generar';
-          errEl.style.display = 'block';
-        }
+      const res = await fetch('/api/estados/generar-todos/', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+        body:    JSON.stringify({ periodo_inicio: inicio, periodo_fin: fin, inversionista_ids, dias_override })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        cerrarCierreMes();
+        showToast(`${data.generados} estados generados · ${data.omitidos} omitidos`, 'lightning-fill', '#1CB87E');
+        cargarEstados();
       } else {
-        res  = await fetch('/api/estados/generar-inversionista/', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
-          body:    JSON.stringify({
-            inversionista_id: _cierreInvId,
-            periodo_inicio:   inicio,
-            periodo_fin:      fin,
-          })
-        });
-        data = await res.json();
-        if (res.ok) {
-          cerrarCierreMes();
-          showToast(
-            `Estado generado para ${data.inversionista} · ${data.inversiones_calculadas} inversión(es) · $${parseFloat(data.total_pagar).toLocaleString('es-MX',{minimumFractionDigits:2})}`,
-            'file-earmark-check-fill', '#1CB87E'
-          );
-          cargarEstados();
-        } else {
-          errMsg.textContent = data.error || 'Error al generar';
-          errEl.style.display = 'block';
-        }
+        errMsg.textContent = data.error || 'Error al generar';
+        errEl.style.display = 'block';
       }
     } catch {
       errMsg.textContent = 'Sin conexión al servidor';

@@ -479,17 +479,25 @@ def estado_detail(request, pk):
 def generar_estados_todos(request):
     """
     POST /api/estados/generar-todos/
-    Generates ONE EstadoDeCuenta per investor (consolidating all their
-    active inversiones) for the given period.
-    Body: { periodo_inicio, periodo_fin, dias_periodo }
+    Body:
+    {
+      "periodo_inicio": "2026-06-01",
+      "periodo_fin":    "2026-06-30",        # defines the GLOBAL day count
+      "inversionista_ids": [3, 7],           # optional; empty/absent => ALL
+      "dias_override": { "7": 31, "12": 20 } # optional; per-investor fixed days
+    }
 
-    NOTE: investors with periodicidad_pago=30 always get a 30-day window
-    starting from periodo_inicio, regardless of the periodo_fin sent.
+    Day-count rules:
+      - Global days = (periodo_fin - periodo_inicio) + 1  (inclusive)
+      - Anyone in dias_override ALWAYS uses that fixed count, ignoring the dates.
+      - Each investor's periodo_fin is recomputed from their own day count.
     """
     from datetime import date, timedelta
 
-    periodo_inicio = request.data.get('periodo_inicio')
-    periodo_fin    = request.data.get('periodo_fin')
+    periodo_inicio    = request.data.get('periodo_inicio')
+    periodo_fin       = request.data.get('periodo_fin')
+    inversionista_ids = request.data.get('inversionista_ids') or []
+    dias_override_raw = request.data.get('dias_override') or {}
 
     if not periodo_inicio or not periodo_fin:
         return Response(
@@ -500,37 +508,63 @@ def generar_estados_todos(request):
     p_inicio_default = date.fromisoformat(str(periodo_inicio))
     p_fin_default    = date.fromisoformat(str(periodo_fin))
 
-    # Get all investors that have at least one active investment
+    dias_global = (p_fin_default - p_inicio_default).days + 1
+    if dias_global < 1:
+        return Response(
+            {'error': 'La fecha fin no puede ser anterior a la fecha inicio'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    # Normalise override map to {int_id: int_days}
+    dias_override = {}
+    for k, v in dias_override_raw.items():
+        try:
+            dias_override[int(k)] = int(v)
+        except (TypeError, ValueError):
+            continue
+
+    # Scope = selected investors + anyone given a fixed-day override.
+    # Both empty => everyone with active investments.
+    try:
+        selected_ids = set(int(i) for i in inversionista_ids)
+    except (TypeError, ValueError):
+        selected_ids = set()
+    target_ids = selected_ids | set(dias_override.keys())
+
     inversionistas = Inversionista.objects.filter(
         inversiones__estado='activo',
         eliminado=False
     ).distinct()
+    if target_ids:
+        inversionistas = inversionistas.filter(id__in=target_ids)
 
     generados = []
     omitidos  = []
 
     for inversionista in inversionistas:
 
-        # Each investor uses their own periodicidad to calculate periodo_fin
-        periodicidad = getattr(inversionista, 'periodicidad_pago', 28)
+        # Fixed-day investors ALWAYS use their override; everyone else
+        # uses the global day count from the selected dates.
+        # Precedence: one-off override from modal > saved per-investor value > global dates
+        if inversionista.id in dias_override:
+            dias_periodo = dias_override[inversionista.id]
+        elif inversionista.dias_cierre_fijo:
+            dias_periodo = inversionista.dias_cierre_fijo
+        else:
+            dias_periodo = dias_global
         p_inicio = p_inicio_default
-        p_fin    = p_inicio + timedelta(days=periodicidad - 1)  # 30 days → inicio + 29
+        p_fin    = p_inicio + timedelta(days=dias_periodo - 1)
 
-        dias_periodo = periodicidad
-
-        # Skip if already has a consolidated estado for this period
         already_exists = EstadoDeCuenta.objects.filter(
             inversionista=inversionista,
             periodo_inicio=p_inicio
         ).exists()
-
         if already_exists:
             omitidos.append(inversionista.nombre_completo)
             continue
 
         inversiones_activas = inversionista.inversiones.filter(estado='activo')
 
-        # Sum across all investments using tranche calculation
         total_bruto   = Decimal('0')
         total_isr     = Decimal('0')
         total_iva     = Decimal('0')
@@ -540,11 +574,11 @@ def generar_estados_todos(request):
             pct_factura = inv.porcentaje_factura / Decimal('100')
             pct_externo = Decimal('1') - pct_factura
 
-            bruto_inv    = _calcular_interes_con_movimientos(inv, p_inicio, p_fin)
-            fact_inv     = bruto_inv * pct_factura
-            isr_inv      = fact_inv * Decimal('0.20')
-            iva_inv      = fact_inv * Decimal('0.16')
-            externo_inv  = bruto_inv * pct_externo
+            bruto_inv   = _calcular_interes_con_movimientos(inv, p_inicio, p_fin)
+            fact_inv    = bruto_inv * pct_factura
+            isr_inv     = fact_inv * Decimal('0.20')
+            iva_inv     = fact_inv * Decimal('0.16')
+            externo_inv = bruto_inv * pct_externo
 
             total_bruto   += bruto_inv
             total_isr     += isr_inv
@@ -574,7 +608,7 @@ def generar_estados_todos(request):
             estado_de_cuenta=estado,
             defaults={'metodo': 'transferencia', 'estado': 'pendiente'}
         )
-        generados.append(f"{inversionista.nombre_completo} ({periodicidad}d: {p_inicio} → {p_fin})")
+        generados.append(f"{inversionista.nombre_completo} ({dias_periodo}d: {p_inicio} → {p_fin})")
 
     return Response({
         'generados': len(generados),

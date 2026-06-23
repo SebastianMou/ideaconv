@@ -105,6 +105,11 @@ class Inversionista(models.Model):
     ]
     periodicidad_pago = models.IntegerField(choices=PERIODICIDAD_CHOICES, default=28)
 
+    dias_cierre_fijo = models.PositiveIntegerField(
+        null=True, blank=True,
+        help_text='Si se define, el cierre SIEMPRE usa estos días para este inversionista, ignorando las fechas globales.'
+    )
+
     def __str__(self):
         return self.nombre_completo
 
