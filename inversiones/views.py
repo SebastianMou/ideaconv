@@ -737,6 +737,14 @@ def _calcular_interes_con_movimientos(inversion, periodo_inicio, periodo_fin):
     p_inicio = periodo_inicio if isinstance(periodo_inicio, date) else date.fromisoformat(str(periodo_inicio))
     p_fin    = periodo_fin    if isinstance(periodo_fin,    date) else date.fromisoformat(str(periodo_fin))
 
+    # Mid-period start: interest accrues from the DAY AFTER the investment's
+    # start date (the deposit day itself does not earn). Investments already
+    # running before the period clip to the period start, so nothing changes.
+    if inversion.fecha_inicio:
+        efectivo_inicio = max(p_inicio, inversion.fecha_inicio + timedelta(days=1))
+    else:
+        efectivo_inicio = p_inicio
+
     tasa = inversion.tasa_anual / Decimal('100')
     base = Decimal(str(inversion.base_calculo))
 
@@ -761,7 +769,7 @@ def _calcular_interes_con_movimientos(inversion, periodo_inicio, periodo_fin):
     # Build tranches walking forward from period start
     tranches        = []
     capital_actual  = capital_inicio
-    tranche_start   = p_inicio
+    tranche_start   = efectivo_inicio
 
     for mov in movimientos:
         # Close tranche up to the day before this movement
@@ -776,7 +784,7 @@ def _calcular_interes_con_movimientos(inversion, periodo_inicio, periodo_fin):
         else:
             capital_actual -= mov.monto
 
-        tranche_start = mov.fecha
+        tranche_start = max(mov.fecha, efectivo_inicio)
 
     # Final tranche: from last movement date to period end (inclusive)
     dias_finales = Decimal(str((p_fin - tranche_start).days + 1))
@@ -1889,7 +1897,6 @@ def estado_enviar(request, pk):
     inversiones_pdf = []
     from datetime import date as _date, timedelta as _td
     for inversion in inversiones_activas:
-        dias     = estado.dias_periodo
         pct_fact = float(inversion.porcentaje_factura) / 100
         bruto_i  = float(_calcular_interes_con_movimientos(
             inversion, estado.periodo_inicio, estado.periodo_fin
@@ -1902,6 +1909,14 @@ def estado_enviar(request, pk):
         # Reconstruct opening capital for PDF detail page
         p_ini   = estado.periodo_inicio if isinstance(estado.periodo_inicio, _date) else _date.fromisoformat(str(estado.periodo_inicio))
         p_fin_d = estado.periodo_fin    if isinstance(estado.periodo_fin,    _date) else _date.fromisoformat(str(estado.periodo_fin))
+        
+        # Same mid-period-start rule as the interest calc
+        if inversion.fecha_inicio:
+            efectivo_inicio_inv = max(p_ini, inversion.fecha_inicio + _td(days=1))
+        else:
+            efectivo_inicio_inv = p_ini
+        dias = max((p_fin_d - efectivo_inicio_inv).days + 1, 0)
+
         movs_periodo = list(inversion.movimientos.filter(
             fecha__gte=p_ini, fecha__lte=p_fin_d
         ).order_by('fecha'))
@@ -1914,7 +1929,7 @@ def estado_enviar(request, pk):
         # Build ordered tranche + movement rows for PDF detail page
         tramos_inv = []
         cap_t   = capital_inicio_inv
-        t_start = p_ini
+        t_start = efectivo_inicio_inv
         tasa_d  = inversion.tasa_anual / Decimal('100')
         base_d  = Decimal(str(inversion.base_calculo))
 
@@ -1936,7 +1951,7 @@ def estado_enviar(request, pk):
                 'monto': str(_m.monto), 'concepto': _m.get_tipo_display() + ' a Capital',
             })
             cap_t   = cap_t + _m.monto if _m.tipo == 'abono' else cap_t - _m.monto
-            t_start = _m.fecha
+            t_start = max(_m.fecha, efectivo_inicio_inv)
 
         dias_f = (p_fin_d - t_start).days + 1
         b_f = float(cap_t * (tasa_d / base_d) * Decimal(str(dias_f)))
@@ -2078,7 +2093,12 @@ def enviar_estados_todos(request):
 
         inversiones_pdf = []
         for inversion in inversiones_activas:
-            dias     = estado.dias_periodo
+            from datetime import timedelta as _td
+            if inversion.fecha_inicio:
+                _ef = max(estado.periodo_inicio, inversion.fecha_inicio + _td(days=1))
+            else:
+                _ef = estado.periodo_inicio
+            dias = max((estado.periodo_fin - _ef).days + 1, 0)
             pct_fact = float(inversion.porcentaje_factura) / 100
             bruto_i  = float(_calcular_interes_con_movimientos(
                 inversion, estado.periodo_inicio, estado.periodo_fin
