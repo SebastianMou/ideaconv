@@ -17,8 +17,10 @@
     <button class="btn-outline-brand" onclick="abrirResumen()">
       <i class="bi bi-file-earmark-bar-graph-fill"></i><span class="d-none d-sm-inline ms-2">Resumen de Corte</span>
     </button>
-    <button class="btn-outline-brand" onclick="abrirEnviarTodos()">
-      <i class="bi bi-send-fill"></i><span class="d-none d-sm-inline ms-2">Enviar Todos</span>
+    <button class="btn-outline-brand" onclick="avisoEnvioIndividual()"
+            title="El envío masivo está desactivado. Envía un inversionista a la vez."
+            style="opacity:.5;cursor:not-allowed;">
+      <i class="bi bi-send-slash"></i><span class="d-none d-sm-inline ms-2">Enviar Todos</span>
     </button>
     <button class="btn-brand" onclick="abrirCierreMes()">
       <i class="bi bi-calendar-check-fill"></i><span class="d-none d-sm-inline ms-2">Cierre de Mes</span>
@@ -91,7 +93,7 @@
 </div>
 
 <!-- ── Email Preview/Edit Modal ── -->
-<div id="email-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3001;width:560px;max-width:96vw;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(26,35,64,.25);max-height:92vh;flex-direction:column;">
+<div id="email-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3001;width:880px;max-width:96vw;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(26,35,64,.25);max-height:92vh;flex-direction:column;">
   <div style="background:var(--brand-navy);padding:18px 24px;display:flex;align-items:center;gap:12px;flex-shrink:0;">
     <i class="bi bi-envelope-fill" style="color:#fff;font-size:18px;"></i>
     <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:16px;color:#fff;">Editar y Enviar Estado de Cuenta</div>
@@ -112,9 +114,15 @@
         <input class="form-control" id="email-asunto" placeholder="Estado de Cuenta — Marzo 2026">
       </div>
       <div class="col-12">
-        <label class="form-label" style="font-size:11.5px;font-weight:600;color:var(--text-muted);text-transform:uppercase;">Notas adicionales (opcional)</label>
+        <label class="form-label" style="font-size:11.5px;font-weight:600;color:var(--text-muted);text-transform:uppercase;">Nota en el cuerpo del correo (opcional)</label>
         <div id="email-notas-editor" style="background:#fff;border:1.5px solid var(--border);border-radius:8px;min-height:80px;"></div>
         <input type="hidden" id="email-notas">
+      </div>
+      <div class="col-12">
+        <label class="form-label" style="font-size:11.5px;font-weight:600;color:var(--text-muted);text-transform:uppercase;">Mensaje dentro del PDF (opcional)</label>
+        <textarea class="form-control" id="email-nota-pdf" rows="3"
+                  placeholder="Este texto aparece como bloque «Mensaje» en la primera página del PDF."
+                  onchange="actualizarPdfPreview()"></textarea>
       </div>
     </div>
 
@@ -124,6 +132,18 @@
     </div>
     <div id="email-preview" style="border:1.5px solid var(--border);border-radius:10px;overflow:hidden;font-size:13px;">
       <!-- filled by JS -->
+    </div>
+
+    <!-- PDF attachment preview -->
+    <div style="display:flex;align-items:center;gap:10px;font-size:11.5px;font-weight:600;color:var(--text-muted);text-transform:uppercase;margin:18px 0 10px;">
+      <span><i class="bi bi-file-earmark-pdf me-1" style="color:var(--brand-red)"></i>Vista previa del PDF adjunto</span>
+      <button onclick="actualizarPdfPreview()" class="btn-outline-brand" style="margin-left:auto;font-size:11px;padding:4px 10px;">
+        <i class="bi bi-arrow-repeat me-1"></i>Actualizar
+      </button>
+    </div>
+    <div style="border:1.5px solid var(--border);border-radius:10px;overflow:hidden;background:#525659;">
+      <iframe id="email-pdf-frame" title="Vista previa PDF"
+              style="width:100%;height:520px;border:0;display:block;"></iframe>
     </div>
 
     <div id="email-error" style="display:none;background:#FDECEA;border:1px solid var(--brand-red);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--brand-red);margin-top:14px;">
@@ -720,7 +740,9 @@
       const badgeClass = e.estado==='generado'?'badge-activo':e.estado==='enviado'?'badge-pagado':'badge-pendiente';
       const canSend    = e.estado==='generado';
       const accionBtn  = e.estado === 'enviado'
-        ? `<span style="font-size:12px;color:var(--success);font-weight:600;"><i class="bi bi-check-circle-fill me-1"></i>Enviado</span>`
+        ? `<button class="btn-outline-brand" style="font-size:11.5px;padding:5px 10px" onclick="abrirEmailModal(${e.id})" title="Volver a enviar">
+             <i class="bi bi-arrow-repeat me-1"></i>Reenviar
+           </button>`
         : e.estado === 'generado'
         ? `<button class="btn-brand" style="font-size:11.5px;padding:5px 10px" onclick="abrirEmailModal(${e.id})">
              <i class="bi bi-envelope me-1"></i>Enviar
@@ -787,7 +809,10 @@
     initQuillEmail();
     document.getElementById('email-error').style.display='none';
     document.getElementById('email-estado-id').value=edcId;
+    document.getElementById('email-nota-pdf').value='';
     document.getElementById('email-preview').innerHTML='<div style="padding:20px;text-align:center;color:var(--text-muted)"><i class="bi bi-arrow-repeat"></i> Cargando vista previa...</div>';
+    // Load the real PDF (exactly what will be attached) into the preview frame
+    cargarPdfPreview(edcId, '');
 
     try{
       const res  = await fetch(`/api/estados/${edcId}/preview/`);
@@ -877,6 +902,30 @@
   function cerrarEmailModal(){
     document.getElementById('modal-overlay').style.display='none';
     document.getElementById('email-modal').style.display='none';
+    // Free the iframe so a stale PDF isn't shown next time
+    const frame = document.getElementById('email-pdf-frame');
+    if(frame) frame.src = 'about:blank';
+  }
+
+  // Loads the server-generated PDF (same one that gets emailed) into the iframe
+  function cargarPdfPreview(edcId, nota){
+    const frame = document.getElementById('email-pdf-frame');
+    if(!frame) return;
+    const q = nota ? ('?nota_pdf=' + encodeURIComponent(nota)) : '';
+    frame.src = `/api/estados/${edcId}/pdf-preview/${q}`;
+  }
+
+  // Re-renders the PDF preview with the current "Mensaje dentro del PDF" text
+  function actualizarPdfPreview(){
+    const edcId = document.getElementById('email-estado-id').value;
+    if(!edcId) return;
+    const nota  = document.getElementById('email-nota-pdf').value || '';
+    cargarPdfPreview(edcId, nota);
+  }
+
+  // Enviar Todos is intentionally disabled — send one investor at a time
+  function avisoEnvioIndividual(){
+    showToast('El envío masivo está desactivado. Envía un inversionista a la vez.', 'info-circle', '#F5A623');
   }
 
   async function enviarEmailIndividual(){
@@ -884,6 +933,7 @@
     const correo = document.getElementById('email-correo').value.trim();
     const asunto = document.getElementById('email-asunto').value.trim();
     const notas = quillEmail ? quillEmail.root.innerHTML : '';
+    const notaPdf = document.getElementById('email-nota-pdf').value || '';
     const errEl  = document.getElementById('email-error');
     const errMsg = document.getElementById('email-error-msg');
 
@@ -897,7 +947,7 @@
       const res  = await fetch(`/api/estados/${id}/enviar/`,{
         method:'POST',
         headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},
-        body:JSON.stringify({correo, asunto, notas_extra:notas})
+        body:JSON.stringify({correo, asunto, notas_extra:notas, nota_pdf:notaPdf})
       });
       const data = await res.json();
       if(res.ok){
@@ -912,9 +962,9 @@
           const accionCell = document.getElementById(`accion-edc-${edcId}`);
           if(badgeCell)  badgeCell.innerHTML  = `<span class="badge-status badge-pagado">${updated.estado_display}</span>`;
           if(accionCell) accionCell.innerHTML = `<div class="d-flex gap-1 align-items-center">
-            <span style="font-size:12px;color:var(--success);font-weight:600;">
-              <i class="bi bi-check-circle-fill me-1"></i>${updated.estado_display}
-            </span>
+            <button class="btn-outline-brand" style="font-size:11.5px;padding:5px 10px" onclick="abrirEmailModal(${edcId})" title="Volver a enviar">
+              <i class="bi bi-arrow-repeat me-1"></i>Reenviar
+            </button>
             <a class="btn-icon" onclick="eliminarEstado(${edcId})" title="Eliminar" style="color:var(--brand-red)"><i class="bi bi-trash"></i></a>
           </div>`;
         } catch { cargarEstados(); }

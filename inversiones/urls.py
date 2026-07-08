@@ -42,8 +42,9 @@ urlpatterns = [
     path('api/estados/enviar-todos/',            views.enviar_estados_todos,          name='api-enviar-todos'),
     path('api/estados/<int:pk>/',                views.estado_detail,                 name='api-estado-detail'),
     path('api/estados/<int:pk>/preview/',        views.estado_preview,                name='api-estado-preview'),
+    path('api/estados/<int:pk>/pdf-preview/',    views.estado_pdf_preview,            name='api-estado-pdf-preview'),
     path('api/estados/<int:pk>/enviar/',         views.estado_enviar,                 name='api-estado-enviar'),
-
+        
     # ── Pagos ──
     path('api/pagos/',                       views.pagos_list,    name='api-pagos-list'),
     path('api/pagos/<int:pk>/',              views.pago_detail,   name='api-pago-detail'),
@@ -70,5 +71,4 @@ urlpatterns = [
     # ── Exportar Excel ──
     path('api/estados/exportar-excel/', views.exportar_excel_estados),
     path('api/notificaciones/dismiss/', views.dismiss_notification, name='api-dismiss-notification'),
-
 ]

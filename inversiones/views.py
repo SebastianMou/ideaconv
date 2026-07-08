@@ -16,6 +16,7 @@ from datetime import datetime
 from reportlab.lib.pagesizes import letter
 from django.db.models import Q
 from django.db import models as django_models
+from django.views.decorators.clickjacking import xframe_options_sameorigin
 
 from reportlab.platypus import (
 SimpleDocTemplate, Paragraph, Spacer,
@@ -1361,6 +1362,37 @@ def _build_estado_pdf(data):
     ]))
     story.append(kpi_tbl)
     story.append(Spacer(1, 16))
+
+    # ════════════════════════════════
+    #  CUSTOM MESSAGE  (editable from the send modal → data['nota_pdf'])
+    # ════════════════════════════════
+    nota_pdf = (data.get('nota_pdf') or '').strip()
+    if nota_pdf:
+        story.append(Table(
+            [[Paragraph('Mensaje',
+                S('nmh', fontName='Helvetica-Bold', fontSize=9, textColor=WHITE, alignment=TA_LEFT))]],
+            colWidths=[7.0*inch],
+            style=TableStyle([
+                ('BACKGROUND',    (0,0), (-1,-1), NAVY),
+                ('TOPPADDING',    (0,0), (-1,-1), 6),
+                ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+                ('LEFTPADDING',   (0,0), (-1,-1), 8),
+            ])
+        ))
+        story.append(Table(
+            [[Paragraph(nota_pdf.replace('\n', '<br/>'),
+                S('nmb', fontName='Helvetica', fontSize=8.5, textColor=NAVY, leading=12))]],
+            colWidths=[7.0*inch],
+            style=TableStyle([
+                ('BACKGROUND',    (0,0), (-1,-1), ROWBG),
+                ('BOX',           (0,0), (-1,-1), 0.5, BORDER),
+                ('TOPPADDING',    (0,0), (-1,-1), 8),
+                ('BOTTOMPADDING', (0,0), (-1,-1), 8),
+                ('LEFTPADDING',   (0,0), (-1,-1), 8),
+                ('RIGHTPADDING',  (0,0), (-1,-1), 8),
+            ])
+        ))
+        story.append(Spacer(1, 16))
  
     # ════════════════════════════════
     #  PAGARÉ BREAKDOWN TABLE
@@ -1835,39 +1867,18 @@ def _build_email_html(data, notas_extra='', tipo_comprobante='ambos'):
  
  
 # ══════════════════════════════════════════════════════════════════════════════
-#  estado_enviar  — replace your existing view with this
+#  _build_estado_data  — shared data builder used by both the sender and the
+#  live PDF preview, so what you preview is exactly what gets emailed.
 # ══════════════════════════════════════════════════════════════════════════════
- 
-@api_view(['POST'])
-@login_required(login_url='login')
-def estado_enviar(request, pk):
+
+def _build_estado_data(estado, inv_obj):
     """
-    POST /api/estados/<pk>/enviar/
-    Sends ONE consolidated email + PDF per investor covering ALL their investments.
+    Builds the full `data` dict (incl. per-investment tranche rows) for a single
+    EstadoDeCuenta. Returned dict is ready for _build_estado_pdf() and
+    _build_email_html().
     """
-    from io import BytesIO
+    from datetime import date as _date, timedelta as _td
 
-    estado = get_object_or_404(EstadoDeCuenta, pk=pk)
-
-    # Resolve the investor — works for both old (inversion FK) and new (inversionista FK) records
-    if estado.inversionista:
-        inv_obj = estado.inversionista
-    else:
-        inv_obj = estado.inversion.inversionista
-
-    correo_destino   = request.data.get('correo') or inv_obj.correo
-    asunto           = request.data.get('asunto') or \
-        f'Estado de Cuenta — {estado.periodo_inicio} al {estado.periodo_fin}'
-    notas_extra      = request.data.get('notas_extra', '')
-    tipo_comprobante = request.data.get('tipo_comprobante', 'ambos')
-
-    if not correo_destino:
-        return Response(
-            {'error': f'{inv_obj.nombre_completo} no tiene correo registrado.'},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-
-    # Build the shared data dict
     data = {
         'inversionista':  inv_obj.nombre_completo,
         'rfc':            inv_obj.rfc or '',
@@ -1895,7 +1906,6 @@ def estado_enviar(request, pk):
     data['capital'] = str(total_capital)
 
     inversiones_pdf = []
-    from datetime import date as _date, timedelta as _td
     for inversion in inversiones_activas:
         pct_fact = float(inversion.porcentaje_factura) / 100
         bruto_i  = float(_calcular_interes_con_movimientos(
@@ -1909,7 +1919,7 @@ def estado_enviar(request, pk):
         # Reconstruct opening capital for PDF detail page
         p_ini   = estado.periodo_inicio if isinstance(estado.periodo_inicio, _date) else _date.fromisoformat(str(estado.periodo_inicio))
         p_fin_d = estado.periodo_fin    if isinstance(estado.periodo_fin,    _date) else _date.fromisoformat(str(estado.periodo_fin))
-        
+
         # Same mid-period-start rule as the interest calc
         if inversion.fecha_inicio:
             efectivo_inicio_inv = max(p_ini, inversion.fecha_inicio + _td(days=1))
@@ -1996,6 +2006,79 @@ def estado_enviar(request, pk):
         })
 
     data['inversiones'] = inversiones_pdf
+    return data
+
+
+def _resolver_inversionista(estado):
+    """Works for both old (inversion FK) and new (inversionista FK) records."""
+    if estado.inversionista:
+        return estado.inversionista
+    return estado.inversion.inversionista
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  estado_pdf_preview  — live, in-browser PDF exactly as it will be emailed
+# ══════════════════════════════════════════════════════════════════════════════
+
+@login_required(login_url='login')
+@xframe_options_sameorigin
+def estado_pdf_preview(request, pk):
+    """
+    GET /api/estados/<pk>/pdf-preview/?nota_pdf=<optional message>
+    Returns the generated Estado de Cuenta PDF inline (not an attachment) so the
+    send modal can render it in an <iframe> before the user hits Enviar.
+    """
+    from django.http import HttpResponse
+
+    estado  = get_object_or_404(EstadoDeCuenta, pk=pk)
+    inv_obj = _resolver_inversionista(estado)
+
+    data = _build_estado_data(estado, inv_obj)
+    data['nota_pdf'] = request.GET.get('nota_pdf', '')
+
+    pdf_bytes = _build_estado_pdf(data)
+    resp = HttpResponse(pdf_bytes, content_type='application/pdf')
+    resp['Content-Disposition'] = 'inline; filename="preview.pdf"'
+    return resp
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  estado_enviar  — replace your existing view with this
+# ══════════════════════════════════════════════════════════════════════════════
+ 
+@api_view(['POST'])
+@login_required(login_url='login')
+def estado_enviar(request, pk):
+    """
+    POST /api/estados/<pk>/enviar/
+    Sends ONE consolidated email + PDF per investor covering ALL their investments.
+    """
+    from io import BytesIO
+
+    estado = get_object_or_404(EstadoDeCuenta, pk=pk)
+
+    # Resolve the investor — works for both old (inversion FK) and new (inversionista FK) records
+    if estado.inversionista:
+        inv_obj = estado.inversionista
+    else:
+        inv_obj = estado.inversion.inversionista
+
+    correo_destino   = request.data.get('correo') or inv_obj.correo
+    asunto           = request.data.get('asunto') or \
+        f'Estado de Cuenta — {estado.periodo_inicio} al {estado.periodo_fin}'
+    notas_extra      = request.data.get('notas_extra', '')
+    tipo_comprobante = request.data.get('tipo_comprobante', 'ambos')
+
+    if not correo_destino:
+        return Response(
+            {'error': f'{inv_obj.nombre_completo} no tiene correo registrado.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    # Build the shared data dict (+ per-investment PDF rows)
+    data = _build_estado_data(estado, inv_obj)
+    # Custom message typed in the send modal — flows into BOTH the PDF and email
+    data['nota_pdf'] = request.data.get('nota_pdf', '')
 
     html_content = _build_email_html(data, notas_extra, tipo_comprobante)
     text_content = (
