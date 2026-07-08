@@ -1336,15 +1336,22 @@ def _build_estado_pdf(data):
     kpi_val_s = S('kv', fontName='Helvetica-Bold', fontSize=14, textColor=WHITE,  alignment=TA_CENTER)
     kpi_lbl_s = S('kl', fontName='Helvetica',      fontSize=8,  textColor=LIGHT_BLUE, alignment=TA_CENTER)
  
-    # Page 1 shows only the invoice portion
-    total_bruto_inv   = sum(float(i['interes_bruto']) for i in data.get('inversiones', []))
-    total_fact_base   = sum(
-        float(i['interes_bruto']) * (float(i.get('porcentaje_factura', 100)) / 100)
+    # Page 1 shows only the invoice portion. Each term prefers an explicit key so
+    # that manual edits from the send modal flow straight into the KPI boxes.
+    total_fact_base = sum(
+        float(i.get('bruto_factura',
+                    float(i['interes_bruto']) * (float(i.get('porcentaje_factura', 100)) / 100)))
         for i in data.get('inversiones', [])
     )
-    total_isr_inv     = sum(float(i.get('retencion', 0)) for i in data.get('inversiones', []))
-    total_iva_inv     = sum(float(i.get('iva_inv', 0))   for i in data.get('inversiones', []))
-    total_neto_inv    = total_fact_base - total_isr_inv + total_iva_inv
+    total_isr_inv  = sum(float(i.get('retencion', 0)) for i in data.get('inversiones', []))
+    total_iva_inv  = sum(float(i.get('iva_inv', 0))   for i in data.get('inversiones', []))
+    total_neto_inv = sum(
+        float(i.get('neto_factura',
+                    float(i.get('bruto_factura',
+                                float(i['interes_bruto']) * (float(i.get('porcentaje_factura', 100)) / 100)))
+                    - float(i.get('retencion', 0)) + float(i.get('iva_inv', 0))))
+        for i in data.get('inversiones', [])
+    )
 
     kpi_tbl = Table([
         [Paragraph(fmt(data['capital']),    kpi_val_s),
@@ -1424,25 +1431,22 @@ def _build_estado_pdf(data):
     totals = {'bruto': 0.0, 'ret': 0.0, 'iva': 0.0, 'neto': 0.0, 'neto_invoice': 0.0}
  
     for inv in data.get('inversiones', []):
-        b  = float(inv['interes_bruto'])
-        r  = float(inv.get('retencion', 0))
-        iv = float(inv.get('iva_inv', 0))
-        n  = float(inv['interes_neto'])
-        totals['bruto'] += b
-        totals['ret']   += r
-        totals['iva']   += iv
-        totals['neto']  += n
-        bruto_f = float(inv['interes_bruto']) * (float(inv.get('porcentaje_factura', 100)) / 100)
-        isr_f   = bruto_f * 0.20
-        iva_f   = bruto_f * 0.16
-        totals['bruto_invoice']  = totals.get('bruto_invoice', 0) + bruto_f
-        totals['neto_invoice']  += bruto_f - isr_f + iva_f
-        # Show only the invoiced portion of the rate
-        tasa_factura = float(inv['tasa_anual']) * (float(inv.get('porcentaje_factura', 100)) / 100)
-        bruto_factura = float(inv['interes_bruto']) * (float(inv.get('porcentaje_factura', 100)) / 100)
-        isr_fact      = bruto_factura * 0.20
-        iva_fact      = bruto_factura * 0.16
-        neto_invoice  = bruto_factura - isr_fact + iva_fact
+        pct = float(inv.get('porcentaje_factura', 100)) / 100
+
+        # Every displayed value prefers an explicit key (set by _build_estado_data,
+        # and overwritable by the user's manual edits) and only falls back to the
+        # derived value when that key is absent.
+        tasa_factura  = float(inv.get('tasa_factura',  float(inv['tasa_anual']) * pct))
+        bruto_factura = float(inv.get('bruto_factura', float(inv['interes_bruto']) * pct))
+        r             = float(inv.get('retencion', 0))
+        iv            = float(inv.get('iva_inv',   0))
+        neto_invoice  = float(inv.get('neto_factura', bruto_factura - r + iv))
+
+        totals['bruto_invoice'] = totals.get('bruto_invoice', 0) + bruto_factura
+        totals['ret']          += r
+        totals['iva']          += iv
+        totals['neto_invoice'] += neto_invoice
+
         rows.append([
             Paragraph(inv['folio'],              vbl_s),
             Paragraph(fmt(inv['capital']),       val_s),
@@ -1871,11 +1875,14 @@ def _build_email_html(data, notas_extra='', tipo_comprobante='ambos'):
 #  live PDF preview, so what you preview is exactly what gets emailed.
 # ══════════════════════════════════════════════════════════════════════════════
 
-def _build_estado_data(estado, inv_obj):
+def _build_estado_data(estado, inv_obj, overrides=None):
     """
     Builds the full `data` dict (incl. per-investment tranche rows) for a single
     EstadoDeCuenta. Returned dict is ready for _build_estado_pdf() and
     _build_email_html().
+
+    `overrides` — optional dict of user-typed numbers from the send modal that
+    replace the computed values. Nothing is written to the database.
     """
     from datetime import date as _date, timedelta as _td
 
@@ -1989,6 +1996,12 @@ def _build_estado_data(estado, inv_obj):
             'iva_inv':           f'{iva_i:.2f}',
             'interes_neto':      f'{neto_i:.2f}',
             'porcentaje_factura': str(inversion.porcentaje_factura),
+            # ── Explicit display values (what the Complemento table prints).
+            # These are exactly what the PDF used to derive inline; exposing them
+            # as data means the user can overwrite them from the send modal.
+            'tasa_factura':      f'{float(inversion.tasa_anual) * pct_fact:.2f}',
+            'bruto_factura':     f'{fact_i:.2f}',
+            'neto_factura':      f'{fact_i - isr_i + iva_i:.2f}',
             'tramos':            tramos_inv,
             'estados_historicos': [
                 {'periodo_inicio': str(e.periodo_inicio),
@@ -2006,6 +2019,72 @@ def _build_estado_data(estado, inv_obj):
         })
 
     data['inversiones'] = inversiones_pdf
+    _aplicar_overrides(data, overrides)
+    return data
+
+
+def _aplicar_overrides(data, overrides):
+    """
+    Overwrites computed PDF values with numbers the user typed in the send modal.
+
+    `overrides` shape (all keys optional, all values strings/numbers):
+        {
+          "capital_total": "950000.00",          # KPI "Monto capital" box
+          "inversiones": {
+             "INV-238": {"capital": "...", "dias": 31, "tasa_factura": "15.00",
+                         "bruto_factura": "...", "retencion": "...",
+                         "iva_inv": "...", "neto_factura": "..."}
+          }
+        }
+
+    When any money/rate field of an investment is overridden, that investment's
+    detail page is collapsed to a single synthetic tranche carrying the same
+    numbers, so page 1 and page 2 can never disagree with each other.
+    """
+    if not overrides:
+        return data
+
+    if overrides.get('capital_total') not in (None, ''):
+        data['capital'] = str(overrides['capital_total'])
+
+    por_folio = overrides.get('inversiones') or {}
+    CAMPOS = ('capital', 'dias', 'tasa_factura', 'bruto_factura',
+              'retencion', 'iva_inv', 'neto_factura')
+
+    for inv in data.get('inversiones', []):
+        ov = por_folio.get(inv['folio'])
+        if not ov:
+            continue
+
+        tocado = False
+        for campo in CAMPOS:
+            if ov.get(campo) in (None, ''):
+                continue
+            inv[campo] = int(ov[campo]) if campo == 'dias' else str(ov[campo])
+            tocado = True
+
+        if not tocado:
+            continue
+
+        # Keep the detail page consistent with the edited summary page.
+        b = float(inv['bruto_factura'])
+        r = float(inv['retencion'])
+        v = float(inv['iva_inv'])
+        n = float(inv['neto_factura'])
+        inv['interes_bruto'] = f'{b:.2f}'
+        inv['interes_neto']  = f'{n:.2f}'
+        inv['tramos'] = [{
+            'tipo':         'interes',
+            'fecha_inicio': data['periodo_inicio'],
+            'fecha_fin':    data['periodo_fin'],
+            'dias':         inv['dias'],
+            'capital':      inv['capital'],
+            'interes_bruto': f'{b:.2f}',
+            'retencion':     f'{r:.2f}',
+            'iva':           f'{v:.2f}',
+            'interes_neto':  f'{n:.2f}',
+        }]
+
     return data
 
 
@@ -2017,24 +2096,68 @@ def _resolver_inversionista(estado):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+#  estado_pdf_datos  — current numbers, used to populate the editable inputs
+# ══════════════════════════════════════════════════════════════════════════════
+
+@api_view(['GET'])
+@login_required(login_url='login')
+def estado_pdf_datos(request, pk):
+    """
+    GET /api/estados/<pk>/pdf-datos/
+    Returns the numbers the PDF currently prints, so the send modal can preload
+    its editable input fields with them.
+    """
+    estado  = get_object_or_404(EstadoDeCuenta, pk=pk)
+    inv_obj = _resolver_inversionista(estado)
+    data    = _build_estado_data(estado, inv_obj)
+
+    return Response({
+        'capital_total': data['capital'],
+        'inversiones': [
+            {
+                'folio':         i['folio'],
+                'capital':       i['capital'],
+                'dias':          i['dias'],
+                'tasa_factura':  i['tasa_factura'],
+                'bruto_factura': i['bruto_factura'],
+                'retencion':     i['retencion'],
+                'iva_inv':       i['iva_inv'],
+                'neto_factura':  i['neto_factura'],
+            }
+            for i in data.get('inversiones', [])
+        ],
+    })
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 #  estado_pdf_preview  — live, in-browser PDF exactly as it will be emailed
 # ══════════════════════════════════════════════════════════════════════════════
 
+@api_view(['GET', 'POST'])
 @login_required(login_url='login')
 @xframe_options_sameorigin
 def estado_pdf_preview(request, pk):
     """
-    GET /api/estados/<pk>/pdf-preview/?nota_pdf=<optional message>
-    Returns the generated Estado de Cuenta PDF inline (not an attachment) so the
-    send modal can render it in an <iframe> before the user hits Enviar.
+    GET  /api/estados/<pk>/pdf-preview/?nota_pdf=<msg>
+    POST /api/estados/<pk>/pdf-preview/   {nota_pdf, overrides}
+
+    Returns the generated Estado de Cuenta PDF inline. POST is what the modal
+    uses, so the user's edited numbers travel in a JSON body rather than a URL.
     """
     from django.http import HttpResponse
 
     estado  = get_object_or_404(EstadoDeCuenta, pk=pk)
     inv_obj = _resolver_inversionista(estado)
 
-    data = _build_estado_data(estado, inv_obj)
-    data['nota_pdf'] = request.GET.get('nota_pdf', '')
+    if request.method == 'POST':
+        nota      = request.data.get('nota_pdf', '')
+        overrides = request.data.get('overrides') or None
+    else:
+        nota      = request.GET.get('nota_pdf', '')
+        overrides = None
+
+    data = _build_estado_data(estado, inv_obj, overrides=overrides)
+    data['nota_pdf'] = nota
 
     pdf_bytes = _build_estado_pdf(data)
     resp = HttpResponse(pdf_bytes, content_type='application/pdf')
@@ -2075,8 +2198,10 @@ def estado_enviar(request, pk):
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    # Build the shared data dict (+ per-investment PDF rows)
-    data = _build_estado_data(estado, inv_obj)
+    # Build the shared data dict (+ per-investment PDF rows), applying any
+    # numbers the user edited in the send modal so the emailed PDF matches
+    # the preview exactly.
+    data = _build_estado_data(estado, inv_obj, overrides=request.data.get('overrides') or None)
     # Custom message typed in the send modal — flows into BOTH the PDF and email
     data['nota_pdf'] = request.data.get('nota_pdf', '')
 

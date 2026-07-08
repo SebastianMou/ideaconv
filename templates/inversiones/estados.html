@@ -126,6 +126,49 @@
       </div>
     </div>
 
+    <!-- ── EDITABLE PDF NUMBERS ── -->
+    <div style="border:1.5px solid var(--border);border-radius:10px;padding:14px;margin-bottom:20px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);">
+          <i class="bi bi-pencil-square me-1"></i>Editar números del PDF
+        </div>
+        <button onclick="restablecerNumeros()" class="btn-outline-brand" style="margin-left:auto;font-size:11px;padding:4px 10px;">
+          <i class="bi bi-arrow-counterclockwise me-1"></i>Restablecer
+        </button>
+      </div>
+      <div style="font-size:11.5px;color:var(--text-muted);margin-bottom:10px;">
+        Escribe cualquier cantidad y presiona <strong>Actualizar</strong>. Solo afecta este correo — no cambia la base de datos.
+      </div>
+
+      <div style="margin-bottom:10px;display:flex;align-items:center;gap:10px;">
+        <label style="font-size:12px;font-weight:600;color:var(--brand-navy);min-width:110px;">Monto capital</label>
+        <input class="form-control form-control-sm" id="ov-capital-total" type="number" step="0.01"
+               style="max-width:180px;" onchange="actualizarPdfPreview()">
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;min-width:660px;">
+          <thead>
+            <tr style="background:#F8F9FB;">
+              <th style="padding:7px 8px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-muted);">Pagaré</th>
+              <th style="padding:7px 8px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-muted);">Capital</th>
+              <th style="padding:7px 8px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-muted);">Plazo</th>
+              <th style="padding:7px 8px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-muted);">Tasa %</th>
+              <th style="padding:7px 8px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-muted);">Interés Bruto</th>
+              <th style="padding:7px 8px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:#C8282A;">Retención</th>
+              <th style="padding:7px 8px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:#1CB87E;">IVA</th>
+              <th style="padding:7px 8px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--brand-navy);">Interés Neto</th>
+            </tr>
+          </thead>
+          <tbody id="ov-tbody">
+            <tr><td colspan="8" style="padding:14px;text-align:center;font-size:12px;color:var(--text-muted);">
+              <i class="bi bi-arrow-repeat"></i> Cargando números...
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- Email preview -->
     <div style="font-size:11.5px;font-weight:600;color:var(--text-muted);text-transform:uppercase;margin-bottom:10px;">
       <i class="bi bi-eye me-1"></i>Vista previa del correo
@@ -811,8 +854,10 @@
     document.getElementById('email-estado-id').value=edcId;
     document.getElementById('email-nota-pdf').value='';
     document.getElementById('email-preview').innerHTML='<div style="padding:20px;text-align:center;color:var(--text-muted)"><i class="bi bi-arrow-repeat"></i> Cargando vista previa...</div>';
-    // Load the real PDF (exactly what will be attached) into the preview frame
-    cargarPdfPreview(edcId, '');
+    document.getElementById('ov-tbody').innerHTML='<tr><td colspan="8" style="padding:14px;text-align:center;font-size:12px;color:var(--text-muted);"><i class="bi bi-arrow-repeat"></i> Cargando números...</td></tr>';
+    // Load the editable numbers, then render the real PDF with them
+    await cargarNumerosEditables(edcId);
+    actualizarPdfPreview();
 
     try{
       const res  = await fetch(`/api/estados/${edcId}/preview/`);
@@ -905,22 +950,94 @@
     // Free the iframe so a stale PDF isn't shown next time
     const frame = document.getElementById('email-pdf-frame');
     if(frame) frame.src = 'about:blank';
+    if(_pdfBlobUrl){ URL.revokeObjectURL(_pdfBlobUrl); _pdfBlobUrl = null; }
   }
 
-  // Loads the server-generated PDF (same one that gets emailed) into the iframe
-  function cargarPdfPreview(edcId, nota){
-    const frame = document.getElementById('email-pdf-frame');
-    if(!frame) return;
-    const q = nota ? ('?nota_pdf=' + encodeURIComponent(nota)) : '';
-    frame.src = `/api/estados/${edcId}/pdf-preview/${q}`;
+  // Original (server-computed) numbers, used by "Restablecer"
+  let _numerosOriginales = null;
+  let _pdfBlobUrl = null;
+
+  // Loads the editable number fields with whatever the PDF currently prints
+  async function cargarNumerosEditables(edcId){
+    const tbody = document.getElementById('ov-tbody');
+    try{
+      const res  = await fetch(`/api/estados/${edcId}/pdf-datos/`);
+      const data = await res.json();
+      _numerosOriginales = data;
+      pintarNumeros(data);
+    }catch{
+      tbody.innerHTML = '<tr><td colspan="8" style="padding:14px;text-align:center;font-size:12px;color:var(--brand-red);">No se pudieron cargar los números.</td></tr>';
+    }
   }
 
-  // Re-renders the PDF preview with the current "Mensaje dentro del PDF" text
-  function actualizarPdfPreview(){
+  function pintarNumeros(data){
+    document.getElementById('ov-capital-total').value = parseFloat(data.capital_total || 0).toFixed(2);
+    const tbody = document.getElementById('ov-tbody');
+    if(!data.inversiones || !data.inversiones.length){
+      tbody.innerHTML = '<tr><td colspan="8" style="padding:14px;text-align:center;font-size:12px;color:var(--text-muted);">Sin inversiones activas.</td></tr>';
+      return;
+    }
+    const cell = (folio, campo, val, step) =>
+      `<td style="padding:4px 6px;">
+         <input class="form-control form-control-sm ov-input" data-folio="${folio}" data-campo="${campo}"
+                type="number" step="${step}" value="${val}" style="min-width:96px;font-size:12px;"
+                onchange="actualizarPdfPreview()">
+       </td>`;
+    tbody.innerHTML = data.inversiones.map(i => `
+      <tr>
+        <td style="padding:4px 8px;font-size:12px;font-weight:700;color:var(--brand-navy);white-space:nowrap;">${i.folio}</td>
+        ${cell(i.folio,'capital',       parseFloat(i.capital).toFixed(2),       '0.01')}
+        ${cell(i.folio,'dias',          i.dias,                                 '1')}
+        ${cell(i.folio,'tasa_factura',  parseFloat(i.tasa_factura).toFixed(2),  '0.01')}
+        ${cell(i.folio,'bruto_factura', parseFloat(i.bruto_factura).toFixed(2), '0.01')}
+        ${cell(i.folio,'retencion',     parseFloat(i.retencion).toFixed(2),     '0.01')}
+        ${cell(i.folio,'iva_inv',       parseFloat(i.iva_inv).toFixed(2),       '0.01')}
+        ${cell(i.folio,'neto_factura',  parseFloat(i.neto_factura).toFixed(2),  '0.01')}
+      </tr>`).join('');
+  }
+
+  function restablecerNumeros(){
+    if(_numerosOriginales){
+      pintarNumeros(_numerosOriginales);
+      actualizarPdfPreview();
+    }
+  }
+
+  // Reads every input into the {capital_total, inversiones:{FOLIO:{...}}} shape
+  function recogerOverrides(){
+    const ov = { capital_total: document.getElementById('ov-capital-total').value, inversiones: {} };
+    document.querySelectorAll('.ov-input').forEach(inp => {
+      const f = inp.dataset.folio;
+      if(!ov.inversiones[f]) ov.inversiones[f] = {};
+      ov.inversiones[f][inp.dataset.campo] = inp.value;
+    });
+    return ov;
+  }
+
+  // POSTs the edited numbers and renders the returned PDF straight into the iframe
+  async function actualizarPdfPreview(){
     const edcId = document.getElementById('email-estado-id').value;
     if(!edcId) return;
-    const nota  = document.getElementById('email-nota-pdf').value || '';
-    cargarPdfPreview(edcId, nota);
+    const frame = document.getElementById('email-pdf-frame');
+    if(!frame) return;
+
+    try{
+      const res = await fetch(`/api/estados/${edcId}/pdf-preview/`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},
+        body:JSON.stringify({
+          nota_pdf:  document.getElementById('email-nota-pdf').value || '',
+          overrides: recogerOverrides()
+        })
+      });
+      if(!res.ok) throw new Error('preview failed');
+      const blob = await res.blob();
+      if(_pdfBlobUrl) URL.revokeObjectURL(_pdfBlobUrl);
+      _pdfBlobUrl = URL.createObjectURL(blob);
+      frame.src = _pdfBlobUrl;
+    }catch{
+      showToast('No se pudo generar la vista previa del PDF','x-circle-fill','#FCA5A5');
+    }
   }
 
   // Enviar Todos is intentionally disabled — send one investor at a time
@@ -947,7 +1064,8 @@
       const res  = await fetch(`/api/estados/${id}/enviar/`,{
         method:'POST',
         headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},
-        body:JSON.stringify({correo, asunto, notas_extra:notas, nota_pdf:notaPdf})
+        body:JSON.stringify({correo, asunto, notas_extra:notas, nota_pdf:notaPdf,
+                             overrides: recogerOverrides()})
       });
       const data = await res.json();
       if(res.ok){

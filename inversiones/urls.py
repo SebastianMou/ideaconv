@@ -44,7 +44,8 @@ urlpatterns = [
     path('api/estados/<int:pk>/preview/',        views.estado_preview,                name='api-estado-preview'),
     path('api/estados/<int:pk>/pdf-preview/',    views.estado_pdf_preview,            name='api-estado-pdf-preview'),
     path('api/estados/<int:pk>/enviar/',         views.estado_enviar,                 name='api-estado-enviar'),
-        
+    path('api/estados/<int:pk>/pdf-datos/',      views.estado_pdf_datos,              name='api-estado-pdf-datos'),
+
     # ── Pagos ──
     path('api/pagos/',                       views.pagos_list,    name='api-pagos-list'),
     path('api/pagos/<int:pk>/',              views.pago_detail,   name='api-pago-detail'),
