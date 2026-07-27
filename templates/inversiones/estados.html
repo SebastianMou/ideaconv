@@ -1325,7 +1325,7 @@
     if (!ids.length) { wrap.innerHTML = ''; return; }
     wrap.innerHTML = ids.map(id => {
       const it = _cierreFijos[id];
-      return `<span style="display:inline-flex;align-items:center;gap:6px;background:#FFF6E5;border:1.5px solid #F5A623;border-radius:999px;padding:3px 8px 3px 3px;font-size:12px;font-weight:600;color:var(--brand-navy)">
+      return `<span title="${it.nombre.replace(/"/g,'&quot;')}" style="display:inline-flex;align-items:center;gap:6px;background:#FFF6E5;border:1.5px solid #F5A623;border-radius:999px;padding:3px 8px 3px 3px;font-size:12px;font-weight:600;color:var(--brand-navy)">
         ${_avatar(it.nombre, it.color, 20)}${it.nombre.split(' ')[0]} · ${it.dias}d
         <span onclick="quitarInvFijo(${id})" style="cursor:pointer;color:var(--text-muted);">✕</span>
       </span>`;
