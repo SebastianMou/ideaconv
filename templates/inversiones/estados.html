@@ -17,10 +17,9 @@
     <button class="btn-outline-brand" onclick="abrirResumen()">
       <i class="bi bi-file-earmark-bar-graph-fill"></i><span class="d-none d-sm-inline ms-2">Resumen de Corte</span>
     </button>
-    <button class="btn-outline-brand" onclick="avisoEnvioIndividual()"
-            title="El envío masivo está desactivado. Envía un inversionista a la vez."
-            style="opacity:.5;cursor:not-allowed;">
-      <i class="bi bi-send-slash"></i><span class="d-none d-sm-inline ms-2">Enviar Todos</span>
+    <button class="btn-outline-brand" onclick="abrirEnviarTodos()"
+            title="Enviar el estado de cuenta a todos los inversionistas del mes actual que aún no lo han recibido.">
+      <i class="bi bi-send-fill"></i><span class="d-none d-sm-inline ms-2">Enviar Todos</span>
     </button>
     <button class="btn-brand" onclick="abrirCierreMes()">
       <i class="bi bi-calendar-check-fill"></i><span class="d-none d-sm-inline ms-2">Cierre de Mes</span>
@@ -701,18 +700,21 @@
     document.getElementById('convert-modal').style.display = 'block';
   }
 
-  // FIND your current eliminarTodos and REPLACE WITH:
   function eliminarTodos() {
-    const ids = todosLosEstados.map(e => e.id);
+    // Only the rows the user actually checked
+    const ids = Array.from(document.querySelectorAll('.edc-check:checked'))
+                     .map(cb => parseInt(cb.value, 10));
+
     if (!ids.length) {
-      showToast('No hay estados de cuenta para eliminar', 'exclamation-circle', '#F5A623');
+      showToast('Selecciona al menos un estado de cuenta con las casillas', 'exclamation-circle', '#F5A623');
       return;
     }
-    document.getElementById('cv-title').textContent = 'Eliminar todos los estados de cuenta';
+
+    document.getElementById('cv-title').textContent = 'Eliminar estados seleccionados';
     document.getElementById('cv-body').innerHTML =
-      '<strong>' + ids.length + ' estados de cuenta</strong> seran eliminados con sus pagos asociados. Esta accion no se puede deshacer.';
+      '<strong>' + ids.length + ' estado(s) de cuenta</strong> seleccionado(s) serán eliminados con sus pagos asociados. Esta acción no se puede deshacer.';
     document.getElementById('cv-confirm-btn').style.background = 'var(--brand-red)';
-    document.getElementById('cv-confirm-btn').innerHTML = '<i class="bi bi-trash me-1"></i>Eliminar todos';
+    document.getElementById('cv-confirm-btn').innerHTML = '<i class="bi bi-trash me-1"></i>Eliminar seleccionados';
     document.getElementById('cv-confirm-btn').onclick = async () => {
       closeModal();
       let ok = 0, fail = 0;
@@ -723,7 +725,6 @@
             headers: { 'X-CSRFToken': getCookie('csrftoken') }
           });
           if (res.ok || res.status === 204) {
-            // Remove rows from DOM as each one is deleted
             const detailRowId = 'edc-detail-' + id;
             const mainRow   = document.querySelector('tr[onclick*="toggleEdcDetail(' + id + ',"]');
             const detailRow = document.getElementById(detailRowId);
@@ -733,13 +734,13 @@
           } else { fail++; }
         } catch { fail++; }
       }
-      // Clear memory
-      todosLosEstados = [];
+      // Drop only the deleted ones from memory, keep the rest
+      todosLosEstados = todosLosEstados.filter(e => !ids.includes(e.id));
       actualizarStats();
       if (fail === 0) {
-        showToast(ok + ' estados eliminados', 'trash', '#F5A623');
+        showToast(ok + ' estado(s) eliminado(s)', 'trash', '#F5A623');
       } else {
-        showToast(ok + ' eliminados, ' + fail + ' fallaron', 'exclamation-circle', '#FCA5A5');
+        showToast(ok + ' eliminado(s), ' + fail + ' fallaron', 'exclamation-circle', '#FCA5A5');
       }
     };
     showOverlay();

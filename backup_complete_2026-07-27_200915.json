@@ -1,0 +1,4592 @@
+[
+{
+  "model": "inversiones.promotor",
+  "pk": 1,
+  "fields": {
+    "nombre": "MIGUEL AMADOR",
+    "telefono": "",
+    "correo": "mavala@live.com.mx",
+    "activo": false,
+    "fecha_registro": "2026-05-21"
+  }
+},
+{
+  "model": "inversiones.promotor",
+  "pk": 2,
+  "fields": {
+    "nombre": "LUIS ALBERTO",
+    "telefono": "",
+    "correo": null,
+    "activo": false,
+    "fecha_registro": "2025-02-04"
+  }
+},
+{
+  "model": "inversiones.promotor",
+  "pk": 3,
+  "fields": {
+    "nombre": "Mauricio",
+    "telefono": "",
+    "correo": "mauricio.rivera.arreola@gmail.com",
+    "activo": false,
+    "fecha_registro": "2026-05-21"
+  }
+},
+{
+  "model": "inversiones.promotor",
+  "pk": 4,
+  "fields": {
+    "nombre": "JORGE",
+    "telefono": "",
+    "correo": "jorgeazcunaga@hotmail.com",
+    "activo": false,
+    "fecha_registro": "2026-05-21"
+  }
+},
+{
+  "model": "inversiones.promotor",
+  "pk": 5,
+  "fields": {
+    "nombre": "Miguel Vital ",
+    "telefono": "",
+    "correo": "miguel.valdes@ideacon.com.mx",
+    "activo": false,
+    "fecha_registro": "2026-05-21"
+  }
+},
+{
+  "model": "inversiones.promotor",
+  "pk": 6,
+  "fields": {
+    "nombre": "Héctor Alejandro ",
+    "telefono": "",
+    "correo": "rotcehmty@live.com.mx",
+    "activo": false,
+    "fecha_registro": "2026-05-21"
+  }
+},
+{
+  "model": "inversiones.promotor",
+  "pk": 7,
+  "fields": {
+    "nombre": "IDEACONV",
+    "telefono": "",
+    "correo": "eduardo.munoz@ideacon.com.mx",
+    "activo": false,
+    "fecha_registro": "2026-05-21"
+  }
+},
+{
+  "model": "inversiones.promotor",
+  "pk": 8,
+  "fields": {
+    "nombre": "MIGUEL AMADOR VALDES ALANIS",
+    "telefono": "",
+    "correo": null,
+    "activo": true,
+    "fecha_registro": "2026-05-21"
+  }
+},
+{
+  "model": "inversiones.promotor",
+  "pk": 9,
+  "fields": {
+    "nombre": "Miguel Vital  Valdés  Garza",
+    "telefono": "",
+    "correo": null,
+    "activo": true,
+    "fecha_registro": "2026-05-21"
+  }
+},
+{
+  "model": "inversiones.promotor",
+  "pk": 10,
+  "fields": {
+    "nombre": "Mauricio Rivera Arreola",
+    "telefono": "",
+    "correo": null,
+    "activo": true,
+    "fecha_registro": "2026-05-21"
+  }
+},
+{
+  "model": "inversiones.promotor",
+  "pk": 11,
+  "fields": {
+    "nombre": "Héctor Alejandro  García  Gómez",
+    "telefono": "",
+    "correo": null,
+    "activo": true,
+    "fecha_registro": "2026-05-21"
+  }
+},
+{
+  "model": "inversiones.promotor",
+  "pk": 12,
+  "fields": {
+    "nombre": "JORGE AZCUNAGA HINOJOSA",
+    "telefono": "",
+    "correo": null,
+    "activo": true,
+    "fecha_registro": "2026-05-21"
+  }
+},
+{
+  "model": "inversiones.promotor",
+  "pk": 13,
+  "fields": {
+    "nombre": "LUIS ALBERTO ALANIS MARTINEZ",
+    "telefono": "",
+    "correo": null,
+    "activo": true,
+    "fecha_registro": "2026-05-22"
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 77,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Ramiro Téllez Garza",
+    "nacionalidad": "Mexicana",
+    "curp": "TEGR650620HNLLRM05",
+    "fecha_nacimiento": "1965-06-20",
+    "correo": "elihud.rivera@ideacon.com.mx",
+    "telefono": "",
+    "fecha_ingreso": "2026-05-29",
+    "tipo_documento": "ine",
+    "numero_documento": "2065054144707",
+    "estado_civil": "soltero",
+    "calle": "Popocatepetl 125 Dircunvalacion",
+    "ciudad": "Santa Ctarina",
+    "estado": "Nuevo LEON",
+    "codigo_postal": "66179",
+    "rfc": "TEGR650620000",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "RAMIRO TELLEZ GARZA",
+    "pais_fiscal": "México",
+    "estado_fiscal": "",
+    "cp_fiscal": "",
+    "banco": "santander",
+    "clabe": "014580140396528277",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 5,
+    "periodicidad_pago": 28,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 74,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Salvador Diaz Campos",
+    "nacionalidad": "Mexicana",
+    "curp": "DICS490115HG5",
+    "fecha_nacimiento": "1949-01-15",
+    "correo": "salvador_diaz15@hotmail.com",
+    "telefono": "",
+    "fecha_ingreso": "2026-05-29",
+    "tipo_documento": "ine",
+    "numero_documento": "N",
+    "estado_civil": "soltero",
+    "calle": "COLORINES, GIRASOL",
+    "ciudad": "SAN PEDRO GARZA GARCIA",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "66270",
+    "rfc": "DICS490115HG5",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "",
+    "pais_fiscal": "México",
+    "estado_fiscal": "",
+    "cp_fiscal": "",
+    "banco": "bbva",
+    "clabe": "012580001094849577",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 7,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 69,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Rocio Sauza Putz",
+    "nacionalidad": "mexicano",
+    "curp": "SAPR861212MNLZTC01",
+    "fecha_nacimiento": "1986-12-12",
+    "correo": "sauzarocio@me.com",
+    "telefono": "5218115441660",
+    "fecha_ingreso": "2026-05-19",
+    "tipo_documento": "ine",
+    "numero_documento": "0391072221444",
+    "estado_civil": "soltero",
+    "calle": "JUANA DE ASBAJE",
+    "ciudad": "MONTERREY",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "64700",
+    "rfc": "SAPR861212AV0",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "JUANA DE ASBAJE #110, ROMA, MONTERREY",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "NUEVO LEON",
+    "cp_fiscal": "64700",
+    "banco": "otro",
+    "clabe": "058580229085500179",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 13,
+    "periodicidad_pago": 30,
+    "dias_cierre_fijo": 30
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 45,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Julian Javier Treviño Elizondo",
+    "nacionalidad": "mexicano",
+    "curp": "TEEJ500509HNLRLL07",
+    "fecha_nacimiento": "1950-05-09",
+    "correo": "jjaviertrevi09@gmail.com",
+    "telefono": "5218119090300",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "Juárez",
+    "ciudad": "Apodaca",
+    "estado": "Nuevo León",
+    "codigo_postal": "66640",
+    "rfc": "TEEJ500509867",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "Juárez #202, Centro Huinalá, Apodaca",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "Nuevo León",
+    "cp_fiscal": "66640",
+    "banco": "banorte",
+    "clabe": "072580011428013310",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 8,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 15,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Patricio Bernardo Sauza Gonzalez",
+    "nacionalidad": "mexicano",
+    "curp": "SAGP600212HNLZNT03",
+    "fecha_nacimiento": "1960-02-12",
+    "correo": "psauza@gmail.com",
+    "telefono": "",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "MONTES CARPATOS",
+    "ciudad": "SAN PEDRO  GARZA GARCIA",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "66260",
+    "rfc": "SAGO6002122K9",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "MONTES CARPATOS #213, RESIDENCIAL SAN AGUSTIN, SAN PEDRO  GARZA GARCIA",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "NUEVO LEON",
+    "cp_fiscal": "66260",
+    "banco": "otro",
+    "clabe": "058580000148897786",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 9,
+    "periodicidad_pago": 30,
+    "dias_cierre_fijo": 30
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 9,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Ivan Marcelo De La Garza Treviño",
+    "nacionalidad": "mexicano",
+    "curp": "GATI830514HNLRRV09",
+    "fecha_nacimiento": "1983-05-14",
+    "correo": "jv_asesores@yahoo.com.mx",
+    "telefono": "",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "CARRETERA V JUAREZ",
+    "ciudad": "APODACA",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "66640",
+    "rfc": "GATI8305143Z1",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "CARRETERA V JUAREZ #200 INT A, HUINALA, APODACA",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "NUEVO LEON",
+    "cp_fiscal": "66640",
+    "banco": "",
+    "clabe": "",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 8,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 8,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Erika Lizbeth Garza Hernandez",
+    "nacionalidad": "mexicano",
+    "curp": "GAHE890421MNLRRR09",
+    "fecha_nacimiento": "1989-04-21",
+    "correo": "jv_asesores@yahoo.com.mx",
+    "telefono": "",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "PAPAGAYO",
+    "ciudad": "SAN NICOLAS DE LOS GARZA",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "66450",
+    "rfc": "GAHE890421K56",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "PAPAGAYO #119, CUAUHTEMOC, SAN NICOLAS DE LOS GARZA",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "NUEVO LEON",
+    "cp_fiscal": "66450",
+    "banco": "",
+    "clabe": "",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 8,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 16,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Maria Del Rosario Sauza Putz",
+    "nacionalidad": "mexicano",
+    "curp": "SAPR890509MNLZTS07",
+    "fecha_nacimiento": "1989-05-09",
+    "correo": "sauza.rosario@gmail.com",
+    "telefono": "5218180106585",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "MONTES CARPATOS",
+    "ciudad": "SAN PEDRO  GARZA GARCIA",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "66260",
+    "rfc": "SAPR890509ID7",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "MONTES CARPATOS #213, RESIDENCIAL SAN AGUSTIN, SAN PEDRO  GARZA GARCIA",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "NUEVO LEON",
+    "cp_fiscal": "66260",
+    "banco": "otro",
+    "clabe": "058580229085900193",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 9,
+    "periodicidad_pago": 30,
+    "dias_cierre_fijo": 30
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 19,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Gilberto Rivera Nevarez",
+    "nacionalidad": "mexicano",
+    "curp": "RING780805HNLVVL03",
+    "fecha_nacimiento": "1978-08-05",
+    "correo": "gr.nevarez@hotmail.com",
+    "telefono": "5218114798252",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "RIO POTOSI",
+    "ciudad": "SAN NICOLAS",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "66430",
+    "rfc": "RING780805SXA",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "RIO POTOSI #125, SAN ANTONIO, SAN NICOLAS",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "NUEVO LEON",
+    "cp_fiscal": "66430",
+    "banco": "otro",
+    "clabe": "036580500646885563",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 7,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 70,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Jorge Luis De la Garza Perez",
+    "nacionalidad": "mexicano",
+    "curp": "GAPJ531217HNLRRR06",
+    "fecha_nacimiento": "1953-12-17",
+    "correo": "jorge-delagarza@live.com.mx",
+    "telefono": "5218127257938",
+    "fecha_ingreso": "2026-05-19",
+    "tipo_documento": "ine",
+    "numero_documento": "2211003574452",
+    "estado_civil": "casado",
+    "calle": "Villa Juarez",
+    "ciudad": "APODACA",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "66640",
+    "rfc": "GAPJ531217LH1",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "Villa Juarez #200, Colonial de Huinala, APODACA",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "NUEVO LEON",
+    "cp_fiscal": "66640",
+    "banco": "banorte",
+    "clabe": "072580005850103752",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": null,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 68,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Hilda Nelly Treviño Elizondo",
+    "nacionalidad": "mexicano",
+    "curp": "TEEH441129MNLRLL01",
+    "fecha_nacimiento": "1944-11-29",
+    "correo": "jv_asesores@yahoo.com.mx",
+    "telefono": "5218117558386",
+    "fecha_ingreso": "2026-05-19",
+    "tipo_documento": "ine",
+    "numero_documento": "2211027182919",
+    "estado_civil": "casado",
+    "calle": "BARCELONA",
+    "ciudad": "GUADALUPE",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "67130",
+    "rfc": "TEEH441129674",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "BARCELONA #118, VALLE DE LINDA VISTA, GUADALUPE",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "NUEVO LEON",
+    "cp_fiscal": "67130",
+    "banco": "banorte",
+    "clabe": "072580008340331772",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 11,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 67,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Maria Elena Gomez Gil",
+    "nacionalidad": "mexicano",
+    "curp": "GOGE521105MNLMLL07",
+    "fecha_nacimiento": "1952-11-05",
+    "correo": "zambrano.mty@gmail.com",
+    "telefono": "",
+    "fecha_ingreso": "2026-05-19",
+    "tipo_documento": "ine",
+    "numero_documento": "1090053030717",
+    "estado_civil": "casado",
+    "calle": "RIO GUADALQUIVIR",
+    "ciudad": "SAN PEDRO GARZA GARCIA",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "66220",
+    "rfc": "ZAGJ460523JH7",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "RIO GUADALQUIVIR #212, DEL VALLE, SAN PEDRO GARZA GARCIA",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "NUEVO LEON",
+    "cp_fiscal": "66220",
+    "banco": "",
+    "clabe": "",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": null,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 13,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Sergio Eduardo Elizondo Guzman",
+    "nacionalidad": "mexicano",
+    "curp": "EIGS670805HNLLZR07",
+    "fecha_nacimiento": "1967-08-05",
+    "correo": "",
+    "telefono": "",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "",
+    "ciudad": "",
+    "estado": "",
+    "codigo_postal": "",
+    "rfc": "",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "",
+    "pais_fiscal": "México",
+    "estado_fiscal": "",
+    "cp_fiscal": "",
+    "banco": "",
+    "clabe": "",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 7,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 20,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "María Cecilia Garza de la Garza",
+    "nacionalidad": "Mexicana",
+    "curp": "GAGC580613GD9",
+    "fecha_nacimiento": null,
+    "correo": "",
+    "telefono": "",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "Alfonso Reyes 151",
+    "ciudad": "San Pedro Garza Garcia",
+    "estado": "Nuevo León",
+    "codigo_postal": "66250",
+    "rfc": "GAGC580613GD9",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "María Cecilia Garza de la Garza",
+    "pais_fiscal": "MEX",
+    "estado_fiscal": "Nuevo León",
+    "cp_fiscal": "66250",
+    "banco": "otro",
+    "clabe": "",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 7,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 12,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Raul Eugenio Tassinari Gutierrez",
+    "nacionalidad": "mexicano",
+    "curp": "TAGR800822HNLSTL05",
+    "fecha_nacimiento": "1980-08-22",
+    "correo": "tassinari_guti@hotmail.com",
+    "telefono": "",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "LIBRAMIENTO ARCO VIAL",
+    "ciudad": "SANTA CATARINA",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "66001",
+    "rfc": "TAGR8008227D4",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "LIBRAMIENTO ARCO VIAL #K3.8, IND ARCO VIAL, SANTA CATARINA",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "NUEVO LEON",
+    "cp_fiscal": "66001",
+    "banco": "",
+    "clabe": "",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 7,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 44,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Roberto De la Garza  Tamez",
+    "nacionalidad": "mexicano",
+    "curp": "GATR530220HNLRMB07",
+    "fecha_nacimiento": "1953-02-20",
+    "correo": "ardico77@yahoo.com.mx",
+    "telefono": "5218180801420",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "Cazadores de Galeana",
+    "ciudad": "Monterrey",
+    "estado": "Nuevo León",
+    "codigo_postal": "64920",
+    "rfc": "GATR530220668",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "Cazadores de Galeana #3072, Del Paseo Residencial, Monterrey",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "Nuevo León",
+    "cp_fiscal": "64920",
+    "banco": "banorte",
+    "clabe": "072580005970228834",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 7,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 42,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Monica Elena  Alanis  Martínez",
+    "nacionalidad": "mexicano",
+    "curp": "AAMM691202MNLLRN06",
+    "fecha_nacimiento": "1969-12-09",
+    "correo": "elihud.rivera@ideacon.com.mx",
+    "telefono": "",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "Bosques de Pirineos",
+    "ciudad": "San Pedro Garza Garcia",
+    "estado": "Nuevo León",
+    "codigo_postal": "66250",
+    "rfc": "AAMM691202000",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "Bosques de Pirineos #431, Bosques del Valle, San Pedro Garza Garcia",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "Nuevo León",
+    "cp_fiscal": "66250",
+    "banco": "",
+    "clabe": "",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 7,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 36,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Heriberto  Rico  Garza",
+    "nacionalidad": "mexicano",
+    "curp": "RIGH530725HNLCRR09",
+    "fecha_nacimiento": "1953-07-25",
+    "correo": "heriberto.rico@lamisionsuper.com",
+    "telefono": "",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "Pino Suárez Sur",
+    "ciudad": "Linares",
+    "estado": "Nuevo León",
+    "codigo_postal": "67700",
+    "rfc": "RIGH5307256U8",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "Pino Suárez Sur #400, Zona Centro, Linares",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "Nuevo León",
+    "cp_fiscal": "67700",
+    "banco": "santander",
+    "clabe": "014595605482522329",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 7,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 11,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Martha Elia Treviño Elizondo",
+    "nacionalidad": "mexicano",
+    "curp": "TEEM541022MNLRLR05",
+    "fecha_nacimiento": "1954-10-22",
+    "correo": "marthatrevinoeli@gmail.com",
+    "telefono": "5218113111149",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "VICTOR HUGO",
+    "ciudad": "APODACA",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "66640",
+    "rfc": "TEEM541022C32",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "VICTOR HUGO #212, HUINALA, APODACA",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "NUEVO LEON",
+    "cp_fiscal": "66640",
+    "banco": "banorte",
+    "clabe": "072580000995702880",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 8,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 66,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Ana Bertha Alanis Martinez",
+    "nacionalidad": "Mexicana",
+    "curp": "XXXXXXXXXRSP",
+    "fecha_nacimiento": null,
+    "correo": "elihud.rivera@ideacon.com.mx",
+    "telefono": "8116050101",
+    "fecha_ingreso": "2026-04-29",
+    "tipo_documento": "ine",
+    "numero_documento": "1111111144",
+    "estado_civil": "soltero",
+    "calle": "BOSQUES DE PIRINEOS, NUM 431",
+    "ciudad": "SAN PEDRO GARZA GARCIA",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "66250",
+    "rfc": "AAMA691202000",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "",
+    "pais_fiscal": "México",
+    "estado_fiscal": "",
+    "cp_fiscal": "",
+    "banco": "banamex",
+    "clabe": "",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": null,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 23,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Regina Beatriz Valdes Garza",
+    "nacionalidad": "mexicano",
+    "curp": "VAGR880729MNLLRG14",
+    "fecha_nacimiento": "1988-07-29",
+    "correo": "regina_valdesg@hotmail.com",
+    "telefono": "5218119113697",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "SIERRA AZUL",
+    "ciudad": "SAN PEDRO GARZA GARCIA",
+    "estado": "Nuevo León",
+    "codigo_postal": "66256",
+    "rfc": "VAGR880729MN3",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "SIERRA AZUL #1090 INT 9, LOMAS DEL VALLE, SAN PEDRO GARZA GARCIA",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "Nuevo León",
+    "cp_fiscal": "66256",
+    "banco": "otro",
+    "clabe": "044580256023497726",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 7,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 18,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Diego Manuel Guerra  Perez",
+    "nacionalidad": "mexicano",
+    "curp": "GUPD870924HNLRRG03",
+    "fecha_nacimiento": "1987-09-24",
+    "correo": "diego_guerra@hotmail.com",
+    "telefono": "5218183625305",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "TEMISTOCLES",
+    "ciudad": "SAN PEDRO  GARZA GARCIA",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "66297",
+    "rfc": "GUPD870924KT7",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "TEMISTOCLES #111, RESIDENCIAL CHIPINQUE, SAN PEDRO  GARZA GARCIA",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "NUEVO LEON",
+    "cp_fiscal": "66297",
+    "banco": "bbva",
+    "clabe": "012580015857916701",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 7,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 17,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Mauricio Rene Rivera Arreola",
+    "nacionalidad": "mexicano",
+    "curp": "RIAM870923HNLVRR02",
+    "fecha_nacimiento": "1987-09-23",
+    "correo": "mauricio.rivera.arreola@gmail.com",
+    "telefono": "5218115006611",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "LOMAS DEL ENCINO",
+    "ciudad": "SAN PEDRO  GARZA GARCIA",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "66278",
+    "rfc": "RIAM870923BVA",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "LOMAS DEL ENCINO #106, LOMAS DEL CAMPESTRE, SAN PEDRO  GARZA GARCIA",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "NUEVO LEON",
+    "cp_fiscal": "66278",
+    "banco": "banorte",
+    "clabe": "072580002397370892",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 7,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 14,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Maria Concepcion Catalina Putz Zambrano",
+    "nacionalidad": "mexicano",
+    "curp": "PUZC520515MNLTMN03",
+    "fecha_nacimiento": "1952-05-15",
+    "correo": "rpsauza@mac.com",
+    "telefono": "",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "TIGRIS",
+    "ciudad": "SAN PEDRO  GARZA GARCIA",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "66220",
+    "rfc": "PUZC520515AC1",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "TIGRIS #1002 INT D, DEL VALLE, SAN PEDRO  GARZA GARCIA",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "NUEVO LEON",
+    "cp_fiscal": "66220",
+    "banco": "bbva",
+    "clabe": "012580001064520350",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 7,
+    "periodicidad_pago": 30,
+    "dias_cierre_fijo": 30
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 10,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Jorge Luis De La Garza Treviño",
+    "nacionalidad": "mexicano",
+    "curp": "GATJ811209HNLRRR08",
+    "fecha_nacimiento": "1981-12-09",
+    "correo": "jorge.dela.garza@icloud.com",
+    "telefono": "5218110782188",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "BENITO JUAREZ",
+    "ciudad": "APODACA",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "66640",
+    "rfc": "GATJ81120918A",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "BENITO JUAREZ #110, HUINALA, APODACA",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "NUEVO LEON",
+    "cp_fiscal": "66640",
+    "banco": "banorte",
+    "clabe": "072580005491955110",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 8,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 7,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Alfomso Cavazos Elizondo",
+    "nacionalidad": "mexicano",
+    "curp": "CAEA570807HNLVLL08",
+    "fecha_nacimiento": "1957-08-07",
+    "correo": "alfonsocavazos57@hotmail.com",
+    "telefono": "5218183666349",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "AV LOS ANGELES",
+    "ciudad": "SAN NICOLAS DE LOS GARZA",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "66480",
+    "rfc": "CAEA570807GY0",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "AV LOS ANGELES #1000, GARZA CANTU, SAN NICOLAS DE LOS GARZA",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "NUEVO LEON",
+    "cp_fiscal": "66480",
+    "banco": "",
+    "clabe": "",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 9,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 22,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Angelica Yolanda Elizondo Cantu",
+    "nacionalidad": "mexicano",
+    "curp": "EICA390423MNLLNN01",
+    "fecha_nacimiento": "1939-04-23",
+    "correo": "lgonzalez@ideacon.com.mx",
+    "telefono": "5218212195801",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "Niños Heroes",
+    "ciudad": "Linares",
+    "estado": "Nuevo León",
+    "codigo_postal": "67700",
+    "rfc": "EICA390423TP7",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "Niños Heroes #205, Centro, Linares",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "Nuevo León",
+    "cp_fiscal": "67700",
+    "banco": "banorte",
+    "clabe": "072595005443126490",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 7,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 37,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Bertha Aída  Valdés  Alanís",
+    "nacionalidad": "mexicano",
+    "curp": "VAAB540114MNLLLR04",
+    "fecha_nacimiento": "1954-01-14",
+    "correo": "bertha.valdes@ideacon.com.mx",
+    "telefono": "",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "Cumbres de Asturias",
+    "ciudad": "Monterrey",
+    "estado": "Nuevo León",
+    "codigo_postal": "64346",
+    "rfc": "VAAB5401145F8",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "Cumbres de Asturias #217, Cumbres Elite 7mo Sector, Monterrey",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "Nuevo León",
+    "cp_fiscal": "64346",
+    "banco": "santander",
+    "clabe": "014580606170715481",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 7,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 35,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Eugenio  Rico  Cantú",
+    "nacionalidad": "mexicano",
+    "curp": "RICE900918HNLCNG08",
+    "fecha_nacimiento": "1990-09-18",
+    "correo": "eugenio.rico@lamisionsuper.com",
+    "telefono": "",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "Pino Suárez Sur",
+    "ciudad": "Linares",
+    "estado": "Nuevo León",
+    "codigo_postal": "67700",
+    "rfc": "RICE900918328",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "Pino Suárez Sur #400, Zona Centro, Linares",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "Nuevo León",
+    "cp_fiscal": "67700",
+    "banco": "bbva",
+    "clabe": "012580029990879665",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 7,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 32,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Myrna Azcunaga Hinojosa",
+    "nacionalidad": "mexicano",
+    "curp": "AUHM800327MNLZNY03",
+    "fecha_nacimiento": "1980-03-27",
+    "correo": "myrna_azcunaga@hotmail.com",
+    "telefono": "5218112124811",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "CLAVEL",
+    "ciudad": "SAN PEDRO GARZA GARCIA",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "66260",
+    "rfc": "AUHM8003275K8",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "CLAVEL #457, LOS COLORINES, SAN PEDRO GARZA GARCIA",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "NUEVO LEON",
+    "cp_fiscal": "66260",
+    "banco": "banorte",
+    "clabe": "072580004189354846",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 12,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 75,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Myrna Adriana González Elizaldi",
+    "nacionalidad": "Mexicana",
+    "curp": "GOEM590725MNLNLY07",
+    "fecha_nacimiento": "1959-07-25",
+    "correo": "myrna@grupojahe.com.mx",
+    "telefono": "",
+    "fecha_ingreso": "2026-05-29",
+    "tipo_documento": "ine",
+    "numero_documento": "N",
+    "estado_civil": "soltero",
+    "calle": "Lomas del Valle, Alfonso Reyes",
+    "ciudad": "SAN PEDRO GARZA GARCIA",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "66256",
+    "rfc": "AUHM8003275K9",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "",
+    "pais_fiscal": "México",
+    "estado_fiscal": "",
+    "cp_fiscal": "",
+    "banco": "banamex",
+    "clabe": "002580487600696586",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 9,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 31,
+  "fields": {
+    "tipo_contribuyente": "moral",
+    "es_entidad_financiera": false,
+    "nombre_completo": "OPTIMA ADMINISTRACIÓN Y SERVICIOS ESTRATÉGICOS S.A. DE C.V.",
+    "nacionalidad": "mexicano",
+    "curp": null,
+    "fecha_nacimiento": null,
+    "correo": "eduardo.munoz@ideacon.com.mx",
+    "telefono": "",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "Mississipi",
+    "ciudad": "San Pedro Garza García",
+    "estado": "Nuevo León",
+    "codigo_postal": "66220",
+    "rfc": "OAS131017LT9",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "Mississipi #44 INT B, Del Valle, San Pedro Garza García",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "Nuevo León",
+    "cp_fiscal": "66220",
+    "banco": "otro",
+    "clabe": "132180000057592184",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 11,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 38,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Rubén Arturo  Garza  Gómez",
+    "nacionalidad": "mexicano",
+    "curp": "GAGR590206HNLRMB09",
+    "fecha_nacimiento": "1959-02-06",
+    "correo": "rugza3@hotmail.com",
+    "telefono": "",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "Plaza del Aguililla",
+    "ciudad": "Monterrey",
+    "estado": "Nuevo León",
+    "codigo_postal": "64960",
+    "rfc": "GARG5902065F8",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "Plaza del Aguililla #7, Ciudad Satélite, Monterrey",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "Nuevo León",
+    "cp_fiscal": "64960",
+    "banco": "banorte",
+    "clabe": "0632462786",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 9,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 39,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Alvaro  Díaz  Campos",
+    "nacionalidad": "mexicano",
+    "curp": null,
+    "fecha_nacimiento": null,
+    "correo": "a.diazc.47@gmail.com",
+    "telefono": "",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "N",
+    "ciudad": "N",
+    "estado": "N",
+    "codigo_postal": "0",
+    "rfc": "XAXX010101000",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "N #0, N, N",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "N",
+    "cp_fiscal": "0",
+    "banco": "banorte",
+    "clabe": "0670066346",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 7,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 40,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Martha Alicia  Moya  Anchondo",
+    "nacionalidad": "mexicano",
+    "curp": "MOAM421226MCHYNR06",
+    "fecha_nacimiento": "1942-12-26",
+    "correo": "eduardo.munoz@ideacon.com.mx",
+    "telefono": "",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "Sierra de Juárez",
+    "ciudad": "San Pedro Garza Garcia",
+    "estado": "Nuevo León",
+    "codigo_postal": "66250",
+    "rfc": "MOAM4212263N2",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "Sierra de Juárez #231, Bosques del Valle, San Pedro Garza Garcia",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "Nuevo León",
+    "cp_fiscal": "66250",
+    "banco": "banorte",
+    "clabe": "0100118424",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 7,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 43,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Carlos Ricardo  Alanis  Galindo",
+    "nacionalidad": "mexicano",
+    "curp": "AAGC340403HNLLLR03",
+    "fecha_nacimiento": "1934-04-03",
+    "correo": "carlos_alanis@hotmail.it",
+    "telefono": "",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "Av. Hidalgo",
+    "ciudad": "Linares",
+    "estado": "Nuevo León",
+    "codigo_postal": "67700",
+    "rfc": "AAGC340403F31",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "Av. Hidalgo #910, Zona Centro, Linares",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "Nuevo León",
+    "cp_fiscal": "67700",
+    "banco": "",
+    "clabe": "",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 7,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 46,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Miguel Vital  Valdés  Garza",
+    "nacionalidad": "mexicano",
+    "curp": "VAGM870115HNLLRG01",
+    "fecha_nacimiento": "1987-01-15",
+    "correo": "miguelvaldes87@gmail.com",
+    "telefono": "5218115006611",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "Sierra Azul",
+    "ciudad": "San Pedro Garza García",
+    "estado": "Nuevo León",
+    "codigo_postal": "66256",
+    "rfc": "VAGM870115327",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "Sierra Azul #1090 INT 9, Lomas del Valle, San Pedro Garza García",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "Nuevo León",
+    "cp_fiscal": "66256",
+    "banco": "banorte",
+    "clabe": "273044820",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 7,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 33,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Jorge  Azcunaga Hinojosa",
+    "nacionalidad": "mexicano",
+    "curp": "AUHJ770204HNLZNR00",
+    "fecha_nacimiento": "1977-02-04",
+    "correo": "jorgeazcunaga@hotmail.com",
+    "telefono": "5218115553537",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "MANZANAREZ",
+    "ciudad": "SAN PEDRO GARZA GARCIA",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "66286",
+    "rfc": "AUHJ770204NQ6",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "MANZANAREZ #522, COLONIAL DE LA SIERRA, SAN PEDRO GARZA GARCIA",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "NUEVO LEON",
+    "cp_fiscal": "66286",
+    "banco": "banorte",
+    "clabe": "072580010942294098",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 9,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 30,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Nereo Rivera Gonzalez",
+    "nacionalidad": "mexicano",
+    "curp": "RIGN570930HTSVNR03",
+    "fecha_nacimiento": "1957-09-30",
+    "correo": "nereorg@hotmail.com",
+    "telefono": "5218110808009",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "CORINTO",
+    "ciudad": "SAN PEDRO GARZA GARCIA",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "66274",
+    "rfc": "RIGN570930IY7",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "CORINTO #412, JARDINES DE SAN AGUSTIN, SAN PEDRO GARZA GARCIA",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "NUEVO LEON",
+    "cp_fiscal": "66274",
+    "banco": "banorte",
+    "clabe": "072580005443121264",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 10,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 29,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Luis Alberto Alanis Martinez",
+    "nacionalidad": "mexicano",
+    "curp": "AAML790819HNLLRS02",
+    "fecha_nacimiento": "1979-08-19",
+    "correo": "luisalanis@hotmail.com",
+    "telefono": "5218114184930",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "BOSQUES DE LOS PIRINEOS",
+    "ciudad": "SAN PEDRO GARZA GARCIA",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "66250",
+    "rfc": "AAML790819SMA",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "BOSQUES DE LOS PIRINEOS #431, BOSQUES DEL VALLE, SAN PEDRO GARZA GARCIA",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "NUEVO LEON",
+    "cp_fiscal": "66250",
+    "banco": "otro",
+    "clabe": "058580230398700118",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 7,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 28,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Jose Rodolfo Peña Garcia",
+    "nacionalidad": "mexicano",
+    "curp": "PEGR900719HTSXRD03",
+    "fecha_nacimiento": "1990-07-19",
+    "correo": "jrodolfopg@gmail.com",
+    "telefono": "5218116036546",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "JERONIMO SILLER",
+    "ciudad": "SAN PEDRO GARZA GARCIA",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "66290",
+    "rfc": "PEGR900719IS5",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "JERONIMO SILLER #108, JARDINES DE SAN ANGEL, SAN PEDRO GARZA GARCIA",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "NUEVO LEON",
+    "cp_fiscal": "66290",
+    "banco": "bbva",
+    "clabe": "012580004615613590",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 9,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 27,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Elias Alberto Garcia Cantu",
+    "nacionalidad": "mexicano",
+    "curp": "GACE620520HNLRNL07",
+    "fecha_nacimiento": "1962-05-20",
+    "correo": "delia.arias@egccardiologia.com.mx",
+    "telefono": "5218123197436",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "LOMA GRANDE",
+    "ciudad": "MONTERREY",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "64710",
+    "rfc": "GACE620520GB1",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "LOMA GRANDE #2714 INT M14, LOMAS DE SAN FRANCISCO, MONTERREY",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "NUEVO LEON",
+    "cp_fiscal": "64710",
+    "banco": "santander",
+    "clabe": "014580605399554783",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 7,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 25,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Arturo Gomez  Abad",
+    "nacionalidad": "mexicano",
+    "curp": "GOAA670517HNLRRS02",
+    "fecha_nacimiento": "1967-05-17",
+    "correo": "agomez@supertiendarico.com",
+    "telefono": "5218211002835",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "CARRERA TORRES",
+    "ciudad": "HIDALGO",
+    "estado": "TAMAULIPAS",
+    "codigo_postal": "87800",
+    "rfc": "GOAA670517183",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "CARRERA TORRES #201, CENTRO, HIDALGO",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "TAMAULIPAS",
+    "cp_fiscal": "87800",
+    "banco": "santander",
+    "clabe": "014595565438942381",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 7,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 24,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Marcela Rico Cantu",
+    "nacionalidad": "mexicano",
+    "curp": "RICM821012MNLCNR01",
+    "fecha_nacimiento": "1982-10-12",
+    "correo": "marcelarico@gmail.com",
+    "telefono": "",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "LOUISINA 26",
+    "ciudad": "Mexico DF",
+    "estado": "MEXICO DF",
+    "codigo_postal": "3810",
+    "rfc": "RICM821012FE9",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "LOUISINA 26 #26 INT 301, NAPOLES, Mexico DF",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "MEXICO DF",
+    "cp_fiscal": "3810",
+    "banco": "banamex",
+    "clabe": "002580901088190562",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 7,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 21,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Ruben Arturo Garza Garza",
+    "nacionalidad": "mexicano",
+    "curp": "GAGR900307HNLRRB06",
+    "fecha_nacimiento": "1990-03-07",
+    "correo": "garzagarzar@gmail.com",
+    "telefono": "",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "PLAZA DE LA AGUILILLA",
+    "ciudad": "MONTERREY",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "64960",
+    "rfc": "GAGR900307428",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "PLAZA DE LA AGUILILLA #7, CIUDAD SATELITE, MONTERREY",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "NUEVO LEON",
+    "cp_fiscal": "64960",
+    "banco": "banorte",
+    "clabe": "072580002537449716",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 9,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 6,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Domingo Antonio Treviño Garza",
+    "nacionalidad": "mexicano",
+    "curp": "TEGD880515HNLRRM04",
+    "fecha_nacimiento": "1988-05-15",
+    "correo": "domingot88@gmail.com",
+    "telefono": "5218114703652",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "CALLE MIRADOR DE COATZACOALCOS",
+    "ciudad": "SAN PEDRO GARZA GARCIA",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "66256",
+    "rfc": "TEGD880515RJ0",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "CALLE MIRADOR DE COATZACOALCOS #210, LOMAS DEL VALLE, SAN PEDRO GARZA GARCIA",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "NUEVO LEON",
+    "cp_fiscal": "66256",
+    "banco": "bbva",
+    "clabe": "012580029087634535",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 9,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 1,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Hector Enrique Luna Gonzalez",
+    "nacionalidad": "mexicano",
+    "curp": "LUGH601118HNLNNC09",
+    "fecha_nacimiento": "1960-11-18",
+    "correo": "hector_hlyasa@hotmail.com",
+    "telefono": "5218211074694",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "CALLE JUAREZ",
+    "ciudad": "LINARES",
+    "estado": "NUEVO LEON",
+    "codigo_postal": "67700",
+    "rfc": "LUGH601118IS3",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "CALLE JUAREZ #301, CENTRO, LINARES",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "NUEVO LEON",
+    "cp_fiscal": "67700",
+    "banco": "",
+    "clabe": "",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 7,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversionista",
+  "pk": 47,
+  "fields": {
+    "tipo_contribuyente": "fisica",
+    "es_entidad_financiera": false,
+    "nombre_completo": "Miguel Amador  Valdés  Alanís",
+    "nacionalidad": "mexicano",
+    "curp": "AAM550401HNLLLG06",
+    "fecha_nacimiento": null,
+    "correo": "mavala@live.com.mx",
+    "telefono": "",
+    "fecha_ingreso": "2026-05-21",
+    "tipo_documento": "ine",
+    "numero_documento": "",
+    "estado_civil": "soltero",
+    "calle": "Sierra Azul",
+    "ciudad": "San Pedro Garza Garcia",
+    "estado": "Nuevo León",
+    "codigo_postal": "66256",
+    "rfc": "VAAM550401KN4",
+    "regimen_fiscal": "Régimen de Intereses",
+    "nombre_fiscal": "Sierra Azul #1090 INT 9, Lomas del Valle, San Pedro Garza Garcia",
+    "pais_fiscal": "Mexico",
+    "estado_fiscal": "Nuevo León",
+    "cp_fiscal": "66256",
+    "banco": "banorte",
+    "clabe": "287010279",
+    "eliminado": false,
+    "fecha_eliminado": null,
+    "promotor": 7,
+    "periodicidad_pago": 31,
+    "dias_cierre_fijo": null
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 9,
+  "fields": {
+    "inversionista": 27,
+    "capital": "13000000.00",
+    "tasa_anual": "15.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "64.51613",
+    "fecha_inicio": "2026-04-04",
+    "fecha_vencimiento": "2028-04-04",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 22,
+  "fields": {
+    "inversionista": 17,
+    "capital": "3000000.00",
+    "tasa_anual": "16.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2026-01-27",
+    "fecha_vencimiento": "2028-01-27",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 74,
+  "fields": {
+    "inversionista": 12,
+    "capital": "2000000.00",
+    "tasa_anual": "15.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2024-12-03",
+    "fecha_vencimiento": "2026-12-03",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 29,
+  "fields": {
+    "inversionista": 44,
+    "capital": "4000000.00",
+    "tasa_anual": "16.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "66.66667",
+    "fecha_inicio": "2026-01-01",
+    "fecha_vencimiento": "2027-12-31",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 41,
+  "fields": {
+    "inversionista": 6,
+    "capital": "1000000.00",
+    "tasa_anual": "14.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "48.27586",
+    "fecha_inicio": "2025-10-01",
+    "fecha_vencimiento": "2027-10-01",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 44,
+  "fields": {
+    "inversionista": 69,
+    "capital": "1000000.00",
+    "tasa_anual": "14.40",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2025-12-08",
+    "fecha_vencimiento": "2027-12-08",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 37,
+  "fields": {
+    "inversionista": 70,
+    "capital": "1000000.00",
+    "tasa_anual": "16.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "51.51515",
+    "fecha_inicio": "2026-03-23",
+    "fecha_vencimiento": "2028-03-23",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 19,
+  "fields": {
+    "inversionista": 37,
+    "capital": "6600000.00",
+    "tasa_anual": "15.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "53.33333",
+    "fecha_inicio": "2026-02-02",
+    "fecha_vencimiento": "2028-02-02",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 32,
+  "fields": {
+    "inversionista": 70,
+    "capital": "1000000.00",
+    "tasa_anual": "16.75",
+    "base_calculo": 360,
+    "porcentaje_factura": "50.74627",
+    "fecha_inicio": "2025-11-04",
+    "fecha_vencimiento": "2027-11-04",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 34,
+  "fields": {
+    "inversionista": 19,
+    "capital": "2000000.00",
+    "tasa_anual": "15.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "100.00000",
+    "fecha_inicio": "2025-12-01",
+    "fecha_vencimiento": "2027-11-30",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 45,
+  "fields": {
+    "inversionista": 8,
+    "capital": "2500000.00",
+    "tasa_anual": "16.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "51.51515",
+    "fecha_inicio": "2025-09-05",
+    "fecha_vencimiento": "2027-09-05",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 17,
+  "fields": {
+    "inversionista": 35,
+    "capital": "3000000.00",
+    "tasa_anual": "15.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "46.66667",
+    "fecha_inicio": "2026-03-02",
+    "fecha_vencimiento": "2028-03-02",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 76,
+  "fields": {
+    "inversionista": 29,
+    "capital": "8000000.00",
+    "tasa_anual": "21.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2024-12-19",
+    "fecha_vencimiento": "2026-12-19",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 35,
+  "fields": {
+    "inversionista": 19,
+    "capital": "1000000.00",
+    "tasa_anual": "16.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "100.00000",
+    "fecha_inicio": "2025-12-01",
+    "fecha_vencimiento": "2027-10-03",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 59,
+  "fields": {
+    "inversionista": 19,
+    "capital": "3000000.00",
+    "tasa_anual": "15.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "100.00000",
+    "fecha_inicio": "2025-03-09",
+    "fecha_vencimiento": "2027-03-09",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 46,
+  "fields": {
+    "inversionista": 9,
+    "capital": "3000000.00",
+    "tasa_anual": "16.75",
+    "base_calculo": 360,
+    "porcentaje_factura": "50.74627",
+    "fecha_inicio": "2025-09-01",
+    "fecha_vencimiento": "2027-09-01",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 16,
+  "fields": {
+    "inversionista": 33,
+    "capital": "1000000.00",
+    "tasa_anual": "14.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "55.17241",
+    "fecha_inicio": "2026-03-23",
+    "fecha_vencimiento": "2028-03-23",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 47,
+  "fields": {
+    "inversionista": 33,
+    "capital": "2000000.00",
+    "tasa_anual": "15.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "53.33333",
+    "fecha_inicio": "2025-08-08",
+    "fecha_vencimiento": "2027-08-08",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 79,
+  "fields": {
+    "inversionista": 27,
+    "capital": "12000000.00",
+    "tasa_anual": "17.25",
+    "base_calculo": 360,
+    "porcentaje_factura": "46.37681",
+    "fecha_inicio": "2024-10-01",
+    "fecha_vencimiento": "2026-10-01",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 72,
+  "fields": {
+    "inversionista": 29,
+    "capital": "12000000.00",
+    "tasa_anual": "21.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "32.55814",
+    "fecha_inicio": "2024-12-20",
+    "fecha_vencimiento": "2026-12-20",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 24,
+  "fields": {
+    "inversionista": 29,
+    "capital": "5000000.00",
+    "tasa_anual": "21.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2026-01-22",
+    "fecha_vencimiento": "2028-01-22",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 63,
+  "fields": {
+    "inversionista": 20,
+    "capital": "1500000.00",
+    "tasa_anual": "17.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "58.82353",
+    "fecha_inicio": "2025-03-01",
+    "fecha_vencimiento": "2027-01-09",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 1,
+  "fields": {
+    "inversionista": 16,
+    "capital": "1000000.00",
+    "tasa_anual": "14.40",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2026-03-13",
+    "fecha_vencimiento": "2028-03-13",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 66,
+  "fields": {
+    "inversionista": 42,
+    "capital": "1050000.00",
+    "tasa_anual": "15.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2025-02-01",
+    "fecha_vencimiento": "2026-12-27",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 11,
+  "fields": {
+    "inversionista": 32,
+    "capital": "1500000.00",
+    "tasa_anual": "16.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "43.75000",
+    "fecha_inicio": "2026-04-30",
+    "fecha_vencimiento": "2028-04-30",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 5,
+  "fields": {
+    "inversionista": 1,
+    "capital": "1000000.00",
+    "tasa_anual": "13.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "100.00000",
+    "fecha_inicio": "2026-05-12",
+    "fecha_vencimiento": "2028-05-12",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 38,
+  "fields": {
+    "inversionista": 29,
+    "capital": "25000000.00",
+    "tasa_anual": "21.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2026-02-27",
+    "fecha_vencimiento": "2028-02-27",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 62,
+  "fields": {
+    "inversionista": 75,
+    "capital": "1595000.00",
+    "tasa_anual": "16.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2025-11-10",
+    "fecha_vencimiento": "2027-11-10",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 64,
+  "fields": {
+    "inversionista": 66,
+    "capital": "425000.00",
+    "tasa_anual": "15.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2025-02-01",
+    "fecha_vencimiento": "2027-02-01",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 51,
+  "fields": {
+    "inversionista": 22,
+    "capital": "1000000.00",
+    "tasa_anual": "14.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2025-07-01",
+    "fecha_vencimiento": "2027-07-01",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 25,
+  "fields": {
+    "inversionista": 43,
+    "capital": "800000.00",
+    "tasa_anual": "14.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2026-01-07",
+    "fecha_vencimiento": "2028-01-07",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 23,
+  "fields": {
+    "inversionista": 10,
+    "capital": "1000000.00",
+    "tasa_anual": "16.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "66.66667",
+    "fecha_inicio": "2026-01-03",
+    "fecha_vencimiento": "2028-01-02",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 49,
+  "fields": {
+    "inversionista": 10,
+    "capital": "1500000.00",
+    "tasa_anual": "16.75",
+    "base_calculo": 360,
+    "porcentaje_factura": "50.74627",
+    "fecha_inicio": "2025-08-01",
+    "fecha_vencimiento": "2027-08-01",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 55,
+  "fields": {
+    "inversionista": 10,
+    "capital": "5000000.00",
+    "tasa_anual": "17.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "50.00000",
+    "fecha_inicio": "2025-06-05",
+    "fecha_vencimiento": "2027-06-05",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 48,
+  "fields": {
+    "inversionista": 45,
+    "capital": "2000000.00",
+    "tasa_anual": "16.75",
+    "base_calculo": 360,
+    "porcentaje_factura": "50.74627",
+    "fecha_inicio": "2025-08-06",
+    "fecha_vencimiento": "2027-08-06",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 53,
+  "fields": {
+    "inversionista": 45,
+    "capital": "14000000.00",
+    "tasa_anual": "17.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "50.00000",
+    "fecha_inicio": "2025-06-05",
+    "fecha_vencimiento": "2027-06-05",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 57,
+  "fields": {
+    "inversionista": 20,
+    "capital": "1000000.00",
+    "tasa_anual": "17.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "62.85714",
+    "fecha_inicio": "2025-04-01",
+    "fecha_vencimiento": "2027-03-01",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 61,
+  "fields": {
+    "inversionista": 14,
+    "capital": "5000000.00",
+    "tasa_anual": "14.40",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2025-03-25",
+    "fecha_vencimiento": "2027-04-01",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 68,
+  "fields": {
+    "inversionista": 14,
+    "capital": "10000000.00",
+    "tasa_anual": "14.40",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2025-01-30",
+    "fecha_vencimiento": "2027-01-30",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 95,
+  "fields": {
+    "inversionista": 14,
+    "capital": "10000000.00",
+    "tasa_anual": "14.40",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2024-06-01",
+    "fecha_vencimiento": "2026-06-03",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 43,
+  "fields": {
+    "inversionista": 16,
+    "capital": "500000.00",
+    "tasa_anual": "14.40",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2025-09-24",
+    "fecha_vencimiento": "2027-09-24",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 36,
+  "fields": {
+    "inversionista": 16,
+    "capital": "1000000.00",
+    "tasa_anual": "14.40",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2026-01-01",
+    "fecha_vencimiento": "2028-01-01",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 60,
+  "fields": {
+    "inversionista": 40,
+    "capital": "1000000.00",
+    "tasa_anual": "15.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2025-03-06",
+    "fecha_vencimiento": "2027-03-06",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 54,
+  "fields": {
+    "inversionista": 11,
+    "capital": "4000000.00",
+    "tasa_anual": "17.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "50.00000",
+    "fecha_inicio": "2025-06-05",
+    "fecha_vencimiento": "2027-06-05",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 50,
+  "fields": {
+    "inversionista": 47,
+    "capital": "865300.00",
+    "tasa_anual": "15.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "60.00000",
+    "fecha_inicio": "2025-07-01",
+    "fecha_vencimiento": "2027-07-01",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 71,
+  "fields": {
+    "inversionista": 46,
+    "capital": "4066420.00",
+    "tasa_anual": "15.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "56.12903",
+    "fecha_inicio": "2024-12-31",
+    "fecha_vencimiento": "2026-12-31",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 90,
+  "fields": {
+    "inversionista": 30,
+    "capital": "2350000.00",
+    "tasa_anual": "15.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2024-08-31",
+    "fecha_vencimiento": "2026-08-31",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 26,
+  "fields": {
+    "inversionista": 13,
+    "capital": "1000000.00",
+    "tasa_anual": "14.40",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2026-01-05",
+    "fecha_vencimiento": "2028-01-05",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 84,
+  "fields": {
+    "inversionista": 13,
+    "capital": "1000000.00",
+    "tasa_anual": "15.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2024-10-21",
+    "fecha_vencimiento": "2026-10-21",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 87,
+  "fields": {
+    "inversionista": 39,
+    "capital": "1300000.00",
+    "tasa_anual": "16.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2024-09-30",
+    "fecha_vencimiento": "2026-08-06",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 88,
+  "fields": {
+    "inversionista": 39,
+    "capital": "3500000.00",
+    "tasa_anual": "16.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2024-09-30",
+    "fecha_vencimiento": "2026-09-30",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 40,
+  "fields": {
+    "inversionista": 67,
+    "capital": "1000000.00",
+    "tasa_anual": "13.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2026-03-17",
+    "fecha_vencimiento": "2028-03-17",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 78,
+  "fields": {
+    "inversionista": 25,
+    "capital": "380000.00",
+    "tasa_anual": "13.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "100.00000",
+    "fecha_inicio": "2024-11-09",
+    "fecha_vencimiento": "2026-11-09",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 27,
+  "fields": {
+    "inversionista": 37,
+    "capital": "1000000.00",
+    "tasa_anual": "14.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "71.42857",
+    "fecha_inicio": "2026-01-05",
+    "fecha_vencimiento": "2028-01-05",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 91,
+  "fields": {
+    "inversionista": 27,
+    "capital": "3000000.00",
+    "tasa_anual": "17.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "52.94118",
+    "fecha_inicio": "2024-08-08",
+    "fecha_vencimiento": "2026-08-08",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 67,
+  "fields": {
+    "inversionista": 39,
+    "capital": "5200000.00",
+    "tasa_anual": "16.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2025-03-10",
+    "fecha_vencimiento": "2027-03-10",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 69,
+  "fields": {
+    "inversionista": 68,
+    "capital": "3000000.00",
+    "tasa_anual": "16.75",
+    "base_calculo": 360,
+    "porcentaje_factura": "65.67164",
+    "fecha_inicio": "2026-01-29",
+    "fecha_vencimiento": "2028-01-29",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 70,
+  "fields": {
+    "inversionista": 24,
+    "capital": "2000000.00",
+    "tasa_anual": "16.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "54.54545",
+    "fecha_inicio": "2025-01-25",
+    "fecha_vencimiento": "2027-01-25",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 52,
+  "fields": {
+    "inversionista": 74,
+    "capital": "6000000.00",
+    "tasa_anual": "16.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2024-10-07",
+    "fecha_vencimiento": "2026-10-06",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 56,
+  "fields": {
+    "inversionista": 74,
+    "capital": "500000.00",
+    "tasa_anual": "16.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2024-10-06",
+    "fecha_vencimiento": "2026-08-06",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 4,
+  "fields": {
+    "inversionista": 23,
+    "capital": "1970000.00",
+    "tasa_anual": "15.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "60.00000",
+    "fecha_inicio": "2026-05-17",
+    "fecha_vencimiento": "2028-05-17",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 2,
+  "fields": {
+    "inversionista": 15,
+    "capital": "3000000.00",
+    "tasa_anual": "14.40",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2026-05-01",
+    "fecha_vencimiento": "2028-04-18",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 6,
+  "fields": {
+    "inversionista": 19,
+    "capital": "2000100.00",
+    "tasa_anual": "13.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "100.00000",
+    "fecha_inicio": "2026-04-30",
+    "fecha_vencimiento": "2028-04-30",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 8,
+  "fields": {
+    "inversionista": 27,
+    "capital": "5000000.00",
+    "tasa_anual": "16.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "54.54545",
+    "fecha_inicio": "2024-04-30",
+    "fecha_vencimiento": "2028-04-30",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 58,
+  "fields": {
+    "inversionista": 27,
+    "capital": "5000000.00",
+    "tasa_anual": "15.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "64.51613",
+    "fecha_inicio": "2025-04-14",
+    "fecha_vencimiento": "2027-04-14",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 73,
+  "fields": {
+    "inversionista": 77,
+    "capital": "500000.00",
+    "tasa_anual": "13.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2026-05-28",
+    "fecha_vencimiento": "2028-05-28",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 33,
+  "fields": {
+    "inversionista": 17,
+    "capital": "0.00",
+    "tasa_anual": "16.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2025-12-04",
+    "fecha_vencimiento": "2027-12-04",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 75,
+  "fields": {
+    "inversionista": 10,
+    "capital": "1000000.00",
+    "tasa_anual": "16.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "66.66666",
+    "fecha_inicio": "2026-06-01",
+    "fecha_vencimiento": "2028-06-01",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 7,
+  "fields": {
+    "inversionista": 36,
+    "capital": "0.00",
+    "tasa_anual": "14.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "57.14285",
+    "fecha_inicio": "2026-05-04",
+    "fecha_vencimiento": "2028-05-04",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 80,
+  "fields": {
+    "inversionista": 40,
+    "capital": "0.00",
+    "tasa_anual": "15.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2026-03-01",
+    "fecha_vencimiento": "2028-02-29",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 83,
+  "fields": {
+    "inversionista": 40,
+    "capital": "1500000.00",
+    "tasa_anual": "14.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2026-03-01",
+    "fecha_vencimiento": "2028-02-29",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 81,
+  "fields": {
+    "inversionista": 36,
+    "capital": "0.00",
+    "tasa_anual": "14.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2026-06-05",
+    "fecha_vencimiento": "2028-06-05",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 85,
+  "fields": {
+    "inversionista": 36,
+    "capital": "2000000.00",
+    "tasa_anual": "15.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2026-06-05",
+    "fecha_vencimiento": "2028-06-05",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 82,
+  "fields": {
+    "inversionista": 36,
+    "capital": "0.00",
+    "tasa_anual": "14.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2026-05-04",
+    "fecha_vencimiento": "2028-05-04",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 86,
+  "fields": {
+    "inversionista": 36,
+    "capital": "2000000.00",
+    "tasa_anual": "15.00",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2026-05-31",
+    "fecha_vencimiento": "2028-05-31",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 89,
+  "fields": {
+    "inversionista": 29,
+    "capital": "3000000.00",
+    "tasa_anual": "21.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2026-05-21",
+    "fecha_vencimiento": "2028-05-21",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.inversion",
+  "pk": 92,
+  "fields": {
+    "inversionista": 17,
+    "capital": "2000000.00",
+    "tasa_anual": "16.50",
+    "base_calculo": 360,
+    "porcentaje_factura": "0.00000",
+    "fecha_inicio": "2026-07-23",
+    "fecha_vencimiento": "2028-07-23",
+    "estado": "activo",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.movimiento",
+  "pk": 16,
+  "fields": {
+    "inversion": 80,
+    "tipo": "retiro",
+    "monto": "1500000.00",
+    "fecha": "2026-03-01",
+    "notas": "CAMBIO DE CONDICIONES",
+    "fecha_registro": "2026-06-25T22:17:29.201Z"
+  }
+},
+{
+  "model": "inversiones.movimiento",
+  "pk": 12,
+  "fields": {
+    "inversion": 22,
+    "tipo": "retiro",
+    "monto": "1000000.00",
+    "fecha": "2026-04-16",
+    "notas": "",
+    "fecha_registro": "2026-04-20T02:26:38.471Z"
+  }
+},
+{
+  "model": "inversiones.movimiento",
+  "pk": 13,
+  "fields": {
+    "inversion": 24,
+    "tipo": "retiro",
+    "monto": "500000.00",
+    "fecha": "2026-04-16",
+    "notas": "",
+    "fecha_registro": "2026-04-20T03:13:59.034Z"
+  }
+},
+{
+  "model": "inversiones.movimiento",
+  "pk": 15,
+  "fields": {
+    "inversion": 7,
+    "tipo": "retiro",
+    "monto": "2000000.00",
+    "fecha": "2026-05-31",
+    "notas": "CAMBIO DE CONDICIONES",
+    "fecha_registro": "2026-06-23T22:34:35.865Z"
+  }
+},
+{
+  "model": "inversiones.movimiento",
+  "pk": 18,
+  "fields": {
+    "inversion": 82,
+    "tipo": "retiro",
+    "monto": "2000000.00",
+    "fecha": "2026-05-31",
+    "notas": "",
+    "fecha_registro": "2026-07-01T18:34:39.035Z"
+  }
+},
+{
+  "model": "inversiones.movimiento",
+  "pk": 14,
+  "fields": {
+    "inversion": 33,
+    "tipo": "retiro",
+    "monto": "500000.00",
+    "fecha": "2026-06-01",
+    "notas": "",
+    "fecha_registro": "2026-06-22T21:06:25.140Z"
+  }
+},
+{
+  "model": "inversiones.movimiento",
+  "pk": 17,
+  "fields": {
+    "inversion": 81,
+    "tipo": "retiro",
+    "monto": "2000000.00",
+    "fecha": "2026-06-05",
+    "notas": "",
+    "fecha_registro": "2026-07-01T18:33:00.119Z"
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 730,
+  "fields": {
+    "inversionista": 33,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "38319.44",
+    "isr": "4133.33",
+    "iva": "3306.67",
+    "interes_neto": "19840.00",
+    "pago_externo": "17652.78",
+    "total_pagar": "37492.77",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.670Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 731,
+  "fields": {
+    "inversionista": 66,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "5489.58",
+    "isr": "0.00",
+    "iva": "0.00",
+    "interes_neto": "0.00",
+    "pago_externo": "5489.58",
+    "total_pagar": "5489.58",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.681Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 732,
+  "fields": {
+    "inversionista": 9,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "43270.83",
+    "isr": "4391.67",
+    "iva": "3513.33",
+    "interes_neto": "21080.00",
+    "pago_externo": "21312.50",
+    "total_pagar": "42392.50",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.692Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 733,
+  "fields": {
+    "inversionista": 8,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "35520.83",
+    "isr": "3659.72",
+    "iva": "2927.78",
+    "interes_neto": "17566.66",
+    "pago_externo": "17222.22",
+    "total_pagar": "34788.89",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.702Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 734,
+  "fields": {
+    "inversionista": 77,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "5597.22",
+    "isr": "0.00",
+    "iva": "0.00",
+    "interes_neto": "0.00",
+    "pago_externo": "5597.22",
+    "total_pagar": "5597.22",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.715Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 735,
+  "fields": {
+    "inversionista": 47,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "11176.79",
+    "isr": "1341.21",
+    "iva": "1072.97",
+    "interes_neto": "6437.83",
+    "pago_externo": "4470.72",
+    "total_pagar": "10908.55",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.724Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 736,
+  "fields": {
+    "inversionista": 43,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "9988.89",
+    "isr": "0.00",
+    "iva": "0.00",
+    "interes_neto": "0.00",
+    "pago_externo": "9988.89",
+    "total_pagar": "9988.89",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.733Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 737,
+  "fields": {
+    "inversionista": 20,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "37027.77",
+    "isr": "4477.78",
+    "iva": "3582.22",
+    "interes_neto": "21493.33",
+    "pago_externo": "14638.89",
+    "total_pagar": "36132.21",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.746Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 738,
+  "fields": {
+    "inversionista": 19,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "100751.12",
+    "isr": "20150.22",
+    "iva": "16120.18",
+    "interes_neto": "96721.08",
+    "pago_externo": "0.00",
+    "total_pagar": "96721.08",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.761Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 739,
+  "fields": {
+    "inversionista": 75,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "21975.56",
+    "isr": "0.00",
+    "iva": "0.00",
+    "interes_neto": "0.00",
+    "pago_externo": "21975.56",
+    "total_pagar": "21975.56",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.771Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 740,
+  "fields": {
+    "inversionista": 40,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "31645.84",
+    "isr": "0.00",
+    "iva": "0.00",
+    "interes_neto": "0.00",
+    "pago_externo": "31645.84",
+    "total_pagar": "31645.84",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.783Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 741,
+  "fields": {
+    "inversionista": 36,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "51666.66",
+    "isr": "0.00",
+    "iva": "0.00",
+    "interes_neto": "0.00",
+    "pago_externo": "51666.66",
+    "total_pagar": "51666.66",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.799Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 742,
+  "fields": {
+    "inversionista": 67,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "11625.00",
+    "isr": "0.00",
+    "iva": "0.00",
+    "interes_neto": "0.00",
+    "pago_externo": "11625.00",
+    "total_pagar": "11625.00",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.808Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 743,
+  "fields": {
+    "inversionista": 35,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "38750.00",
+    "isr": "3616.67",
+    "iva": "2893.33",
+    "interes_neto": "17360.00",
+    "pago_externo": "20666.67",
+    "total_pagar": "38026.67",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.817Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 744,
+  "fields": {
+    "inversionista": 42,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "13562.50",
+    "isr": "0.00",
+    "iva": "0.00",
+    "interes_neto": "0.00",
+    "pago_externo": "13562.50",
+    "total_pagar": "13562.50",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.828Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 745,
+  "fields": {
+    "inversionista": 45,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "233791.66",
+    "isr": "23422.22",
+    "iva": "18737.78",
+    "interes_neto": "112426.66",
+    "pago_externo": "116680.55",
+    "total_pagar": "229107.22",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.838Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 746,
+  "fields": {
+    "inversionista": 37,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "97305.56",
+    "isr": "10815.56",
+    "iva": "8652.44",
+    "interes_neto": "51914.67",
+    "pago_externo": "43227.78",
+    "total_pagar": "95142.45",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.847Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 747,
+  "fields": {
+    "inversionista": 13,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "25316.67",
+    "isr": "0.00",
+    "iva": "0.00",
+    "interes_neto": "0.00",
+    "pago_externo": "25316.67",
+    "total_pagar": "25316.67",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.858Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 748,
+  "fields": {
+    "inversionista": 14,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-30",
+    "dias_periodo": 30,
+    "interes_bruto": "300000.00",
+    "isr": "0.00",
+    "iva": "0.00",
+    "interes_neto": "0.00",
+    "pago_externo": "300000.00",
+    "total_pagar": "300000.00",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.868Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 749,
+  "fields": {
+    "inversionista": 44,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "56833.33",
+    "isr": "7577.78",
+    "iva": "6062.22",
+    "interes_neto": "36373.33",
+    "pago_externo": "18944.44",
+    "total_pagar": "55317.77",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.876Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 750,
+  "fields": {
+    "inversionista": 1,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "11194.44",
+    "isr": "2238.89",
+    "iva": "1791.11",
+    "interes_neto": "10746.66",
+    "pago_externo": "0.00",
+    "total_pagar": "10746.66",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.884Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 751,
+  "fields": {
+    "inversionista": 17,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "49958.33",
+    "isr": "0.00",
+    "iva": "0.00",
+    "interes_neto": "0.00",
+    "pago_externo": "49958.33",
+    "total_pagar": "49958.33",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.895Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 752,
+  "fields": {
+    "inversionista": 74,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "89770.84",
+    "isr": "0.00",
+    "iva": "0.00",
+    "interes_neto": "0.00",
+    "pago_externo": "89770.84",
+    "total_pagar": "89770.84",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.906Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 753,
+  "fields": {
+    "inversionista": 11,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "58555.56",
+    "isr": "5855.56",
+    "iva": "4684.44",
+    "interes_neto": "28106.67",
+    "pago_externo": "29277.78",
+    "total_pagar": "57384.45",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.915Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 754,
+  "fields": {
+    "inversionista": 22,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "12486.11",
+    "isr": "0.00",
+    "iva": "0.00",
+    "interes_neto": "0.00",
+    "pago_externo": "12486.11",
+    "total_pagar": "12486.11",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.923Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 755,
+  "fields": {
+    "inversionista": 30,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "31365.97",
+    "isr": "0.00",
+    "iva": "0.00",
+    "interes_neto": "0.00",
+    "pago_externo": "31365.97",
+    "total_pagar": "31365.97",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.930Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 756,
+  "fields": {
+    "inversionista": 16,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-30",
+    "dias_periodo": 30,
+    "interes_bruto": "30000.00",
+    "isr": "0.00",
+    "iva": "0.00",
+    "interes_neto": "0.00",
+    "pago_externo": "30000.00",
+    "total_pagar": "30000.00",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.941Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 757,
+  "fields": {
+    "inversionista": 68,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "43270.83",
+    "isr": "5683.33",
+    "iva": "4546.67",
+    "interes_neto": "27280.00",
+    "pago_externo": "14854.17",
+    "total_pagar": "42134.16",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.949Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 758,
+  "fields": {
+    "inversionista": 23,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "25445.83",
+    "isr": "3053.50",
+    "iva": "2442.80",
+    "interes_neto": "14656.80",
+    "pago_externo": "10178.33",
+    "total_pagar": "24835.13",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.959Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 759,
+  "fields": {
+    "inversionista": 69,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-30",
+    "dias_periodo": 30,
+    "interes_bruto": "12000.00",
+    "isr": "0.00",
+    "iva": "0.00",
+    "interes_neto": "0.00",
+    "pago_externo": "12000.00",
+    "total_pagar": "12000.00",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.968Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 760,
+  "fields": {
+    "inversionista": 15,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-30",
+    "dias_periodo": 30,
+    "interes_bruto": "36000.00",
+    "isr": "0.00",
+    "iva": "0.00",
+    "interes_neto": "0.00",
+    "pago_externo": "36000.00",
+    "total_pagar": "36000.00",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.977Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 761,
+  "fields": {
+    "inversionista": 70,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "28631.94",
+    "isr": "2927.78",
+    "iva": "2342.22",
+    "interes_neto": "14053.33",
+    "pago_externo": "13993.05",
+    "total_pagar": "28046.38",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.986Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 762,
+  "fields": {
+    "inversionista": 32,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "20666.67",
+    "isr": "1808.33",
+    "iva": "1446.67",
+    "interes_neto": "8680.00",
+    "pago_externo": "11625.00",
+    "total_pagar": "20305.00",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:58.996Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 763,
+  "fields": {
+    "inversionista": 39,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "140576.38",
+    "isr": "0.00",
+    "iva": "0.00",
+    "interes_neto": "0.00",
+    "pago_externo": "140576.38",
+    "total_pagar": "140576.38",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:59.009Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 764,
+  "fields": {
+    "inversionista": 25,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "4417.50",
+    "isr": "883.50",
+    "iva": "706.80",
+    "interes_neto": "4240.80",
+    "pago_externo": "0.00",
+    "total_pagar": "4240.80",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:59.021Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 765,
+  "fields": {
+    "inversionista": 46,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "54275.41",
+    "isr": "6092.85",
+    "iva": "4874.28",
+    "interes_neto": "29245.69",
+    "pago_externo": "23811.15",
+    "total_pagar": "53056.84",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:59.030Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 766,
+  "fields": {
+    "inversionista": 6,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "12486.11",
+    "isr": "1205.56",
+    "iva": "964.44",
+    "interes_neto": "5786.67",
+    "pago_externo": "6458.33",
+    "total_pagar": "12245.00",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:59.039Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 767,
+  "fields": {
+    "inversionista": 12,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "26694.44",
+    "isr": "0.00",
+    "iva": "0.00",
+    "interes_neto": "0.00",
+    "pago_externo": "26694.44",
+    "total_pagar": "26694.44",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:59.047Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 768,
+  "fields": {
+    "inversionista": 24,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "28416.67",
+    "isr": "3100.00",
+    "iva": "2480.00",
+    "interes_neto": "14880.00",
+    "pago_externo": "12916.67",
+    "total_pagar": "27796.67",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:59.056Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 769,
+  "fields": {
+    "inversionista": 10,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "123246.52",
+    "isr": "13304.17",
+    "iva": "10643.33",
+    "interes_neto": "63860.00",
+    "pago_externo": "56725.69",
+    "total_pagar": "120585.69",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:59.071Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 770,
+  "fields": {
+    "inversionista": 29,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "981236.11",
+    "isr": "14466.67",
+    "iva": "11573.33",
+    "interes_neto": "69440.00",
+    "pago_externo": "908902.77",
+    "total_pagar": "978342.78",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:59.085Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.estadodecuenta",
+  "pk": 771,
+  "fields": {
+    "inversionista": 27,
+    "inversion": null,
+    "periodo_inicio": "2026-07-01",
+    "periodo_fin": "2026-07-31",
+    "dias_periodo": 31,
+    "interes_bruto": "533458.34",
+    "isr": "59933.33",
+    "iva": "47946.67",
+    "interes_neto": "287680.00",
+    "pago_externo": "233791.67",
+    "total_pagar": "521471.67",
+    "estado": "generado",
+    "fecha_generado": "2026-07-27T19:14:59.101Z",
+    "notas": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 709,
+  "fields": {
+    "estado_de_cuenta": 730,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 710,
+  "fields": {
+    "estado_de_cuenta": 731,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 711,
+  "fields": {
+    "estado_de_cuenta": 732,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 712,
+  "fields": {
+    "estado_de_cuenta": 733,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 713,
+  "fields": {
+    "estado_de_cuenta": 734,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 714,
+  "fields": {
+    "estado_de_cuenta": 735,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 715,
+  "fields": {
+    "estado_de_cuenta": 736,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 716,
+  "fields": {
+    "estado_de_cuenta": 737,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 717,
+  "fields": {
+    "estado_de_cuenta": 738,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 718,
+  "fields": {
+    "estado_de_cuenta": 739,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 719,
+  "fields": {
+    "estado_de_cuenta": 740,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 720,
+  "fields": {
+    "estado_de_cuenta": 741,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 721,
+  "fields": {
+    "estado_de_cuenta": 742,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 722,
+  "fields": {
+    "estado_de_cuenta": 743,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 723,
+  "fields": {
+    "estado_de_cuenta": 744,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 724,
+  "fields": {
+    "estado_de_cuenta": 745,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 725,
+  "fields": {
+    "estado_de_cuenta": 746,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 726,
+  "fields": {
+    "estado_de_cuenta": 747,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 727,
+  "fields": {
+    "estado_de_cuenta": 748,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 728,
+  "fields": {
+    "estado_de_cuenta": 749,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 729,
+  "fields": {
+    "estado_de_cuenta": 750,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 730,
+  "fields": {
+    "estado_de_cuenta": 751,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 731,
+  "fields": {
+    "estado_de_cuenta": 752,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 732,
+  "fields": {
+    "estado_de_cuenta": 753,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 733,
+  "fields": {
+    "estado_de_cuenta": 754,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 734,
+  "fields": {
+    "estado_de_cuenta": 755,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 735,
+  "fields": {
+    "estado_de_cuenta": 756,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 736,
+  "fields": {
+    "estado_de_cuenta": 757,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 737,
+  "fields": {
+    "estado_de_cuenta": 758,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 738,
+  "fields": {
+    "estado_de_cuenta": 759,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 739,
+  "fields": {
+    "estado_de_cuenta": 760,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 740,
+  "fields": {
+    "estado_de_cuenta": 761,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 741,
+  "fields": {
+    "estado_de_cuenta": 762,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 742,
+  "fields": {
+    "estado_de_cuenta": 763,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 743,
+  "fields": {
+    "estado_de_cuenta": 764,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 744,
+  "fields": {
+    "estado_de_cuenta": 765,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 745,
+  "fields": {
+    "estado_de_cuenta": 766,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 746,
+  "fields": {
+    "estado_de_cuenta": 767,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 747,
+  "fields": {
+    "estado_de_cuenta": 768,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 748,
+  "fields": {
+    "estado_de_cuenta": 769,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 749,
+  "fields": {
+    "estado_de_cuenta": 770,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.pago",
+  "pk": 750,
+  "fields": {
+    "estado_de_cuenta": 771,
+    "metodo": "transferencia",
+    "fecha_pago": null,
+    "estado": "pendiente",
+    "folio": "",
+    "notas": "",
+    "confirmado_por": ""
+  }
+},
+{
+  "model": "inversiones.prospecto",
+  "pk": 1,
+  "fields": {
+    "nombre_completo": "ARTURO GOMEZ ABAD",
+    "telefono": "",
+    "correo": "agomez@supertiendarico.com",
+    "monto_estimado": null,
+    "promotor": 7,
+    "etapa": "inicial",
+    "notas": "",
+    "fecha_registro": "2026-05-21",
+    "convertido": false,
+    "inversionista": null
+  }
+},
+{
+  "model": "inversiones.prospecto",
+  "pk": 2,
+  "fields": {
+    "nombre_completo": "SALVADOR DIAZ CAMPOS",
+    "telefono": "",
+    "correo": "salvador_diaz15@hotmail.com",
+    "monto_estimado": null,
+    "promotor": 7,
+    "etapa": "inicial",
+    "notas": "",
+    "fecha_registro": "2026-05-21",
+    "convertido": false,
+    "inversionista": null
+  }
+},
+{
+  "model": "inversiones.prospecto",
+  "pk": 3,
+  "fields": {
+    "nombre_completo": "ELIAS ALBERTO GARCIA CANTU",
+    "telefono": "",
+    "correo": "eliasgarcia.doc@gmail.com",
+    "monto_estimado": null,
+    "promotor": 7,
+    "etapa": "inicial",
+    "notas": "",
+    "fecha_registro": "2026-05-21",
+    "convertido": false,
+    "inversionista": null
+  }
+},
+{
+  "model": "inversiones.prospecto",
+  "pk": 4,
+  "fields": {
+    "nombre_completo": "JORGE AZCUNAGA HINOJOSA",
+    "telefono": "",
+    "correo": "jorgeazcunaga@hotmail.com",
+    "monto_estimado": null,
+    "promotor": 7,
+    "etapa": "inicial",
+    "notas": "",
+    "fecha_registro": "2026-05-21",
+    "convertido": false,
+    "inversionista": null
+  }
+},
+{
+  "model": "inversiones.bugreport",
+  "pk": 15,
+  "fields": {
+    "tipo": "calculo",
+    "pagina": "/estados/Cierre de mes",
+    "descripcion": "<p>Hola, Calculo 31 días para las cuentas de los SAUZA , ue debe ser 30 días siempre.</p>",
+    "esperado": "<p><br></p>",
+    "url_actual": "https://ideaconv.site/estados/",
+    "usuario": "eduardomh70",
+    "fecha": "2026-07-24T00:57:33.238Z",
+    "resuelto": false
+  }
+},
+{
+  "model": "inversiones.bugreport",
+  "pk": 14,
+  "fields": {
+    "tipo": "otro",
+    "pagina": "/dashboard",
+    "descripcion": "<p>En icno de calendario hay aviso de 3 inversiones por vencer...</p><p>Pero no dice a cuales hace referencia.</p>",
+    "esperado": "<p><br></p>",
+    "url_actual": "https://ideaconv.site/",
+    "usuario": "eduardomh70",
+    "fecha": "2026-07-01T16:53:20.298Z",
+    "resuelto": false
+  }
+},
+{
+  "model": "inversiones.bugreport",
+  "pk": 13,
+  "fields": {
+    "tipo": "calculo",
+    "pagina": "/estados/",
+    "descripcion": "<p>INV-81 de Heriberto Rico , su calculo debe comenzar el 05 de junio 2026, y el sistema calculó 30 días</p>",
+    "esperado": "<p><br></p>",
+    "url_actual": "https://ideaconv.site/estados/",
+    "usuario": "eduardomh70",
+    "fecha": "2026-06-24T01:14:16.951Z",
+    "resuelto": false
+  }
+},
+{
+  "model": "inversiones.bugreport",
+  "pk": 12,
+  "fields": {
+    "tipo": "calculo",
+    "pagina": "/estados/",
+    "descripcion": "<p>Calvulo de Heriberto Rico Garza , debe comenzar la segunda inversión el día de inicio de la inversión y esta calculando 30 días</p>",
+    "esperado": "<p><br></p>",
+    "url_actual": "https://ideaconv.site/estados/",
+    "usuario": "eduardomh70",
+    "fecha": "2026-06-24T01:09:12.347Z",
+    "resuelto": false
+  }
+},
+{
+  "model": "inversiones.bugreport",
+  "pk": 11,
+  "fields": {
+    "tipo": "calculo",
+    "pagina": "/inversionistas/Estados de Cuenta",
+    "descripcion": "<p>Aunque el warning por ser juunio dice 30 días de calculo, el sistema lo hace a 31 dias</p>",
+    "esperado": "<p><br></p>",
+    "url_actual": "https://ideaconv.site/inversionistas/",
+    "usuario": "eduardomh70",
+    "fecha": "2026-06-22T22:04:54.752Z",
+    "resuelto": false
+  }
+},
+{
+  "model": "inversiones.notificaciondismissed",
+  "pk": 1,
+  "fields": {
+    "inversion": 95,
+    "fecha_dismissed": "2026-05-29"
+  }
+}
+]
