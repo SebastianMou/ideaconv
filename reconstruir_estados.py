@@ -30,7 +30,7 @@ EstadoDeCuenta = M('EstadoDeCuenta')
 Pago           = M('Pago')
 
 # ── CONFIG ──────────────────────────────────────────────────────────────────
-DRY_RUN     = False          # ← set to False to actually write to the database
+DRY_RUN     = True          # ← set to False to actually write to the database
 START_YEAR  = 2026
 START_MONTH = 5             # May
 END_YEAR    = date.today().year

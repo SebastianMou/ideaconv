@@ -1345,13 +1345,9 @@ def _build_estado_pdf(data):
     )
     total_isr_inv  = sum(float(i.get('retencion', 0)) for i in data.get('inversiones', []))
     total_iva_inv  = sum(float(i.get('iva_inv', 0))   for i in data.get('inversiones', []))
-    total_neto_inv = sum(
-        float(i.get('neto_factura',
-                    float(i.get('bruto_factura',
-                                float(i['interes_bruto']) * (float(i.get('porcentaje_factura', 100)) / 100)))
-                    - float(i.get('retencion', 0)) + float(i.get('iva_inv', 0))))
-        for i in data.get('inversiones', [])
-    )
+    # Real total the investor is paid = invoiced net + non-invoiced (external) part.
+    # interes_neto already holds this, so it's correct for 0%, partial, and 100% facturación.
+    total_neto_inv = sum(float(i.get('interes_neto', 0)) for i in data.get('inversiones', []))
 
     kpi_tbl = Table([
         [Paragraph(fmt(data['capital']),    kpi_val_s),
@@ -1433,14 +1429,15 @@ def _build_estado_pdf(data):
     for inv in data.get('inversiones', []):
         pct = float(inv.get('porcentaje_factura', 100)) / 100
 
-        # Every displayed value prefers an explicit key (set by _build_estado_data,
-        # and overwritable by the user's manual edits) and only falls back to the
-        # derived value when that key is absent.
-        tasa_factura  = float(inv.get('tasa_factura',  float(inv['tasa_anual']) * pct))
-        bruto_factura = float(inv.get('bruto_factura', float(inv['interes_bruto']) * pct))
+        # Show the investor's REAL interest (gross rate, gross amount, full net).
+        # ISR/IVA still reflect only the invoiced portion, so they stay 0 (shown
+        # as "-") for investors who don't invoice. This makes 0%- and partial-
+        # facturación statements show the true amount instead of zeros.
+        tasa_factura  = float(inv['tasa_anual'])
+        bruto_factura = float(inv['interes_bruto'])
         r             = float(inv.get('retencion', 0))
         iv            = float(inv.get('iva_inv',   0))
-        neto_invoice  = float(inv.get('neto_factura', bruto_factura - r + iv))
+        neto_invoice  = float(inv.get('interes_neto', bruto_factura - r + iv))
 
         totals['bruto_invoice'] = totals.get('bruto_invoice', 0) + bruto_factura
         totals['ret']          += r
@@ -2066,13 +2063,15 @@ def _aplicar_overrides(data, overrides):
         if not tocado:
             continue
 
-        # Keep the detail page consistent with the edited summary page.
-        b = float(inv['bruto_factura'])
+        # The Complemento and summary now show the investor's REAL interest
+        # (interes_bruto / interes_neto). Mirror THOSE into the collapsed detail
+        # tranche. Using bruto_factura / neto_factura here was the bug: for non-
+        # or partial-invoicing investors it overwrote the real gross with the
+        # invoiced slice — zero for 0%-facturación, half for partials.
+        b = float(inv['interes_bruto'])
         r = float(inv['retencion'])
         v = float(inv['iva_inv'])
-        n = float(inv['neto_factura'])
-        inv['interes_bruto'] = f'{b:.2f}'
-        inv['interes_neto']  = f'{n:.2f}'
+        n = float(inv['interes_neto'])
         inv['tramos'] = [{
             'tipo':         'interes',
             'fecha_inicio': data['periodo_inicio'],

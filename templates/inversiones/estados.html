@@ -1188,8 +1188,15 @@
     const btn = document.getElementById('btn-cierre-generar');
     const n = Object.keys(_cierreSeleccionados).length;
     const f = Object.keys(_cierreFijos).length;
-    let label = (n === 0) ? 'Todos' : `${n} seleccionado(s)`;
-    if (f > 0) label += ` · ${f} días fijos`;
+    let label;
+    if (n === 0) {
+      // Generating for everyone — the fixed-days note is relevant here
+      label = 'Todos';
+      if (f > 0) label += ` · ${f} días fijos`;
+    } else {
+      // Specific investors selected — only these will generate
+      label = `Solo ${n} seleccionado(s)`;
+    }
     btn.innerHTML = `<i class="bi bi-calendar-check-fill me-1"></i>Generar Cierre — ${label}`;
   }
 
