@@ -519,10 +519,17 @@
     try {
       const res  = await fetch(`/api/inversionistas/${invId}/`);
       const data = await res.json();
-      const inversiones = (data.inversiones || []).filter(inv => inv.estado === 'activo');
+      const pIniF = new Date(estado.periodo_inicio);
+      const pFinF = new Date(estado.periodo_fin);
+      const inversiones = (data.inversiones || []).filter(inv => {
+        if (inv.estado === 'activo') return true;
+        if (!inv.fecha_vencimiento) return false;
+        const fv = new Date(inv.fecha_vencimiento);
+        return fv >= pIniF && fv <= pFinF;   // vencido dentro del período (el "muñón")
+      });
 
       if (!inversiones.length) {
-        content.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--text-muted);">Sin inversiones activas.</div>';
+        content.innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:8px 0;">Sin inversiones activas.</div>';
         return;
       }
 
@@ -532,35 +539,66 @@
         const base  = parseInt(inv.base_calculo);
         const pctF  = parseFloat(inv.porcentaje_factura) / 100;
 
-        // Tranche-aware interest calculation using movimientos within the period
+                // Tranche-aware interest calculation — misma regla que el backend
+        const DAY = 86400000;
         const pInicio = new Date(estado.periodo_inicio);
         const pFin    = new Date(estado.periodo_fin);
-        const movs    = (inv.movimientos || [])
-          .map(m => ({ ...m, fecha: new Date(m.fecha) }))
-          .filter(m => m.fecha >= pInicio && m.fecha <= pFin)
-          .sort((a, b) => a.fecha - b.fecha);
 
-        // Reconstruct opening capital by reversing in-period movements
-        let capInicio = parseFloat(inv.capital);
-        movs.forEach(m => {
-          if (m.tipo === 'abono') capInicio -= parseFloat(m.monto);
-          else                    capInicio += parseFloat(m.monto);
-        });
-
-        // Walk forward through tranches
-        let bruto = 0;
-        let capActual    = capInicio;
-        let trancheStart = new Date(pInicio);
-        movs.forEach(m => {
-          if (m.fecha > trancheStart) {
-            const dias = (m.fecha - trancheStart) / 86400000;
-            if (dias > 0 && capActual > 0) bruto += capActual * (tasa / base) * dias;
+        // Inicio de ventana: renovación gana DESDE su inicio; depósito nuevo
+        // desde el día siguiente.
+        const fIni = inv.fecha_inicio ? new Date(inv.fecha_inicio) : null;
+        let efectivoInicio;
+        if (fIni) {
+          if (inv.renovacion_de) {
+            efectivoInicio = new Date(Math.max(pInicio, fIni));
+          } else {
+            const fIniMas1 = new Date(fIni); fIniMas1.setDate(fIniMas1.getDate() + 1);
+            efectivoInicio = new Date(Math.max(pInicio, fIniMas1));
           }
-          capActual += m.tipo === 'abono' ? parseFloat(m.monto) : -parseFloat(m.monto);
-          trancheStart = new Date(m.fecha);
-        });
-        const diasFinales = (pFin - trancheStart) / 86400000 + 1;
-        if (diasFinales > 0 && capActual > 0) bruto += capActual * (tasa / base) * diasFinales;
+        } else {
+          efectivoInicio = new Date(pInicio);
+        }
+
+        // Fin de ventana: gana hasta el día ANTES del vencimiento.
+        let efectivoFin;
+        if (inv.fecha_vencimiento) {
+          const fvMenos1 = new Date(inv.fecha_vencimiento);
+          fvMenos1.setDate(fvMenos1.getDate() - 1);
+          efectivoFin = new Date(Math.min(pFin, fvMenos1));
+        } else {
+          efectivoFin = new Date(pFin);
+        }
+
+        let bruto = 0;
+        if (efectivoFin >= efectivoInicio) {
+          const movs = (inv.movimientos || [])
+            .map(m => ({ ...m, fecha: new Date(m.fecha) }))
+            .filter(m => m.fecha >= pInicio && m.fecha <= pFin)
+            .sort((a, b) => a.fecha - b.fecha);
+
+          // Reconstruct opening capital by reversing in-period movements
+          let capInicio = parseFloat(inv.capital);
+          movs.forEach(m => {
+            if (m.tipo === 'abono') capInicio -= parseFloat(m.monto);
+            else                    capInicio += parseFloat(m.monto);
+          });
+
+          let capActual    = capInicio;
+          let trancheStart = new Date(efectivoInicio);
+          movs.forEach(m => {
+            const corte = new Date(Math.min(m.fecha, efectivoFin.getTime() + DAY));
+            if (corte > trancheStart) {
+              const dias = (corte - trancheStart) / DAY;
+              if (dias > 0 && capActual > 0) bruto += capActual * (tasa / base) * dias;
+            }
+            capActual += m.tipo === 'abono' ? parseFloat(m.monto) : -parseFloat(m.monto);
+            trancheStart = new Date(Math.max(m.fecha, efectivoInicio));
+          });
+          if (efectivoFin >= trancheStart) {
+            const diasFinales = (efectivoFin - trancheStart) / DAY + 1;
+            if (diasFinales > 0 && capActual > 0) bruto += capActual * (tasa / base) * diasFinales;
+          }
+        }
 
         const cap  = parseFloat(inv.capital);
         const fact  = bruto * pctF;
@@ -1435,7 +1473,14 @@
     try {
       const res  = await fetch(`/api/inversionistas/${invId}/`);
       const data = await res.json();
-      const inversiones = (data.inversiones || []).filter(inv => inv.estado === 'activo');
+      const pIniF = new Date(estado.periodo_inicio);
+      const pFinF = new Date(estado.periodo_fin);
+      const inversiones = (data.inversiones || []).filter(inv => {
+        if (inv.estado === 'activo') return true;
+        if (!inv.fecha_vencimiento) return false;
+        const fv = new Date(inv.fecha_vencimiento);
+        return fv >= pIniF && fv <= pFinF;
+      });
 
       if (!inversiones.length) {
         content.innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:8px 0;">Sin inversiones activas.</div>';
@@ -1447,35 +1492,65 @@
         const base = parseInt(inv.base_calculo);
         const pctF = parseFloat(inv.porcentaje_factura) / 100;
 
-        // Tranche-aware interest calculation using movimientos within the period
+                // Tranche-aware interest calculation — misma regla que el backend
+        const DAY = 86400000;
         const pInicio = new Date(estado.periodo_inicio);
         const pFin    = new Date(estado.periodo_fin);
-        const movs    = (inv.movimientos || [])
-          .map(m => ({ ...m, fecha: new Date(m.fecha) }))
-          .filter(m => m.fecha >= pInicio && m.fecha <= pFin)
-          .sort((a, b) => a.fecha - b.fecha);
 
-        // Reconstruct opening capital by reversing in-period movements
-        let capInicio = parseFloat(inv.capital);
-        movs.forEach(m => {
-          if (m.tipo === 'abono') capInicio -= parseFloat(m.monto);
-          else                    capInicio += parseFloat(m.monto);
-        });
-
-        // Walk forward through tranches
-        let bruto = 0;
-        let capActual    = capInicio;
-        let trancheStart = new Date(pInicio);
-        movs.forEach(m => {
-          if (m.fecha > trancheStart) {
-            const dias = (m.fecha - trancheStart) / 86400000;
-            if (dias > 0 && capActual > 0) bruto += capActual * (tasa / base) * dias;
+        // Inicio de ventana: renovación gana DESDE su inicio; depósito nuevo
+        // desde el día siguiente.
+        const fIni = inv.fecha_inicio ? new Date(inv.fecha_inicio) : null;
+        let efectivoInicio;
+        if (fIni) {
+          if (inv.renovacion_de) {
+            efectivoInicio = new Date(Math.max(pInicio, fIni));
+          } else {
+            const fIniMas1 = new Date(fIni); fIniMas1.setDate(fIniMas1.getDate() + 1);
+            efectivoInicio = new Date(Math.max(pInicio, fIniMas1));
           }
-          capActual += m.tipo === 'abono' ? parseFloat(m.monto) : -parseFloat(m.monto);
-          trancheStart = new Date(m.fecha);
-        });
-        const diasFinales = (pFin - trancheStart) / 86400000 + 1;
-        if (diasFinales > 0 && capActual > 0) bruto += capActual * (tasa / base) * diasFinales;
+        } else {
+          efectivoInicio = new Date(pInicio);
+        }
+
+        // Fin de ventana: gana hasta el día ANTES del vencimiento.
+        let efectivoFin;
+        if (inv.fecha_vencimiento) {
+          const fvMenos1 = new Date(inv.fecha_vencimiento);
+          fvMenos1.setDate(fvMenos1.getDate() - 1);
+          efectivoFin = new Date(Math.min(pFin, fvMenos1));
+        } else {
+          efectivoFin = new Date(pFin);
+        }
+
+        let bruto = 0;
+        if (efectivoFin >= efectivoInicio) {
+          const movs = (inv.movimientos || [])
+            .map(m => ({ ...m, fecha: new Date(m.fecha) }))
+            .filter(m => m.fecha >= pInicio && m.fecha <= pFin)
+            .sort((a, b) => a.fecha - b.fecha);
+
+          let capInicio = parseFloat(inv.capital);
+          movs.forEach(m => {
+            if (m.tipo === 'abono') capInicio -= parseFloat(m.monto);
+            else                    capInicio += parseFloat(m.monto);
+          });
+
+          let capActual    = capInicio;
+          let trancheStart = new Date(efectivoInicio);
+          movs.forEach(m => {
+            const corte = new Date(Math.min(m.fecha, efectivoFin.getTime() + DAY));
+            if (corte > trancheStart) {
+              const dias = (corte - trancheStart) / DAY;
+              if (dias > 0 && capActual > 0) bruto += capActual * (tasa / base) * dias;
+            }
+            capActual += m.tipo === 'abono' ? parseFloat(m.monto) : -parseFloat(m.monto);
+            trancheStart = new Date(Math.max(m.fecha, efectivoInicio));
+          });
+          if (efectivoFin >= trancheStart) {
+            const diasFinales = (efectivoFin - trancheStart) / DAY + 1;
+            if (diasFinales > 0 && capActual > 0) bruto += capActual * (tasa / base) * diasFinales;
+          }
+        }
 
         const cap  = parseFloat(inv.capital);
         const fact  = bruto * pctF;

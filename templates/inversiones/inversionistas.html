@@ -367,6 +367,10 @@
                             <div style="font-size:20px;font-weight:800;color:var(--brand-navy)">${fmtMoney(inv.capital)}</div>
                             <div style="display:flex;align-items:center;gap:8px;">
                                 <span class="badge-status ${badgeClass}">${inv.estado_display}</span>
+                                    <button onclick="renovarInversion(${inv.id}, ${invId})"
+                                    style="background:none;border:1.5px solid var(--brand-navy);color:var(--brand-navy);border-radius:7px;padding:3px 9px;cursor:pointer;font-size:12px;" title="Renovar contrato">
+                                    <i class="bi bi-arrow-repeat"></i>
+                                </button>
                                 <button onclick="eliminarInversion(${inv.id}, ${invId})"
                                     style="background:none;border:1.5px solid var(--brand-red);color:var(--brand-red);border-radius:7px;padding:3px 9px;cursor:pointer;font-size:12px;">
                                     <i class="bi bi-trash"></i>
@@ -594,6 +598,115 @@
             errMsg.textContent = 'Sin conexión al servidor.';
             errEl.style.display = 'block';
         }
+        };
+
+        showOverlay();
+        document.getElementById('convert-modal').style.display = 'block';
+    }
+
+    async function renovarInversion(invId, inversionistaId){
+        let cur = {};
+        try {
+            const r = await fetch(`/api/inversiones/${invId}/`);
+            cur = await r.json();
+        } catch { showToast('No se pudo cargar la inversión', 'x-circle-fill', '#FCA5A5'); return; }
+
+        const hoy = new Date().toISOString().split('T')[0];
+        const fRen = cur.fecha_vencimiento || hoy;
+
+        document.getElementById('cv-title').innerHTML =
+        `<i class="bi bi-arrow-repeat me-2" style="color:var(--brand-navy)"></i>Renovar Contrato`;
+        document.getElementById('cv-body').innerHTML = `
+        <div style="text-align:left">
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">
+              Se cerrará el contrato actual el día de renovación y se abrirá uno nuevo vinculado.
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div>
+                <label style="font-size:11.5px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">FECHA DE RENOVACIÓN * <span style="font-weight:400">(inicio del nuevo contrato)</span></label>
+                <input type="date" id="rn-fecha" value="${fRen}" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;">
+              </div>
+              <div style="display:flex;gap:10px;">
+                <div style="flex:1;">
+                  <label style="font-size:11.5px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">CAPITAL ($)</label>
+                  <input type="text" id="rn-capital" value="${cur.capital||''}" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;">
+                </div>
+                <div style="flex:1;">
+                  <label style="font-size:11.5px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">TASA ANUAL (%)</label>
+                  <input type="text" id="rn-tasa" value="${cur.tasa_anual||''}" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;">
+                </div>
+              </div>
+              <div style="display:flex;gap:10px;">
+                <div style="flex:1;">
+                  <label style="font-size:11.5px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">% A FACTURAR</label>
+                  <input type="text" id="rn-factura" value="${cur.porcentaje_factura||'100'}" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;">
+                </div>
+                <div style="flex:1;">
+                  <label style="font-size:11.5px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">DURACIÓN</label>
+                  <select id="rn-duracion" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;">
+                    <option value="6">6 meses</option>
+                    <option value="12">12 meses</option>
+                    <option value="18">18 meses</option>
+                    <option value="24" selected>24 meses</option>
+                    <option value="36">36 meses</option>
+                    <option value="0">Sin vencimiento</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label style="font-size:11.5px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">NUEVO VENCIMIENTO</label>
+                <input type="date" id="rn-vencimiento" readonly style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;opacity:.7;">
+              </div>
+            </div>
+            <div id="rn-error" style="display:none;background:#FDECEA;border:1px solid var(--brand-red);border-radius:8px;padding:9px 12px;font-size:12.5px;color:var(--brand-red);margin-top:10px;">
+              <i class="bi bi-exclamation-circle me-1"></i><span id="rn-error-msg"></span>
+            </div>
+        </div>`;
+
+        const calcVto = () => {
+            const ini = document.getElementById('rn-fecha').value;
+            const dur = parseInt(document.getElementById('rn-duracion').value);
+            const el  = document.getElementById('rn-vencimiento');
+            if(!ini || dur === 0){ el.value=''; return; }
+            const d = new Date(ini); d.setMonth(d.getMonth()+dur);
+            el.value = d.toISOString().split('T')[0];
+        };
+        document.getElementById('rn-fecha').oninput = calcVto;
+        document.getElementById('rn-duracion').onchange = calcVto;
+        calcVto();
+
+        document.getElementById('cv-confirm-btn').style.background = 'var(--brand-navy)';
+        document.getElementById('cv-confirm-btn').innerHTML = '<i class="bi bi-arrow-repeat me-1"></i>Renovar';
+        document.getElementById('cv-confirm-btn').onclick = async () => {
+            const fecha   = document.getElementById('rn-fecha').value;
+            const capital = document.getElementById('rn-capital').value.replace(/,/g,'');
+            const tasa    = document.getElementById('rn-tasa').value;
+            const factura = document.getElementById('rn-factura').value || 100;
+            const venc    = document.getElementById('rn-vencimiento').value || null;
+            const errEl   = document.getElementById('rn-error');
+            const errMsg  = document.getElementById('rn-error-msg');
+            if(!fecha){ errMsg.textContent='La fecha de renovación es obligatoria.'; errEl.style.display='block'; return; }
+            try{
+                const res = await fetch(`/api/inversiones/${invId}/renovar/`, {
+                    method:'POST',
+                    headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},
+                    body: JSON.stringify({
+                        fecha_renovacion: fecha,
+                        capital, tasa_anual: tasa,
+                        porcentaje_factura: factura,
+                        fecha_vencimiento: venc
+                    })
+                });
+                if(res.ok){
+                    closeModal();
+                    showToast('Contrato renovado ✓', 'check-circle-fill', '#1CB87E');
+                    toggleInversiones(inversionistaId, null);
+                } else {
+                    const d = await res.json();
+                    errMsg.textContent = d.error || JSON.stringify(d);
+                    errEl.style.display = 'block';
+                }
+            } catch { errMsg.textContent='Sin conexión al servidor.'; errEl.style.display='block'; }
         };
 
         showOverlay();

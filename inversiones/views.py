@@ -319,6 +319,61 @@ def inversion_detail(request, pk):
         inversion.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+@api_view(['POST'])
+def renovar_inversion(request, pk):
+    """
+    POST /api/inversiones/<pk>/renovar/
+    Cierra el contrato que vence y abre una renovación vinculada.
+    Body: {
+      fecha_renovacion,      # obligatorio: inicio del nuevo = fin del anterior
+      capital?,              # default: capital anterior
+      tasa_anual?,           # default: tasa anterior
+      porcentaje_factura?,   # default: la anterior
+      base_calculo?,         # default: la anterior
+      fecha_vencimiento?     # nuevo vencimiento (opcional)
+    }
+    """
+    from datetime import date
+    old = get_object_or_404(Inversion, pk=pk)
+
+    fecha_renovacion = request.data.get('fecha_renovacion')
+    if not fecha_renovacion:
+        return Response({'error': 'Se requiere fecha_renovacion'},
+                        status=status.HTTP_400_BAD_REQUEST)
+    f_ren = date.fromisoformat(str(fecha_renovacion))
+
+    capital  = Decimal(str(request.data.get('capital', old.capital)))
+    tasa     = Decimal(str(request.data.get('tasa_anual', old.tasa_anual)))
+    pct_fact = Decimal(str(request.data.get('porcentaje_factura', old.porcentaje_factura)))
+    base     = int(request.data.get('base_calculo', old.base_calculo))
+    new_vto  = request.data.get('fecha_vencimiento') or None
+
+    # Cierra el contrato que vence en el día de renovación
+    old.fecha_vencimiento = f_ren
+    old.estado = 'vencido'
+    old.save(update_fields=['fecha_vencimiento', 'estado'])
+
+    # Abre la renovación vinculada
+    nueva = Inversion.objects.create(
+        inversionista=old.inversionista,
+        capital=capital,
+        tasa_anual=tasa,
+        base_calculo=base,
+        porcentaje_factura=pct_fact,
+        fecha_inicio=f_ren,
+        fecha_vencimiento=date.fromisoformat(str(new_vto)) if new_vto else None,
+        estado='activo',
+        renovacion_de=old,
+        numero_renovacion=(old.numero_renovacion or 0) + 1,
+    )
+
+    return Response({
+        'message': f'Renovación creada para {old.inversionista.nombre_completo}',
+        'inversion_anterior': old.id,
+        'inversion_nueva': nueva.id,
+        'numero_renovacion': nueva.numero_renovacion,
+    }, status=status.HTTP_201_CREATED)
+
 @api_view(['GET', 'POST'])
 def movimientos_list(request, inversion_pk):
     """
@@ -564,7 +619,9 @@ def generar_estados_todos(request):
             omitidos.append(inversionista.nombre_completo)
             continue
 
-        inversiones_activas = inversionista.inversiones.filter(estado='activo')
+        inversiones_activas = inversionista.inversiones.filter(
+            Q(estado='activo') | Q(fecha_vencimiento__range=[p_inicio, p_fin])
+        )
 
         total_bruto   = Decimal('0')
         total_isr     = Decimal('0')
@@ -656,7 +713,10 @@ def generar_estado_inversionista(request):
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    inversiones_activas = inversionista.inversiones.filter(estado='activo')
+    inversiones_activas = inversionista.inversiones.filter(
+        Q(estado='activo') | Q(fecha_vencimiento__range=[p_inicio, p_fin])
+    )
+
     if not inversiones_activas.exists():
         return Response(
             {'error': f'{inversionista.nombre_completo} no tiene inversiones activas'},
@@ -738,18 +798,33 @@ def _calcular_interes_con_movimientos(inversion, periodo_inicio, periodo_fin):
     p_inicio = periodo_inicio if isinstance(periodo_inicio, date) else date.fromisoformat(str(periodo_inicio))
     p_fin    = periodo_fin    if isinstance(periodo_fin,    date) else date.fromisoformat(str(periodo_fin))
 
-    # Mid-period start: interest accrues from the DAY AFTER the investment's
-    # start date (the deposit day itself does not earn). Investments already
-    # running before the period clip to the period start, so nothing changes.
+    # ── Inicio de la ventana ──
+    # Una RENOVACIÓN es dinero continuo (rollover): gana DESDE su fecha de
+    # inicio (el día de renovación). Un depósito nuevo usa la regla de fecha
+    # valor: gana a partir del DÍA SIGUIENTE al depósito.
     if inversion.fecha_inicio:
-        efectivo_inicio = max(p_inicio, inversion.fecha_inicio + timedelta(days=1))
+        if getattr(inversion, 'renovacion_de_id', None):
+            efectivo_inicio = max(p_inicio, inversion.fecha_inicio)
+        else:
+            efectivo_inicio = max(p_inicio, inversion.fecha_inicio + timedelta(days=1))
     else:
         efectivo_inicio = p_inicio
+
+    # ── Fin de la ventana ──
+    # El contrato deja de generar en su vencimiento. El día de vencimiento es
+    # el primer día de la renovación, así que gana hasta el DÍA ANTERIOR.
+    if inversion.fecha_vencimiento:
+        efectivo_fin = min(p_fin, inversion.fecha_vencimiento - timedelta(days=1))
+    else:
+        efectivo_fin = p_fin
+
+    # Contrato no activo en esta ventana
+    if efectivo_fin < efectivo_inicio:
+        return Decimal('0.00')
 
     tasa = inversion.tasa_anual / Decimal('100')
     base = Decimal(str(inversion.base_calculo))
 
-    # Get all movements within the period, sorted chronologically
     movimientos = list(
         inversion.movimientos.filter(
             fecha__gte=p_inicio,
@@ -757,29 +832,27 @@ def _calcular_interes_con_movimientos(inversion, periodo_inicio, periodo_fin):
         ).order_by('fecha')
     )
 
-    # Reconstruct capital at the START of the period:
-    # inversion.capital is the balance AFTER all these movements,
-    # so we reverse them to get the opening balance.
+    # Capital de apertura: inversion.capital es el saldo DESPUÉS de los
+    # movimientos, se revierten para obtener el saldo inicial.
     capital_inicio = inversion.capital
     for mov in movimientos:
         if mov.tipo == 'abono':
-            capital_inicio -= mov.monto   # undo the abono
+            capital_inicio -= mov.monto
         else:
-            capital_inicio += mov.monto   # undo the retiro
+            capital_inicio += mov.monto
 
-    # Build tranches walking forward from period start
     tranches        = []
     capital_actual  = capital_inicio
     tranche_start   = efectivo_inicio
 
     for mov in movimientos:
-        # Close tranche up to the day before this movement
-        if mov.fecha > tranche_start:
-            dias_t = Decimal(str((mov.fecha - tranche_start).days))
+        # Cierra el tramo hasta el día anterior al movimiento, sin pasar del fin
+        corte = min(mov.fecha, efectivo_fin + timedelta(days=1))
+        if corte > tranche_start:
+            dias_t = Decimal(str((corte - tranche_start).days))
             if dias_t > 0 and capital_actual > 0:
                 tranches.append((capital_actual, dias_t))
 
-        # Apply movement to get new capital
         if mov.tipo == 'abono':
             capital_actual += mov.monto
         else:
@@ -787,12 +860,12 @@ def _calcular_interes_con_movimientos(inversion, periodo_inicio, periodo_fin):
 
         tranche_start = max(mov.fecha, efectivo_inicio)
 
-    # Final tranche: from last movement date to period end (inclusive)
-    dias_finales = Decimal(str((p_fin - tranche_start).days + 1))
-    if dias_finales > 0 and capital_actual > 0:
-        tranches.append((capital_actual, dias_finales))
+    # Tramo final: hasta efectivo_fin (inclusive)
+    if efectivo_fin >= tranche_start:
+        dias_finales = Decimal(str((efectivo_fin - tranche_start).days + 1))
+        if dias_finales > 0 and capital_actual > 0:
+            tranches.append((capital_actual, dias_finales))
 
-    # Sum interest across all tranches
     interes_bruto = Decimal('0')
     for capital_t, dias_t in tranches:
         interes_bruto += capital_t * (tasa / base) * dias_t
@@ -1848,7 +1921,10 @@ def _build_estado_data(estado, inv_obj, overrides=None):
     }
 
     # Build per-investment rows — summary page (page 1)
-    inversiones_activas = inv_obj.inversiones.filter(estado='activo').order_by('id')
+    inversiones_activas = inv_obj.inversiones.filter(
+        Q(estado='activo') |
+        Q(fecha_vencimiento__range=[estado.periodo_inicio, estado.periodo_fin])
+    ).order_by('id')
     total_capital = sum(inv.capital for inv in inversiones_activas)
     data['capital'] = str(total_capital)
 
@@ -1867,12 +1943,23 @@ def _build_estado_data(estado, inv_obj, overrides=None):
         p_ini   = estado.periodo_inicio if isinstance(estado.periodo_inicio, _date) else _date.fromisoformat(str(estado.periodo_inicio))
         p_fin_d = estado.periodo_fin    if isinstance(estado.periodo_fin,    _date) else _date.fromisoformat(str(estado.periodo_fin))
 
-        # Same mid-period-start rule as the interest calc
+        # Misma regla que el cálculo de interés: renovación gana desde su
+        # inicio; depósito nuevo desde el día siguiente.
         if inversion.fecha_inicio:
-            efectivo_inicio_inv = max(p_ini, inversion.fecha_inicio + _td(days=1))
+            if getattr(inversion, 'renovacion_de_id', None):
+                efectivo_inicio_inv = max(p_ini, inversion.fecha_inicio)
+            else:
+                efectivo_inicio_inv = max(p_ini, inversion.fecha_inicio + _td(days=1))
         else:
             efectivo_inicio_inv = p_ini
-        dias = max((p_fin_d - efectivo_inicio_inv).days + 1, 0)
+
+        # Fin de ventana: gana hasta el día ANTES del vencimiento.
+        if inversion.fecha_vencimiento:
+            efectivo_fin_inv = min(p_fin_d, inversion.fecha_vencimiento - _td(days=1))
+        else:
+            efectivo_fin_inv = p_fin_d
+
+        dias = max((efectivo_fin_inv - efectivo_inicio_inv).days + 1, 0)
 
         movs_periodo = list(inversion.movimientos.filter(
             fecha__gte=p_ini, fecha__lte=p_fin_d
@@ -1891,13 +1978,14 @@ def _build_estado_data(estado, inv_obj, overrides=None):
         base_d  = Decimal(str(inversion.base_calculo))
 
         for _m in movs_periodo:
-            if _m.fecha > t_start:
-                dias_t = (_m.fecha - t_start).days
+            corte = min(_m.fecha, efectivo_fin_inv + _td(days=1))
+            if corte > t_start:
+                dias_t = (corte - t_start).days
                 b_t   = float(cap_t * (tasa_d / base_d) * Decimal(str(dias_t)))
                 f_t   = b_t * pct_fact; isr_t = f_t * 0.20; iva_t = f_t * 0.16
                 tramos_inv.append({
                     'tipo': 'interes',
-                    'fecha_inicio': str(t_start), 'fecha_fin': str(_m.fecha - _td(days=1)),
+                    'fecha_inicio': str(t_start), 'fecha_fin': str(corte - _td(days=1)),
                     'dias': dias_t, 'capital': str(cap_t),
                     'interes_bruto': f'{b_t:.2f}', 'retencion': f'{isr_t:.2f}',
                     'iva': f'{iva_t:.2f}',
@@ -1910,17 +1998,18 @@ def _build_estado_data(estado, inv_obj, overrides=None):
             cap_t   = cap_t + _m.monto if _m.tipo == 'abono' else cap_t - _m.monto
             t_start = max(_m.fecha, efectivo_inicio_inv)
 
-        dias_f = (p_fin_d - t_start).days + 1
-        b_f = float(cap_t * (tasa_d / base_d) * Decimal(str(dias_f)))
-        f_f = b_f * pct_fact; isr_f = f_f * 0.20; iva_f = f_f * 0.16
-        tramos_inv.append({
-            'tipo': 'interes',
-            'fecha_inicio': str(t_start), 'fecha_fin': str(p_fin_d),
-            'dias': dias_f, 'capital': str(cap_t),
-            'interes_bruto': f'{b_f:.2f}', 'retencion': f'{isr_f:.2f}',
-            'iva': f'{iva_f:.2f}',
-            'interes_neto': f'{f_f - isr_f + iva_f + b_f*(1-pct_fact):.2f}',
-        })
+        if efectivo_fin_inv >= t_start:
+            dias_f = (efectivo_fin_inv - t_start).days + 1
+            b_f = float(cap_t * (tasa_d / base_d) * Decimal(str(dias_f)))
+            f_f = b_f * pct_fact; isr_f = f_f * 0.20; iva_f = f_f * 0.16
+            tramos_inv.append({
+                'tipo': 'interes',
+                'fecha_inicio': str(t_start), 'fecha_fin': str(efectivo_fin_inv),
+                'dias': dias_f, 'capital': str(cap_t),
+                'interes_bruto': f'{b_f:.2f}', 'retencion': f'{isr_f:.2f}',
+                'iva': f'{iva_f:.2f}',
+                'interes_neto': f'{f_f - isr_f + iva_f + b_f*(1-pct_fact):.2f}',
+            })
 
         inversiones_pdf.append({
             'folio':             f'INV-{inversion.id}',
@@ -2237,7 +2326,10 @@ def enviar_estados_todos(request):
             'total_pagar':    str(estado.total_pagar),
         }
 
-        inversiones_activas = inv_obj.inversiones.filter(estado='activo').order_by('id')
+        inversiones_activas = inv_obj.inversiones.filter(
+            Q(estado='activo') |
+            Q(fecha_vencimiento__range=[estado.periodo_inicio, estado.periodo_fin])
+        ).order_by('id')
         total_capital = sum(inv.capital for inv in inversiones_activas)
         data['capital'] = str(total_capital)
 
@@ -2245,10 +2337,17 @@ def enviar_estados_todos(request):
         for inversion in inversiones_activas:
             from datetime import timedelta as _td
             if inversion.fecha_inicio:
-                _ef = max(estado.periodo_inicio, inversion.fecha_inicio + _td(days=1))
+                if getattr(inversion, 'renovacion_de_id', None):
+                    _ef = max(estado.periodo_inicio, inversion.fecha_inicio)
+                else:
+                    _ef = max(estado.periodo_inicio, inversion.fecha_inicio + _td(days=1))
             else:
                 _ef = estado.periodo_inicio
-            dias = max((estado.periodo_fin - _ef).days + 1, 0)
+            if inversion.fecha_vencimiento:
+                _ef_fin = min(estado.periodo_fin, inversion.fecha_vencimiento - _td(days=1))
+            else:
+                _ef_fin = estado.periodo_fin
+            dias = max((_ef_fin - _ef).days + 1, 0)
             pct_fact = float(inversion.porcentaje_factura) / 100
             bruto_i  = float(_calcular_interes_con_movimientos(
                 inversion, estado.periodo_inicio, estado.periodo_fin

@@ -37,10 +37,16 @@ class InversionSerializer(serializers.ModelSerializer):
     estado_display = serializers.CharField(source='get_estado_display', read_only=True)
     base_display = serializers.CharField(source='get_base_calculo_display', read_only=True)
     movimientos = MovimientoSerializer(many=True, read_only=True)
+    folio_display = serializers.SerializerMethodField()
 
     class Meta:
         model = Inversion
         fields = '__all__'
+
+    def get_folio_display(self, obj):
+        if obj.numero_renovacion:
+            return f'INV-{obj.id} · Renovación {obj.numero_renovacion:03d}'
+        return f'INV-{obj.id}'
 
 class InversionistaSerializer(serializers.ModelSerializer):
     promotor_nombre = serializers.CharField(source='promotor.nombre', read_only=True)

@@ -142,6 +142,14 @@ class Inversion(models.Model):
     estado = models.CharField(max_length=15, choices=ESTADO_CHOICES, default='activo')
     notas = models.TextField(blank=True)
 
+    # ── Renovación / cadena de contratos ──
+    renovacion_de = models.ForeignKey(
+        'self', null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='renovaciones'
+    )
+    numero_renovacion = models.PositiveIntegerField(default=0)
+
     @property
     def porcentaje_externo(self):
         return 100 - self.porcentaje_factura

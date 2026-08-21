@@ -27,6 +27,7 @@ urlpatterns = [
     # ── Inversiones ──
     path('api/inversiones/',                              views.inversiones_list,  name='api-inversiones-list'),
     path('api/inversiones/<int:pk>/',                     views.inversion_detail,  name='api-inversion-detail'),
+    path('api/inversiones/<int:pk>/renovar/',             views.renovar_inversion, name='api-renovar-inversion'),
     path('api/inversiones/<int:inversion_pk>/movimientos/', views.movimientos_list),
 
     # ── Movimientos ──
