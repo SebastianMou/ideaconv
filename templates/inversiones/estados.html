@@ -600,7 +600,7 @@
           }
         }
 
-        const cap  = parseFloat(inv.capital);
+        const cap  = inv.estado === 'vencido' ? 0 : parseFloat(inv.capital);
         const fact  = bruto * pctF;
         const isr   = fact * 0.20;
         const iva   = fact * 0.16;
@@ -1552,7 +1552,7 @@
           }
         }
 
-        const cap  = parseFloat(inv.capital);
+        const cap  = inv.estado === 'vencido' ? 0 : parseFloat(inv.capital);
         const fact  = bruto * pctF;
         const isr   = fact * 0.20;
         const iva   = fact * 0.16;

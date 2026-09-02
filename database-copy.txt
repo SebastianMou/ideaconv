@@ -1,0 +1,44 @@
+The fix: force the dump to read production explicitly
+
+Putting DATABASE_URL=... on the same line as the command guarantees it hits Railway no matter what .env says. No ambiguity this time.
+
+1. Prove which DB is which — run both, compare:
+
+bash
+# PRODUCTION (read-only)
+DATABASE_URL="postgresql://postgres:csQSAsXlInLqcZpMiEKgkhgLFUuhFgnx@gondola.proxy.rlwy.net:47290/railway" \
+python manage.py shell -c "from inversiones.models import Inversionista, Inversion, EstadoDeCuenta; print('PROD:', Inversionista.objects.count(), Inversion.objects.count(), EstadoDeCuenta.objects.count())"
+
+# LOCAL
+python manage.py shell -c "from inversiones.models import Inversionista, Inversion, EstadoDeCuenta; print('LOCAL:', Inversionista.objects.count(), Inversion.objects.count(), EstadoDeCuenta.objects.count())"
+
+If those two lines differ, the earlier snapshot was indeed the wrong DB (expected). If they're identical, the data already matches and the "difference" you saw is something else — tell me what specifically looked off.
+
+2. Re-dump, forcing production, with a clear filename:
+
+bash
+DATABASE_URL="postgresql://postgres:csQSAsXlInLqcZpMiEKgkhgLFUuhFgnx@gondola.proxy.rlwy.net:47290/railway" \
+python manage.py dumpdata \
+  --natural-primary --natural-foreign \
+  --exclude contenttypes --exclude auth.permission \
+  --exclude admin.logentry --exclude sessions.session \
+  --indent 2 \
+  --output prod_from_railway.json
+
+3. Confirm you're on local SQLite before wiping anything:
+
+bash
+python manage.py shell -c "from django.db import connection; print(connection.settings_dict['ENGINE'], connection.settings_dict['NAME'])"
+
+Must print sqlite3 and .../db.sqlite3. If it doesn't, stop.
+
+4. Load the correct snapshot into local:
+
+bash
+python manage.py flush --no-input
+python manage.py loaddata prod_from_railway.json
+
+5. Verify local now matches the PROD line from step 1:
+
+bash
+python manage.py shell -c "from inversiones.models import Inversionista, Inversion, EstadoDeCuenta; print('LOCAL:', Inversionista.objects.count(), Inversion.objects.count(), EstadoDeCuenta.objects.count())"

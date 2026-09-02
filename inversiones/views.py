@@ -1925,7 +1925,10 @@ def _build_estado_data(estado, inv_obj, overrides=None):
         Q(estado='activo') |
         Q(fecha_vencimiento__range=[estado.periodo_inicio, estado.periodo_fin])
     ).order_by('id')
-    total_capital = sum(inv.capital for inv in inversiones_activas)
+    # Saldo = solo capital de inversiones ACTIVAS (no sumar vencidas).
+    total_capital = sum(
+        inv.capital for inv in inversiones_activas if inv.estado == 'activo'
+    )
     data['capital'] = str(total_capital)
 
     inversiones_pdf = []
@@ -2330,7 +2333,10 @@ def enviar_estados_todos(request):
             Q(estado='activo') |
             Q(fecha_vencimiento__range=[estado.periodo_inicio, estado.periodo_fin])
         ).order_by('id')
-        total_capital = sum(inv.capital for inv in inversiones_activas)
+        # Saldo = solo capital de inversiones ACTIVAS (no sumar vencidas).
+        total_capital = sum(
+            inv.capital for inv in inversiones_activas if inv.estado == 'activo'
+        )
         data['capital'] = str(total_capital)
 
         inversiones_pdf = []
@@ -2359,7 +2365,7 @@ def enviar_estados_todos(request):
 
             inversiones_pdf.append({
                 'folio':             f'INV-{inversion.id}',
-                'capital':           str(inversion.capital),
+                'capital':           str(inversion.capital) if inversion.estado == 'activo' else '0',
                 'tasa_anual':        str(inversion.tasa_anual),
                 'base_calculo':      inversion.base_calculo,
                 'fecha_inicio':      str(inversion.fecha_inicio),
