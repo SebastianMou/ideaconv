@@ -1411,9 +1411,12 @@ def _build_estado_pdf(data):
  
     total_isr_inv  = sum(float(i.get('retencion', 0)) for i in data.get('inversiones', []))
     total_iva_inv  = sum(float(i.get('iva_inv', 0))   for i in data.get('inversiones', []))
-    # Real total the investor is paid = invoiced net + non-invoiced (external) part.
-    # interes_neto already holds this, so it's correct for 0%, partial, and 100% facturación.
-    total_neto_inv = sum(float(i.get('interes_neto', 0)) for i in data.get('inversiones', []))
+    # Real total interest to pay across all investments regardless of tax invoice percentage
+    total_neto_inv = sum(
+        float(i.get('interes_neto', 0)) + float(i.get('pago_externo', 0)) 
+        if 'pago_externo' in i else float(i.get('interes_bruto', 0)) - float(i.get('retencion', 0)) + float(i.get('iva_inv', 0))
+        for i in data.get('inversiones', [])
+    ) if data.get('inversiones') else float(data.get('total_pagar', 0))
 
     kpi_tbl = Table([
         [Paragraph(fmt(data['capital']),    kpi_val_s),
@@ -1491,32 +1494,30 @@ def _build_estado_pdf(data):
     totals = {'bruto': 0.0, 'ret': 0.0, 'iva': 0.0, 'neto': 0.0, 'neto_invoice': 0.0}
  
     for inv in data.get('inversiones', []):
-        pct = float(inv.get('porcentaje_factura', 100)) / 100
-
-        # Show the investor's REAL interest (gross rate, gross amount, full net).
-        # ISR/IVA still reflect only the invoiced portion, so they stay 0 (shown
-        # as "-") for investors who don't invoice. This makes 0%- and partial-
-        # facturación statements show the true amount instead of zeros.
-        tasa_factura  = float(inv['tasa_anual'])
-        bruto_factura = float(inv['interes_bruto'])
+        tasa_anual   = float(inv.get('tasa_anual', 0))
+        interes_bruto = float(inv.get('interes_bruto', 0))
         r             = float(inv.get('retencion', 0))
         iv            = float(inv.get('iva_inv',   0))
-        neto_invoice  = float(inv.get('interes_neto', bruto_factura - r + iv))
+        pago_ext      = float(inv.get('pago_externo', 0))
+        
+        # Calculate net payout taking both invoice portion and external payment into account
+        neto_total    = float(inv.get('interes_neto', 0)) + pago_ext if 'pago_externo' in inv else (interes_bruto - r + iv)
+        dias_plazo    = str(inv.get('dias', data.get('dias_periodo', 0)))
 
-        totals['bruto_invoice'] = totals.get('bruto_invoice', 0) + bruto_factura
+        totals['bruto_invoice'] = totals.get('bruto_invoice', 0) + interes_bruto
         totals['ret']          += r
         totals['iva']          += iv
-        totals['neto_invoice'] += neto_invoice
+        totals['neto_invoice'] += neto_total
 
         rows.append([
-            Paragraph(inv['folio'],              vbl_s),
-            Paragraph(fmt(inv['capital']),       val_s),
-            Paragraph(str(inv['dias']),          val_s),
-            Paragraph(f'{tasa_factura:.2f} %',   val_s),
-            Paragraph(fmt(bruto_factura),        val_s),
+            Paragraph(str(inv.get('folio', '#1')), vbl_s),
+            Paragraph(fmt(inv.get('capital', 0)), val_s),
+            Paragraph(dias_plazo,                 val_s),
+            Paragraph(f'{tasa_anual:.2f} %',      val_s),
+            Paragraph(fmt(interes_bruto),         val_s),
             Paragraph('-' if r  == 0 else fmt(r),  val_s),
             Paragraph('-' if iv == 0 else fmt(iv), val_s),
-            Paragraph(fmt(neto_invoice),         vbl_s),
+            Paragraph(fmt(neto_total),            vbl_s),
         ])
  
     rows.append([
