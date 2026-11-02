@@ -589,6 +589,7 @@ def generar_estados_todos(request):
     # they just override the day count for those investors.
     inversionistas = Inversionista.objects.filter(
         inversiones__estado='activo',
+        inversiones__porcentaje_factura__gt=0,
         eliminado=False
     ).distinct()
     if selected_ids:
@@ -620,33 +621,21 @@ def generar_estados_todos(request):
             continue
 
         inversiones_activas = inversionista.inversiones.filter(
-            Q(estado='activo') | Q(fecha_vencimiento__range=[p_inicio, p_fin])
+            Q(estado='activo') | Q(fecha_vencimiento__range=[p_inicio, p_fin]),
+            porcentaje_factura__gt=0,
         )
+        if not inversiones_activas.exists():
+            continue
 
-        total_bruto   = Decimal('0')
-        total_isr     = Decimal('0')
-        total_iva     = Decimal('0')
+        total_bruto, total_isr, total_iva = _totales_facturados(
+            inversiones_activas, p_inicio, p_fin
+        )
+        interes_neto  = total_bruto - total_isr + total_iva
+        total_pagar   = interes_neto
         total_externo = Decimal('0')
 
-        for inv in inversiones_activas:
-            pct_factura = inv.porcentaje_factura / Decimal('100')
-            pct_externo = Decimal('1') - pct_factura
-
-            bruto_inv   = _calcular_interes_con_movimientos(inv, p_inicio, p_fin)
-            fact_inv    = bruto_inv * pct_factura
-            isr_inv     = fact_inv * Decimal('0.20')
-            iva_inv     = fact_inv * Decimal('0.16')
-            externo_inv = bruto_inv * pct_externo
-
-            total_bruto   += bruto_inv
-            total_isr     += isr_inv
-            total_iva     += iva_inv
-            total_externo += externo_inv
-
-        subtotal_fact = (total_bruto - total_externo) - total_isr
-        total_fact    = subtotal_fact + total_iva
-        interes_neto  = subtotal_fact + total_iva
-        total_pagar   = total_fact + total_externo
+        if total_bruto <= 0:
+            continue
 
         estado = EstadoDeCuenta.objects.create(
             inversionista=inversionista,
@@ -714,39 +703,28 @@ def generar_estado_inversionista(request):
         )
 
     inversiones_activas = inversionista.inversiones.filter(
-        Q(estado='activo') | Q(fecha_vencimiento__range=[p_inicio, p_fin])
+        Q(estado='activo') | Q(fecha_vencimiento__range=[p_inicio, p_fin]),
+        porcentaje_factura__gt=0,
     )
 
     if not inversiones_activas.exists():
         return Response(
-            {'error': f'{inversionista.nombre_completo} no tiene inversiones activas'},
+            {'error': f'{inversionista.nombre_completo} no tiene inversiones facturables'},
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    total_bruto   = Decimal('0')
-    total_isr     = Decimal('0')
-    total_iva     = Decimal('0')
+    total_bruto, total_isr, total_iva = _totales_facturados(
+        inversiones_activas, periodo_inicio, periodo_fin
+    )
+    interes_neto  = total_bruto - total_isr + total_iva
+    total_pagar   = interes_neto
     total_externo = Decimal('0')
 
-    for inv in inversiones_activas:
-        pct_factura = inv.porcentaje_factura / Decimal('100')
-        pct_externo = Decimal('1') - pct_factura
-
-        bruto_inv   = _calcular_interes_con_movimientos(inv, periodo_inicio, periodo_fin)
-        fact_inv    = bruto_inv * pct_factura
-        isr_inv     = fact_inv * Decimal('0.20')
-        iva_inv     = fact_inv * Decimal('0.16')
-        externo_inv = bruto_inv * pct_externo
-
-        total_bruto   += bruto_inv
-        total_isr     += isr_inv
-        total_iva     += iva_inv
-        total_externo += externo_inv
-
-    subtotal_fact = (total_bruto - total_externo) - total_isr
-    total_fact    = subtotal_fact + total_iva
-    interes_neto  = subtotal_fact + total_iva
-    total_pagar   = total_fact + total_externo
+    if total_bruto <= 0:
+        return Response(
+            {'error': f'{inversionista.nombre_completo} no tiene interés facturable en este período'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     estado = EstadoDeCuenta.objects.create(
         inversionista=inversionista,
@@ -778,6 +756,24 @@ def generar_estado_inversionista(request):
         'interes_bruto': str(total_bruto.quantize(Decimal('0.01'))),
         'inversiones_calculadas': inversiones_activas.count(),
     })
+
+
+def _totales_facturados(inversiones, periodo_inicio, periodo_fin):
+    """
+    Suma SOLO la parte facturada de cada inversión.
+    La parte externa (OTROS) se ignora por completo.
+    Returns: (bruto_facturado, isr, iva) as Decimal
+    """
+    total_bruto = Decimal('0')
+    total_isr   = Decimal('0')
+    total_iva   = Decimal('0')
+    for inv in inversiones:
+        pct  = inv.porcentaje_factura / Decimal('100')
+        fact = _calcular_interes_con_movimientos(inv, periodo_inicio, periodo_fin) * pct
+        total_bruto += fact
+        total_isr   += fact * Decimal('0.20')
+        total_iva   += fact * Decimal('0.16')
+    return total_bruto, total_isr, total_iva
 
     
 def _calcular_interes_con_movimientos(inversion, periodo_inicio, periodo_fin):
@@ -1486,7 +1482,7 @@ def _build_estado_pdf(data):
     vbl_s = S('cb', fontName='Helvetica-Bold', fontSize=8, textColor=NAVY,  alignment=TA_CENTER)
     tot_s = S('ct', fontName='Helvetica-Bold', fontSize=8, textColor=WHITE, alignment=TA_CENTER)
  
-    col_w = [0.6*inch, 1.0*inch, 0.55*inch, 0.9*inch, 0.95*inch, 0.8*inch, 0.65*inch, 0.85*inch]
+    col_w = [0.6*inch, 1.0*inch, 0.55*inch, 0.9*inch, 0.95*inch, 0.8*inch, 0.85*inch, 0.85*inch]
     hdrs  = ['#Pagaré', 'Capital', 'Plazo', 'Tasa Bruta Anual',
              'Interés Bruto', 'Retención', 'IVA', 'Interés Neto']
  
@@ -1494,7 +1490,7 @@ def _build_estado_pdf(data):
     totals = {'bruto': 0.0, 'ret': 0.0, 'iva': 0.0, 'neto': 0.0, 'neto_invoice': 0.0}
  
     for inv in data.get('inversiones', []):
-        tasa_anual   = float(inv.get('tasa_anual', 0))
+        tasa_anual   = float(inv.get('tasa_factura', inv.get('tasa_anual', 0)))
         interes_bruto = float(inv.get('interes_bruto', 0))
         r             = float(inv.get('retencion', 0))
         iv            = float(inv.get('iva_inv',   0))
@@ -1598,7 +1594,7 @@ def _build_estado_pdf(data):
                 S('fc', fontName='Helvetica', fontSize=8, textColor=GRAY)),
         ]
         right_lines = [
-            Paragraph('Interes Anual Bruto: ' + str(inv['tasa_anual']) + ' %',
+            Paragraph('Interes Anual Bruto: ' + str(inv.get('tasa_factura', inv['tasa_anual'])) + ' %',
                 S('ri', fontName='Helvetica', fontSize=8, textColor=GRAY, alignment=TA_RIGHT)),
             Paragraph('Tasa de Retencion: 20.0 %',
                 S('rr', fontName='Helvetica', fontSize=8, textColor=GRAY, alignment=TA_RIGHT)),
@@ -1644,7 +1640,7 @@ def _build_estado_pdf(data):
         dlft_s = S('dlf', fontName='Helvetica', fontSize=8, textColor=NAVY, alignment=TA_LEFT)
         dlbl_s = S('dlb', fontName='Helvetica-Bold', fontSize=8, textColor=NAVY, alignment=TA_LEFT)
 
-        dcol_w = [0.9*inch, 0.5*inch, 0.95*inch, 1.15*inch, 0.95*inch, 0.85*inch, 0.6*inch, 0.9*inch]
+        dcol_w = [0.9*inch, 0.5*inch, 0.95*inch, 1.15*inch, 0.95*inch, 0.85*inch, 0.8*inch, 0.9*inch]
         dhdrs  = ['Fecha', 'Plazo', 'Monto', 'Concepto', 'Interes Bruto', 'Retencion', 'IVA', 'Interes Neto']
 
         drows = [[Paragraph(h, dhdr_s) for h in dhdrs]]
@@ -1924,7 +1920,8 @@ def _build_estado_data(estado, inv_obj, overrides=None):
     # Build per-investment rows — summary page (page 1)
     inversiones_activas = inv_obj.inversiones.filter(
         Q(estado='activo') |
-        Q(fecha_vencimiento__range=[estado.periodo_inicio, estado.periodo_fin])
+        Q(fecha_vencimiento__range=[estado.periodo_inicio, estado.periodo_fin]),
+        porcentaje_factura__gt=0,
     ).order_by('id')
     # Saldo = solo capital de inversiones ACTIVAS (no sumar vencidas).
     total_capital = sum(
@@ -1941,7 +1938,7 @@ def _build_estado_data(estado, inv_obj, overrides=None):
         fact_i   = bruto_i * pct_fact
         isr_i    = fact_i * 0.20
         iva_i    = fact_i * 0.16
-        neto_i   = fact_i - isr_i + iva_i + (bruto_i * (1 - pct_fact))
+        neto_i   = fact_i - isr_i + iva_i
 
         # Reconstruct opening capital for PDF detail page
         p_ini   = estado.periodo_inicio if isinstance(estado.periodo_inicio, _date) else _date.fromisoformat(str(estado.periodo_inicio))
@@ -1991,9 +1988,9 @@ def _build_estado_data(estado, inv_obj, overrides=None):
                     'tipo': 'interes',
                     'fecha_inicio': str(t_start), 'fecha_fin': str(corte - _td(days=1)),
                     'dias': dias_t, 'capital': str(cap_t),
-                    'interes_bruto': f'{b_t:.2f}', 'retencion': f'{isr_t:.2f}',
+                    'interes_bruto': f'{f_t:.2f}', 'retencion': f'{isr_t:.2f}',
                     'iva': f'{iva_t:.2f}',
-                    'interes_neto': f'{f_t - isr_t + iva_t + b_t*(1-pct_fact):.2f}',
+                    'interes_neto': f'{f_t - isr_t + iva_t:.2f}',
                 })
             tramos_inv.append({
                 'tipo': 'movimiento', 'fecha': str(_m.fecha),
@@ -2010,9 +2007,9 @@ def _build_estado_data(estado, inv_obj, overrides=None):
                 'tipo': 'interes',
                 'fecha_inicio': str(t_start), 'fecha_fin': str(efectivo_fin_inv),
                 'dias': dias_f, 'capital': str(cap_t),
-                'interes_bruto': f'{b_f:.2f}', 'retencion': f'{isr_f:.2f}',
+                'interes_bruto': f'{f_f:.2f}', 'retencion': f'{isr_f:.2f}',
                 'iva': f'{iva_f:.2f}',
-                'interes_neto': f'{f_f - isr_f + iva_f + b_f*(1-pct_fact):.2f}',
+                'interes_neto': f'{f_f - isr_f + iva_f:.2f}',
             })
 
         inversiones_pdf.append({
@@ -2024,7 +2021,7 @@ def _build_estado_data(estado, inv_obj, overrides=None):
             'fecha_inicio':      str(inversion.fecha_inicio),
             'fecha_vencimiento': str(inversion.fecha_vencimiento) if inversion.fecha_vencimiento else 'Sin vencimiento',
             'dias':              dias,
-            'interes_bruto':     f'{bruto_i:.2f}',
+            'interes_bruto':     f'{fact_i:.2f}',
             'retencion':         f'{isr_i:.2f}',
             'iva_inv':           f'{iva_i:.2f}',
             'interes_neto':      f'{neto_i:.2f}',
@@ -2098,6 +2095,11 @@ def _aplicar_overrides(data, overrides):
 
         if not tocado:
             continue
+
+        # The PDF now prints only the invoiced amounts, so edits to the
+        # factura fields must feed the printed bruto / neto.
+        inv['interes_bruto'] = inv['bruto_factura']
+        inv['interes_neto']  = inv['neto_factura']
 
         # The Complemento and summary now show the investor's REAL interest
         # (interes_bruto / interes_neto). Mirror THOSE into the collapsed detail
@@ -2281,6 +2283,8 @@ def enviar_estados_todos(request):
     POST /api/estados/enviar-todos/
     Sends ONE consolidated email per investor for all their generado estados.
     Groups multiple estados by investor and sends a single email each.
+    Uses _build_estado_data so the PDF only shows the invoiced amounts
+    (same as the single send and the preview).
     """
     asunto      = request.data.get('asunto', 'Estado de Cuenta Mensual — Ideaconv')
     notas_extra = request.data.get('notas_extra', '')
@@ -2310,91 +2314,9 @@ def enviar_estados_todos(request):
             sin_correo.append(inv_obj.nombre_completo)
             continue
 
-        data = {
-            'inversionista':  inv_obj.nombre_completo,
-            'rfc':            inv_obj.rfc or '',
-            'curp':           getattr(inv_obj, 'curp', '') or '',
-            'calle':          getattr(inv_obj, 'calle', '') or '',
-            'ciudad':         getattr(inv_obj, 'ciudad', '') or '',
-            'estado_dir':     getattr(inv_obj, 'estado', '') or '',
-            'codigo_postal':  getattr(inv_obj, 'codigo_postal', '') or '',
-            'tasa':           '—',
-            'periodo_inicio': str(estado.periodo_inicio),
-            'periodo_fin':    str(estado.periodo_fin),
-            'dias_periodo':   estado.dias_periodo,
-            'interes_bruto':  str(estado.interes_bruto),
-            'isr':            str(estado.isr),
-            'iva':            str(estado.iva),
-            'interes_neto':   str(estado.interes_neto),
-            'pago_externo':   str(estado.pago_externo),
-            'total_pagar':    str(estado.total_pagar),
-        }
-
-        inversiones_activas = inv_obj.inversiones.filter(
-            Q(estado='activo') |
-            Q(fecha_vencimiento__range=[estado.periodo_inicio, estado.periodo_fin])
-        ).order_by('id')
-        # Saldo = solo capital de inversiones ACTIVAS (no sumar vencidas).
-        total_capital = sum(
-            inv.capital for inv in inversiones_activas if inv.estado == 'activo'
-        )
-        data['capital'] = str(total_capital)
-
-        inversiones_pdf = []
-        for inversion in inversiones_activas:
-            from datetime import timedelta as _td
-            if inversion.fecha_inicio:
-                if getattr(inversion, 'renovacion_de_id', None):
-                    _ef = max(estado.periodo_inicio, inversion.fecha_inicio)
-                else:
-                    _ef = max(estado.periodo_inicio, inversion.fecha_inicio + _td(days=1))
-            else:
-                _ef = estado.periodo_inicio
-            if inversion.fecha_vencimiento:
-                _ef_fin = min(estado.periodo_fin, inversion.fecha_vencimiento - _td(days=1))
-            else:
-                _ef_fin = estado.periodo_fin
-            dias = max((_ef_fin - _ef).days + 1, 0)
-            pct_fact = float(inversion.porcentaje_factura) / 100
-            bruto_i  = float(_calcular_interes_con_movimientos(
-                inversion, estado.periodo_inicio, estado.periodo_fin
-            ))
-            fact_i = bruto_i * pct_fact
-            isr_i  = fact_i * 0.20
-            iva_i  = fact_i * 0.16
-            neto_i = fact_i - isr_i + iva_i + (bruto_i * (1 - pct_fact))
-
-            inversiones_pdf.append({
-                'folio':             f'INV-{inversion.id}',
-                'capital':           str(inversion.capital) if inversion.estado == 'activo' else '0',
-                'tasa_anual':        str(inversion.tasa_anual),
-                'base_calculo':      inversion.base_calculo,
-                'fecha_inicio':      str(inversion.fecha_inicio),
-                'fecha_vencimiento': str(inversion.fecha_vencimiento) if inversion.fecha_vencimiento else 'Sin vencimiento',
-                'dias':              dias,
-                'interes_bruto':     f'{bruto_i:.2f}',
-                'retencion':         f'{isr_i:.2f}',
-                'iva_inv':           f'{iva_i:.2f}',
-                'interes_neto':      f'{neto_i:.2f}',
-                'movimientos': [
-                    {'fecha': str(m.fecha), 'monto': str(m.monto),
-                     'tipo': m.tipo, 'tipo_display': m.get_tipo_display()}
-                    for m in inversion.movimientos.order_by('fecha')
-                ],
-                'estados_historicos': [
-                    {'periodo_inicio': str(e.periodo_inicio),
-                     'periodo_fin':    str(e.periodo_fin),
-                     'dias_periodo':   e.dias_periodo,
-                     'interes_bruto':  str(e.interes_bruto),
-                     'isr':            str(e.isr),
-                     'iva':            str(e.iva),
-                     'interes_neto':   str(e.interes_neto)}
-                    for e in EstadoDeCuenta.objects.filter(
-                        inversionista=inv_obj
-                    ).order_by('periodo_inicio')
-                ],
-            })
-        data['inversiones'] = inversiones_pdf
+        # Shared builder: only invoiced investments, only invoiced amounts
+        data = _build_estado_data(estado, inv_obj)
+        data['nota_pdf'] = ''
 
         html_content = _build_email_html(data, notas_extra)
         text_content = f"Estado de Cuenta — {inv_obj.nombre_completo}"
