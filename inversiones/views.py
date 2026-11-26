@@ -775,6 +775,154 @@ def _totales_facturados(inversiones, periodo_inicio, periodo_fin):
         total_iva   += fact * Decimal('0.16')
     return total_bruto, total_isr, total_iva
 
+
+# ══════════════════════════════════════════════
+#  RESUMEN DE CORTE  — TODOS los inversionistas (facturen o no)
+#  El filtro de facturación NO se aplica aquí. Solo se aplica en la
+#  generación de estados de cuenta (generar_estados_todos / generar_estado_inversionista).
+# ══════════════════════════════════════════════
+
+def _calcular_cierre_inversion(inversion, periodo_inicio, periodo_fin):
+    """
+    Cálculo COMPLETO de una inversión para el cierre (misma fórmula que la calculadora):
+      bruto        = interés total del periodo (con tramos por movimientos)
+      facturado    = bruto * porcentaje_factura
+      isr / iva    = 20% / 16% sobre lo facturado
+      neto_factura = facturado - isr + iva
+      externo      = bruto - facturado          (parte NO facturada)
+      total_pagar  = neto_factura + externo
+    """
+    bruto     = _calcular_interes_con_movimientos(inversion, periodo_inicio, periodo_fin)
+    pct       = inversion.porcentaje_factura / Decimal('100')
+    facturado = bruto * pct
+    isr       = facturado * Decimal('0.20')
+    iva       = facturado * Decimal('0.16')
+    neto_fact = facturado - isr + iva
+    externo   = bruto - facturado
+    return {
+        'bruto':        bruto,
+        'facturado':    facturado,
+        'isr':          isr,
+        'iva':          iva,
+        'neto_factura': neto_fact,
+        'externo':      externo,
+        'total_pagar':  neto_fact + externo,
+    }
+
+
+def _resumen_cierre(periodo_inicio, periodo_fin):
+    """
+    Cierre para TODOS los inversionistas no eliminados con inversiones activas
+    (o que vencen dentro del periodo), facturen o no. No escribe en la BD.
+    Respeta dias_cierre_fijo igual que generar_estados_todos.
+    """
+    from datetime import date, timedelta
+
+    p_inicio = periodo_inicio if isinstance(periodo_inicio, date) else date.fromisoformat(str(periodo_inicio))
+    p_fin_g  = periodo_fin    if isinstance(periodo_fin,    date) else date.fromisoformat(str(periodo_fin))
+    dias_global = (p_fin_g - p_inicio).days + 1
+
+    CAMPOS  = ('bruto', 'facturado', 'isr', 'iva', 'neto_factura', 'externo', 'total_pagar')
+    totales = {k: Decimal('0') for k in CAMPOS}
+    totales['saldo'] = Decimal('0')
+    filas = []
+
+    for inversionista in Inversionista.objects.filter(eliminado=False).order_by('nombre_completo'):
+        dias  = inversionista.dias_cierre_fijo or dias_global
+        p_fin = p_inicio + timedelta(days=dias - 1)
+
+        inversiones = inversionista.inversiones.filter(
+            Q(estado='activo') | Q(fecha_vencimiento__range=[p_inicio, p_fin])
+        ).order_by('id')   # ← SIN filtro de porcentaje_factura
+        if not inversiones.exists():
+            continue
+
+        fila_tot = {k: Decimal('0') for k in CAMPOS}
+        saldo    = Decimal('0')
+        detalle  = []
+        for inv in inversiones:
+            c = _calcular_cierre_inversion(inv, p_inicio, p_fin)
+            for k in CAMPOS:
+                fila_tot[k] += c[k]
+            cap = inv.capital if inv.estado == 'activo' else Decimal('0')
+            saldo += cap
+            detalle.append({'folio': f'INV-{inv.id}', 'capital': cap,
+                            'porcentaje_factura': inv.porcentaje_factura, **c})
+
+        if fila_tot['bruto'] <= 0:   # sin interés en el periodo → no aparece
+            continue
+
+        for k in CAMPOS:
+            totales[k] += fila_tot[k]
+        totales['saldo'] += saldo
+
+        filas.append({
+            'id': inversionista.id, 'nombre': inversionista.nombre_completo,
+            'rfc': inversionista.rfc or '',
+            'factura': any(i.porcentaje_factura > 0 for i in inversiones),
+            'dias': dias, 'periodo_inicio': p_inicio, 'periodo_fin': p_fin,
+            'saldo': saldo, 'inversiones': detalle, **fila_tot,
+        })
+
+    return filas, totales
+
+
+def _q2(v):
+    return str(Decimal(v).quantize(Decimal('0.01')))
+
+
+@api_view(['GET'])
+@login_required(login_url='login')
+def resumen_cierre(request):
+    """
+    GET /api/estados/resumen-corte/?periodo_inicio=2026-11-01&periodo_fin=2026-11-30
+    Sin parámetros → mes actual.
+    """
+    from datetime import date
+    import calendar
+
+    pi = request.GET.get('periodo_inicio')
+    pf = request.GET.get('periodo_fin')
+    if not pi or not pf:
+        hoy = date.today()
+        pi  = date(hoy.year, hoy.month, 1)
+        pf  = date(hoy.year, hoy.month, calendar.monthrange(hoy.year, hoy.month)[1])
+    try:
+        p_inicio = pi if isinstance(pi, date) else date.fromisoformat(str(pi))
+        p_fin    = pf if isinstance(pf, date) else date.fromisoformat(str(pf))
+    except ValueError:
+        return Response({'error': 'Fechas inválidas (use AAAA-MM-DD)'}, status=status.HTTP_400_BAD_REQUEST)
+    if p_fin < p_inicio:
+        return Response({'error': 'La fecha fin no puede ser anterior a la fecha inicio'},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    filas, totales = _resumen_cierre(p_inicio, p_fin)
+    DINERO = ('saldo', 'bruto', 'facturado', 'isr', 'iva', 'neto_factura', 'externo', 'total_pagar')
+
+    return Response({
+        'periodo_inicio': str(p_inicio),
+        'periodo_fin':    str(p_fin),
+        'inversionistas': [
+            {
+                'id': f['id'], 'nombre': f['nombre'], 'rfc': f['rfc'],
+                'factura': f['factura'], 'dias': f['dias'],
+                'periodo_inicio': str(f['periodo_inicio']),
+                'periodo_fin':    str(f['periodo_fin']),
+                **{k: _q2(f[k]) for k in DINERO},
+                'inversiones': [
+                    {'folio': d['folio'],
+                     'porcentaje_factura': str(d['porcentaje_factura']),
+                     'capital': _q2(d['capital']),
+                     **{k: _q2(d[k]) for k in DINERO if k != 'saldo'}}
+                    for d in f['inversiones']
+                ],
+            }
+            for f in filas
+        ],
+        'totales': {k: _q2(totales[k]) for k in DINERO},
+        'total_inversionistas': len(filas),
+    })
+
     
 def _calcular_interes_con_movimientos(inversion, periodo_inicio, periodo_fin):
     """
@@ -1104,12 +1252,11 @@ def dashboard_summary(request):
     total_estados     = EstadoDeCuenta.objects.count()
     estados_generados = EstadoDeCuenta.objects.filter(estado='generado').count()
     estados_pendientes = EstadoDeCuenta.objects.filter(estado='pendiente').count()
-    total_intereses   = sum(
-        e.total_pagar for e in EstadoDeCuenta.objects.filter(
-            periodo_inicio__year=today.year,
-            periodo_inicio__month=today.month
-        )
-    ) if EstadoDeCuenta.objects.exists() else 0
+    # Intereses del mes: cierre completo de TODOS los inversionistas (facturen o no)
+    _ini_mes = today.replace(day=1)
+    _fin_mes = today.replace(day=calendar.monthrange(today.year, today.month)[1])
+    _, _tot_mes = _resumen_cierre(_ini_mes, _fin_mes)
+    total_intereses = _tot_mes['total_pagar'].quantize(Decimal('0.01'))
 
     # ── Pagos ──
     pagos_pendientes = Pago.objects.filter(estado='pendiente').count()
@@ -2465,18 +2612,14 @@ def exportar_excel_estados(request):
     periodo_inicio = request.GET.get('periodo_inicio')
     periodo_fin    = request.GET.get('periodo_fin')
 
-    # Filter estados
-    estados_qs = EstadoDeCuenta.objects.select_related(
-        'inversionista', 'inversion__inversionista'
-    ).filter(
-        Q(inversionista__eliminado=False) |
-        Q(inversionista__isnull=True, inversion__inversionista__eliminado=False)
-    )
-    if periodo_inicio:
-        estados_qs = estados_qs.filter(periodo_inicio=periodo_inicio)
-    if periodo_fin:
-        estados_qs = estados_qs.filter(periodo_fin=periodo_fin)
-    estados_qs = estados_qs.order_by('inversionista__nombre_completo')
+    # Resumen de corte — TODOS los inversionistas (facturen o no)
+    from datetime import date as _date
+    import calendar as _cal
+    if not periodo_inicio or not periodo_fin:
+        _hoy = _date.today()
+        periodo_inicio = str(_date(_hoy.year, _hoy.month, 1))
+        periodo_fin    = str(_date(_hoy.year, _hoy.month, _cal.monthrange(_hoy.year, _hoy.month)[1]))
+    filas_resumen, _ = _resumen_cierre(periodo_inicio, periodo_fin)
 
     # Build workbook
     wb = openpyxl.Workbook()
@@ -2533,24 +2676,14 @@ def exportar_excel_estados(request):
 
     # Data rows
     data_rows = []
-    for estado in estados_qs:
-        nombre = (
-            estado.inversionista.nombre_completo
-            if estado.inversionista
-            else estado.inversion.inversionista.nombre_completo
-            if estado.inversion
-            else '—'
-        )
-        neto_facturado = float(estado.interes_neto) - float(estado.pago_externo)
-        pago_externo   = float(estado.pago_externo)
+    for f in filas_resumen:
         data_rows.append({
-            'nombre':        nombre,
-            'interes_neto':  float(estado.total_pagar),
-            'neto_facturado': neto_facturado,
-            'externo':       pago_externo,
-            'isr':           float(estado.isr),
-            'iva':           float(estado.iva),
-            'suma':          neto_facturado + pago_externo,
+            'nombre':       f['nombre'],
+            'interes_neto': round(float(f['total_pagar']), 2),
+            'externo':      round(float(f['externo']), 2),
+            'isr':          round(float(f['isr']), 2),
+            'iva':          round(float(f['iva']), 2),
+            'suma':         round(float(f['neto_factura'] + f['externo']), 2),
         })
 
     # Write data

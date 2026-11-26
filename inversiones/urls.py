@@ -40,6 +40,7 @@ urlpatterns = [
     path('api/estados/',                         views.estados_list,                 name='api-estados-list'),
     path('api/estados/generar-todos/',           views.generar_estados_todos,         name='api-generar-todos'),
     path('api/estados/generar-inversionista/',   views.generar_estado_inversionista,  name='api-generar-estado-inversionista'),
+    path('api/estados/resumen-corte/', views.resumen_cierre, name='api-resumen-corte'),
     path('api/estados/enviar-todos/',            views.enviar_estados_todos,          name='api-enviar-todos'),
     path('api/estados/<int:pk>/',                views.estado_detail,                 name='api-estado-detail'),
     path('api/estados/<int:pk>/preview/',        views.estado_preview,                name='api-estado-preview'),
